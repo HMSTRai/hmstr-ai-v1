@@ -7,8 +7,8 @@ import "leaflet/dist/leaflet.css";
 import "./scss/app.scss";
 
 export const metadata = {
-  title: 'Dashcode Next Js',
-  description: 'Dashcode is a popular dashboard template.',
+  title: 'HMSTR Dashboard',
+  description: 'HMSTR is a popular dashboard template.',
 }
 
 import ThemeProvider from "./theme-provider"
@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
   return (
     <>
       <html lang="en">
-        <body className="font-inter  custom-tippy dashcode-app">
+        <body className="font-inter  custom-tippy -app">
           <ThemeProvider>
             {children}
           </ThemeProvider>

@@ -15,7 +15,7 @@ const SearchModal = () => {
   const searchList = [
     {
       id: 1,
-      name: "What is Dashcode ?",
+      name: "What is HMSTR ?",
     },
     {
       id: 2,
