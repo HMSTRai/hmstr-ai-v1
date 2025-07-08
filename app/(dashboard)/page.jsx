@@ -93,7 +93,6 @@ export default function ClientDashboard({ startDate, endDate, client }) {
   )
 }
 
-// Utilities to reshape RPC JSON to Recharts format
 function formatLeads(data) {
   const grouped = {}
   data?.forEach(({ date, source, total }) => {
