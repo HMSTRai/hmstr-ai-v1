@@ -2,52 +2,114 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import dayjs from 'dayjs'
 
-const StarterPage = () => {
-  const [calls, setCalls] = useState([])
+export default function ClientDashboard({ startDate, endDate, client }) {
+  const [metrics, setMetrics] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data, error } = await supabase
-        .from('callrail_calls')
-        .select('id, created_at, callrail_call_id, company_name, start_time')
-        .order('created_at', { ascending: false })
-        .limit(10)
+      setLoading(true)
+      const { data, error } = await supabase.rpc('dashboard_insights', {
+        start_date: startDate,
+        end_date: endDate,
+        client,
+      })
 
       if (error) console.error(error)
-      else setCalls(data)
+      else setMetrics(data)
+
+      setLoading(false)
     }
 
     fetchData()
-  }, [])
+  }, [startDate, endDate, client])
+
+  if (loading) return <p>Loading...</p>
+  if (!metrics) return <p>No data</p>
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-2">📞 Latest Calls</h1>
-      <table className="w-full text-left text-sm border border-gray-300">
-        <thead className="bg-gray-100 border-b">
-          <tr>
-            <th className="p-2">#</th>
-            <th className="p-2">Call ID</th>
-            <th className="p-2">Company</th>
-            <th className="p-2">Created At</th>
-            <th className="p-2">Start Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {calls.map((call, index) => (
-            <tr key={call.id} className="border-b hover:bg-gray-50">
-              <td className="p-2">{index + 1}</td>
-              <td className="p-2">{call.callrail_call_id}</td>
-              <td className="p-2">{call.company_name}</td>
-              <td className="p-2">{new Date(call.created_at).toLocaleString()}</td>
-              <td className="p-2">{new Date(call.start_time).toLocaleString()}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="space-y-6">
+      {/* Metrics */}
+      <div className="bg-white rounded-xl shadow p-6 grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <div>
+          <p className="text-gray-500">Total Leads</p>
+          <p className="text-xl font-semibold">{metrics.leads}</p>
+        </div>
+        <div>
+          <p className="text-gray-500">PPC Leads</p>
+          <p className="text-xl">{metrics.ppc_leads}</p>
+        </div>
+        <div>
+          <p className="text-gray-500">LSA Leads</p>
+          <p className="text-xl">{metrics.lsa_leads}</p>
+        </div>
+        <div>
+          <p className="text-gray-500">SEO Leads</p>
+          <p className="text-xl">{metrics.seo_leads}</p>
+        </div>
+        <div>
+          <p className="text-gray-500">Total Spend</p>
+          <p className="text-xl">${metrics.total_spend?.toFixed(2)}</p>
+        </div>
+      </div>
+
+      {/* Qualified Leads Line Chart */}
+      <div>
+        <h2 className="text-lg font-bold mb-2">Qualified Leads by Period</h2>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={formatLeads(metrics.qualified_by_day)}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="PPC" stroke="#8884d8" />
+            <Line type="monotone" dataKey="LSA" stroke="#82ca9d" />
+            <Line type="monotone" dataKey="SEO" stroke="#ffc658" />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* CPL Line Chart */}
+      <div>
+        <h2 className="text-lg font-bold mb-2">Cost per Qualified Lead by Month</h2>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={formatCPL(metrics.cpl_by_month)}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="month" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="PPC" stroke="#8884d8" />
+            <Line type="monotone" dataKey="LSA" stroke="#82ca9d" />
+            <Line type="monotone" dataKey="SEO" stroke="#ffc658" />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   )
 }
 
-export default StarterPage
+// Utilities to reshape RPC JSON to Recharts format
+function formatLeads(data) {
+  const grouped = {}
+  data?.forEach(({ date, source, total }) => {
+    const key = dayjs(date).format('YYYY-MM-DD')
+    grouped[key] = grouped[key] || { date: key }
+    grouped[key][source] = total
+  })
+  return Object.values(grouped)
+}
+
+function formatCPL(data) {
+  const grouped = {}
+  data?.forEach(({ month, source, cpl }) => {
+    const key = dayjs(month).format('YYYY-MM')
+    grouped[key] = grouped[key] || { month: key }
+    grouped[key][source] = parseFloat(cpl)
+  })
+  return Object.values(grouped)
+}

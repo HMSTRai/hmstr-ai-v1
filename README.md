@@ -14,17 +14,24 @@ pnpm dev
 
 This tells npm to ignore peer dependency conflicts and proceed:
 ```bash
-npm install --legacy-peer-deps
+npm install --legacy-peer-depsgit commit -m "updated"
+git push origin main
 ```
 
 ## Push It to GitHub
-
+```bash
 git init
 git add .
 git commit -m "Initial commit of HMSTR Dashboard"
 git branch -M main
 git remote add origin https://github.com/your-username/hmstr-dashboard.git
 git push -u origin main
+```
+## Push
+```bash
+git commit -m "updated"
+git push origin main
+```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
