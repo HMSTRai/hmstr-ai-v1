@@ -20,6 +20,7 @@
     "@iconify/react": "^4.1.0",
     "@reduxjs/toolkit": "^1.9.3",
     "@south-paw/react-vector-maps": "^3.2.0",
+    "@supabase/supabase-js": "^2.50.3",
     "@svg-maps/world": "^1.0.1",
     "@tippyjs/react": "^4.2.6",
     "apexcharts": "^3.33.2",
