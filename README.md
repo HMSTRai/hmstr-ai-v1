@@ -12,6 +12,20 @@ yarn dev
 pnpm dev
 ```
 
+This tells npm to ignore peer dependency conflicts and proceed:
+```bash
+npm install --legacy-peer-deps
+```
+
+## Push It to GitHub
+
+git init
+git add .
+git commit -m "Initial commit of HMSTR Dashboard"
+git branch -M main
+git remote add origin https://github.com/your-username/hmstr-dashboard.git
+git push -u origin main
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
