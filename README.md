@@ -29,8 +29,9 @@ git push -u origin main
 ```
 ## Push
 ```bash
-git commit -m "updated"
-git push origin main
+git add .
+git commit -m "new"
+git push
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
