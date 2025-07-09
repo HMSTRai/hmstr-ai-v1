@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
-// Dropdown to select client
 function ClientSelector({ onSelect }) {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,11 +12,7 @@ function ClientSelector({ onSelect }) {
       const { data, error } = await supabase
         .from('clients_ffs')
         .select('cr_client_id, cr_company_name');
-      if (error) {
-        alert('Failed to load clients');
-      } else {
-        setClients(data || []);
-      }
+      setClients(data || []);
       setLoading(false);
     }
     fetchClients();
@@ -26,10 +21,10 @@ function ClientSelector({ onSelect }) {
   if (loading) return <p>Loading clients...</p>;
 
   return (
-    <div className="mb-4">
+    <div>
       <label className="block mb-1 font-semibold">Select Client:</label>
       <select
-        className="border rounded px-3 py-2"
+        className="border rounded px-3 py-2 min-w-[220px]"
         onChange={e => onSelect(e.target.value)}
         defaultValue=""
       >
@@ -44,7 +39,31 @@ function ClientSelector({ onSelect }) {
   );
 }
 
-// Metrics display
+function DateSelector({ startDate, endDate, onChange }) {
+  return (
+    <div className="flex gap-4 items-end">
+      <div>
+        <label className="block mb-1 font-semibold">Start Date:</label>
+        <input
+          type="date"
+          value={startDate}
+          onChange={e => onChange('startDate', e.target.value)}
+          className="border rounded px-3 py-2"
+        />
+      </div>
+      <div>
+        <label className="block mb-1 font-semibold">End Date:</label>
+        <input
+          type="date"
+          value={endDate}
+          onChange={e => onChange('endDate', e.target.value)}
+          className="border rounded px-3 py-2"
+        />
+      </div>
+    </div>
+  );
+}
+
 function MetricsDashboard({ clientId, startDate, endDate }) {
   const [metrics, setMetrics] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -111,16 +130,28 @@ function MetricsDashboard({ clientId, startDate, endDate }) {
   );
 }
 
-// The page itself
+// --- Main Page ---
 export default function DashboardPage() {
+  const today = new Date().toISOString().slice(0, 10);
   const [selectedClient, setSelectedClient] = useState('');
-  const startDate = '2025-01-01';
-  const endDate = '2025-08-01';
+  const [startDate, setStartDate] = useState('2025-01-01');
+  const [endDate, setEndDate] = useState(today);
+
+  const handleDateChange = (type, value) => {
+    if (type === 'startDate') setStartDate(value);
+    else setEndDate(value);
+  };
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <ClientSelector onSelect={setSelectedClient} />
-      <MetricsDashboard clientId={selectedClient} startDate={startDate} endDate={endDate} />
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Sidebar is assumed rendered by your layout, so just margin for content */}
+      <main className="pl-8 pt-10 w-full">
+        <div className="flex items-center gap-8 mb-6">
+          <ClientSelector onSelect={setSelectedClient} />
+          <DateSelector startDate={startDate} endDate={endDate} onChange={handleDateChange} />
+        </div>
+        <MetricsDashboard clientId={selectedClient} startDate={startDate} endDate={endDate} />
+      </main>
     </div>
   );
 }
