@@ -21,10 +21,11 @@ export default function ClientDashboard({ startDate, endDate, client }) {
     const fetchData = async () => {
       setLoading(true);
       const { data, error } = await supabase.rpc('dashboard_insights', {
-        start_date: startDate,
-        end_date: endDate,
-        client: client,
-      });
+  company_id: client,
+  start_date: startDate,
+  end_date: endDate,
+});
+
 
       console.log('RPC DATA:', data);
       console.log('RPC ERROR:', error);
