@@ -166,6 +166,7 @@ export default function ModernDashboard() {
             </LineChart>
           </ResponsiveContainer>
         </SectionCard>
+        
         <SectionCard title="Cost Per Qualified Lead by Period">
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={cpqlChartData}>
