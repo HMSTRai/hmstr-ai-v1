@@ -12,7 +12,7 @@ function ClientSelector({ clients, selected, onSelect }) {
     >
       <option value="">Select Client</option>
       {clients.map(c => (
-        <option key={c.cr_client_id} value={c.cr_client_id}>
+        <option key={c.client_id} value={c.client_id}>
           {c.cr_company_name}
         </option>
       ))}

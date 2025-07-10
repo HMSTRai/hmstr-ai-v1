@@ -1,4 +1,3 @@
-// app/api/top-metrics/route.js
 import { supabase } from '@/lib/supabaseClient'
 
 export async function GET(req) {
