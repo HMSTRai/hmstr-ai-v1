@@ -91,7 +91,7 @@ export default function ModernDashboard() {
       .then(res => res.json())
       .then(({ data, error }) => {
         if (error) throw new Error(error)
-        setMetrics(data ? data : null)
+        setMetrics(Array.isArray(data) && data.length ? data[0] : null)
         setError(null)
       })
       .catch(err => setError(err.message))
