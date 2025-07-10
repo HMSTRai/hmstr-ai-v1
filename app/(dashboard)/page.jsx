@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
-// ClientSelector Component
 function ClientSelector({ clients, selected, onSelect }) {
   return (
     <select
@@ -21,7 +20,6 @@ function ClientSelector({ clients, selected, onSelect }) {
   )
 }
 
-// DateSelector Component
 function DateSelector({ startDate, endDate, onChange }) {
   return (
     <div className="flex items-center gap-2">
@@ -42,7 +40,6 @@ function DateSelector({ startDate, endDate, onChange }) {
   )
 }
 
-// StatCard Component
 function StatCard({ label, value, sublabel, color = 'text-blue-600' }) {
   return (
     <div className="bg-white rounded-2xl shadow-md px-6 py-4 flex flex-col items-center min-w-[120px] transition hover:shadow-lg hover:bg-gray-50">
@@ -53,7 +50,6 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600' }) {
   )
 }
 
-// SectionCard Component
 function SectionCard({ children, title }) {
   return (
     <section className="bg-white rounded-2xl shadow p-6 mb-8">
@@ -73,7 +69,7 @@ export default function ModernDashboard() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  // Fetch clients (API)
+  // Fetch clients
   useEffect(() => {
     fetch('/api/clients')
       .then(res => res.json())
@@ -84,34 +80,28 @@ export default function ModernDashboard() {
       .catch(err => setError(err.message))
   }, [])
 
-  // Fetch metrics for selected client & date (API)
+  // Fetch metrics
   useEffect(() => {
-    if (!selectedClient) return setMetrics(null)
+    if (!selectedClient) {
+      setMetrics(null)
+      return
+    }
     setLoading(true)
     fetch(`/api/top-metrics?clientId=${selectedClient}&start=${startDate}&end=${endDate}`)
       .then(res => res.json())
       .then(({ data, error }) => {
         if (error) throw new Error(error)
-        setMetrics(data && data.length ? data[0] : null)
+        setMetrics(data ? data : null)
         setError(null)
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
   }, [selectedClient, startDate, endDate])
 
-  // TODO: Replace with real chart data from API when Cory exposes it!
-  const leadsChartData = [
-    { date: '2025-05-01', total: 5, ppc: 1, lsa: 2, seo: 2 },
-    { date: '2025-05-02', total: 15, ppc: 10, lsa: 3, seo: 2 },
-    // ...
-  ]
-  const cpqlChartData = [
-    { date: '2025-05-01', total: 80, ppc: 224, lsa: 0, seo: 0 },
-    { date: '2025-06-01', total: 120, ppc: 180, lsa: 0, seo: 0 },
-    // ...
-  ]
+  // Default to empty arrays if metrics not loaded yet
+  const leadsChartData = metrics?.leads_chart || []
+  const cpqlChartData = metrics?.cpql_chart || []
 
-  // UI
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col px-0">
       {/* Controls */}
@@ -138,19 +128,19 @@ export default function ModernDashboard() {
         </SectionCard>
       </div>
 
-      {/* Engagement Metrics Example */}
+      {/* Engagement Metrics */}
       <div className="flex gap-6 px-10">
         <SectionCard>
           <div className="flex flex-row gap-12 items-center">
             <div>
               <div className="text-gray-500 mb-1">Human Engagement Rate</div>
-              <div className="text-2xl font-bold text-blue-700">32.41%</div>
-              <div className="text-xs text-gray-400">140 of 432</div>
+              <div className="text-2xl font-bold text-blue-700">{metrics?.human_engagement_rate ?? '--'}%</div>
+              <div className="text-xs text-gray-400">{metrics?.human_engaged_count ?? '--'} of {metrics?.human_total_count ?? '--'}</div>
             </div>
             <div>
               <div className="text-gray-500 mb-1">AI Forward Rate</div>
-              <div className="text-2xl font-bold text-green-700">73.15%</div>
-              <div className="text-xs text-gray-400">316 of 432</div>
+              <div className="text-2xl font-bold text-green-700">{metrics?.ai_forward_rate ?? '--'}%</div>
+              <div className="text-xs text-gray-400">{metrics?.ai_forward_count ?? '--'} of {metrics?.ai_total_count ?? '--'}</div>
             </div>
           </div>
         </SectionCard>
