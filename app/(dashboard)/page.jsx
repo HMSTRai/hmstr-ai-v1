@@ -3,8 +3,6 @@
 import { useEffect, useState } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
-// --- Simple utility components ---
-
 function ClientSelector({ clients, selected, onSelect }) {
   return (
     <select
@@ -14,7 +12,7 @@ function ClientSelector({ clients, selected, onSelect }) {
     >
       <option value="">Select Client</option>
       {clients.map(c => (
-        <option key={c.cr_client_id} value={c.cr_client_id}>
+        <option key={c.client_id_int} value={c.client_id_int}>
           {c.cr_company_name}
         </option>
       ))}
@@ -61,19 +59,17 @@ function SectionCard({ children, title }) {
   )
 }
 
-// --- Main Dashboard Component ---
-
 export default function ModernDashboard() {
   const today = new Date().toISOString().slice(0, 10)
   const [clients, setClients] = useState([])
   const [selectedClient, setSelectedClient] = useState('')
   const [startDate, setStartDate] = useState('2025-05-01')
   const [endDate, setEndDate] = useState(today)
-  const [metrics, setMetrics] = useState(undefined) // undefined=not loaded, null=no data, object=data
+  const [metrics, setMetrics] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  // --- Fetch clients ---
+  // Fetch clients
   useEffect(() => {
     fetch('/api/clients')
       .then(res => res.json())
@@ -84,10 +80,10 @@ export default function ModernDashboard() {
       .catch(err => setError(err.message))
   }, [])
 
-  // --- Fetch metrics ---
+  // Fetch metrics
   useEffect(() => {
     if (!selectedClient) {
-      setMetrics(undefined)
+      setMetrics(null)
       return
     }
     setLoading(true)
@@ -95,30 +91,24 @@ export default function ModernDashboard() {
       .then(res => res.json())
       .then(({ data, error }) => {
         if (error) throw new Error(error)
-        if (Array.isArray(data) && data.length > 0) {
-          setMetrics(data[0])
-          console.log("Loaded metrics:", data[0])
-        } else {
-          setMetrics(null) // No data for this selection
-          console.log("No metrics for this selection")
-        }
+        setMetrics(Array.isArray(data) && data.length ? data[0] : null)
         setError(null)
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
   }, [selectedClient, startDate, endDate])
 
-  // --- Chart data ---
+  // Default to empty arrays if metrics not loaded yet
   const leadsChartData = metrics?.leads_chart || []
   const cpqlChartData = metrics?.cpql_chart || []
 
-  // --- Money formatting ---
+  // Helper for formatting money
   const formatMoney = val =>
     typeof val === "number"
       ? `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
       : '--'
 
-  // --- Determine if ALL metrics are zero (for empty-state message) ---
+  // Show a user-friendly message if all metrics are zero
   function allZeroMetrics(obj) {
     if (!obj) return false
     const keys = [
@@ -150,13 +140,6 @@ export default function ModernDashboard() {
       {error && (
         <div className="w-full flex justify-center items-center py-10">
           <div className="bg-red-100 text-red-600 px-4 py-2 rounded">{error}</div>
-        </div>
-      )}
-
-      {/* Print metrics object for debug (remove in prod) */}
-      {metrics && (
-        <div className="px-10 mt-2">
-          <pre className="bg-gray-100 p-2 text-xs rounded">{JSON.stringify(metrics, null, 2)}</pre>
         </div>
       )}
 
@@ -211,47 +194,35 @@ export default function ModernDashboard() {
           {/* Charts */}
           <div className="flex flex-col gap-6 px-10 pb-10 mt-4">
             <SectionCard title="Qualified Leads by Period">
-              {leadsChartData.length === 0 ? (
-                <div className="text-center text-gray-400 py-10">
-                  No chart data available.
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height={220}>
-                  <LineChart data={leadsChartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" />
-                    <Line type="monotone" dataKey="ppc" stroke="#10b981" name="PPC" />
-                    <Line type="monotone" dataKey="lsa" stroke="#f59e42" name="LSA" />
-                    <Line type="monotone" dataKey="seo" stroke="#ec4899" name="SEO" />
-                  </LineChart>
-                </ResponsiveContainer>
-              )}
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart data={leadsChartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" />
+                  <Line type="monotone" dataKey="ppc" stroke="#10b981" name="PPC" />
+                  <Line type="monotone" dataKey="lsa" stroke="#f59e42" name="LSA" />
+                  <Line type="monotone" dataKey="seo" stroke="#ec4899" name="SEO" />
+                </LineChart>
+              </ResponsiveContainer>
             </SectionCard>
             
             <SectionCard title="Cost Per Qualified Lead by Period">
-              {cpqlChartData.length === 0 ? (
-                <div className="text-center text-gray-400 py-10">
-                  No chart data available.
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height={220}>
-                  <LineChart data={cpqlChartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" />
-                    <Line type="monotone" dataKey="ppc" stroke="#10b981" name="PPC" />
-                    <Line type="monotone" dataKey="lsa" stroke="#f59e42" name="LSA" />
-                    <Line type="monotone" dataKey="seo" stroke="#ec4899" name="SEO" />
-                  </LineChart>
-                </ResponsiveContainer>
-              )}
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart data={cpqlChartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" />
+                  <Line type="monotone" dataKey="ppc" stroke="#10b981" name="PPC" />
+                  <Line type="monotone" dataKey="lsa" stroke="#f59e42" name="LSA" />
+                  <Line type="monotone" dataKey="seo" stroke="#ec4899" name="SEO" />
+                </LineChart>
+              </ResponsiveContainer>
             </SectionCard>
           </div>
         </>
