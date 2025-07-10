@@ -59,12 +59,32 @@ function SectionCard({ children, title }) {
   )
 }
 
+// Helper to create zeroed data for the charts
+function createEmptyChartData(start, end) {
+  if (!start || !end || start > end) return []
+  const result = []
+  let current = new Date(start)
+  const endDateObj = new Date(end)
+  while (current <= endDateObj) {
+    const dateStr = current.toISOString().slice(0, 10)
+    result.push({
+      date: dateStr,
+      total: 0,
+      ppc: 0,
+      lsa: 0,
+      seo: 0,
+    })
+    current.setDate(current.getDate() + 1)
+  }
+  return result
+}
+
 export default function ModernDashboard() {
   const today = new Date().toISOString().slice(0, 10)
   const [clients, setClients] = useState([])
   const [selectedClient, setSelectedClient] = useState('')
-  const [startDate, setStartDate] = useState('2024-12-01')
-  const [endDate, setEndDate] = useState('2024-12-12')
+  const [startDate, setStartDate] = useState(today)
+  const [endDate, setEndDate] = useState(today)
   const [metrics, setMetrics] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -80,9 +100,9 @@ export default function ModernDashboard() {
       .catch(err => setError(err.message))
   }, [])
 
-  // Fetch metrics
+  // Fetch metrics only if client selected and date range valid
   useEffect(() => {
-    if (!selectedClient) {
+    if (!selectedClient || !startDate || !endDate || startDate > endDate) {
       setMetrics(null)
       return
     }
@@ -98,9 +118,24 @@ export default function ModernDashboard() {
       .finally(() => setLoading(false))
   }, [selectedClient, startDate, endDate])
 
-  // Chart data
-  const leadsChartData = metrics?.leads_chart || []
-  const cpqlChartData = metrics?.cpql_chart || []
+  // Use zeroed data if no metrics or empty data
+  const leadsChartData =
+    metrics && metrics.leads_chart && metrics.leads_chart.length > 0
+      ? metrics.leads_chart
+      : createEmptyChartData(startDate, endDate)
+
+  const cpqlChartData =
+    metrics && metrics.cpql_chart && metrics.cpql_chart.length > 0
+      ? metrics.cpql_chart
+      : createEmptyChartData(startDate, endDate)
+
+  const formatCurrency = (val) =>
+    typeof val === 'number'
+      ? `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      : '--'
+
+  const formatPercent = (val) =>
+    typeof val === 'number' ? `${val.toFixed(2)}%` : '--%'
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col px-0">
@@ -110,7 +145,7 @@ export default function ModernDashboard() {
         <DateSelector
           startDate={startDate}
           endDate={endDate}
-          onChange={(type, val) => type === 'startDate' ? setStartDate(val) : setEndDate(val)}
+          onChange={(type, val) => (type === 'startDate' ? setStartDate(val) : setEndDate(val))}
         />
       </div>
 
@@ -122,8 +157,8 @@ export default function ModernDashboard() {
             <StatCard label="PPC Leads" value={metrics?.qualified_leads_ppc ?? '--'} color="text-green-600" />
             <StatCard label="LSA Leads" value={metrics?.qualified_leads_lsa ?? '--'} color="text-yellow-600" />
             <StatCard label="SEO Leads" value={metrics?.qualified_leads_seo ?? '--'} color="text-pink-600" />
-            <StatCard label="Total Spend" value={metrics?.spend_total != null ? `$${metrics.spend_total.toLocaleString(undefined, { minimumFractionDigits:2 })}` : '--'} color="text-purple-700" />
-            <StatCard label="CPQL Total" value={metrics?.cpql_total != null ? `$${metrics.cpql_total.toLocaleString(undefined, { minimumFractionDigits:2 })}` : '--'} color="text-teal-600" />
+            <StatCard label="Total Spend" value={formatCurrency(metrics?.spend_total)} color="text-purple-700" />
+            <StatCard label="CPQL Total" value={formatCurrency(metrics?.cpql_total)} color="text-teal-600" />
           </div>
         </SectionCard>
       </div>
@@ -134,12 +169,12 @@ export default function ModernDashboard() {
           <div className="flex flex-row gap-12 items-center">
             <div>
               <div className="text-gray-500 mb-1">Human Engagement Rate</div>
-              <div className="text-2xl font-bold text-blue-700">{metrics?.human_engagement_rate ?? '--'}%</div>
+              <div className="text-2xl font-bold text-blue-700">{formatPercent(metrics?.human_engagement_rate)}</div>
               <div className="text-xs text-gray-400">{metrics?.human_engaged_count ?? '--'} of {metrics?.human_total_count ?? '--'}</div>
             </div>
             <div>
               <div className="text-gray-500 mb-1">AI Forward Rate</div>
-              <div className="text-2xl font-bold text-green-700">{metrics?.ai_forward_rate ?? '--'}%</div>
+              <div className="text-2xl font-bold text-green-700">{formatPercent(metrics?.ai_forward_rate)}</div>
               <div className="text-xs text-gray-400">{metrics?.ai_forward_count ?? '--'} of {metrics?.ai_total_count ?? '--'}</div>
             </div>
           </div>
@@ -150,17 +185,11 @@ export default function ModernDashboard() {
       <div className="flex flex-col gap-6 px-10 pb-10 mt-4">
         <SectionCard title="Qualified Leads by Period">
           <ResponsiveContainer width="100%" height={260}>
-            <AreaChart
-              data={leadsChartData}
-              margin={{ top: 20, right: 32, left: 0, bottom: 0 }}
-            >
+            <AreaChart data={leadsChartData} margin={{ top: 20, right: 32, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
               <XAxis dataKey="date" tick={{ fontSize: 14 }} />
               <YAxis tick={{ fontSize: 14 }} />
-              <Tooltip
-                contentStyle={{ borderRadius: 14, fontSize: 15 }}
-                labelStyle={{ fontWeight: 600, color: '#374151' }}
-              />
+              <Tooltip contentStyle={{ borderRadius: 14, fontSize: 15 }} labelStyle={{ fontWeight: 600, color: '#374151' }} />
               <Legend verticalAlign="top" height={36} />
               <Area type="monotone" dataKey="total" name="Total" stackId="1" stroke="#6366f1" fill="#6366f1" fillOpacity={0.23} />
               <Area type="monotone" dataKey="ppc" name="PPC" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.18} />
@@ -172,17 +201,11 @@ export default function ModernDashboard() {
 
         <SectionCard title="Cost Per Qualified Lead by Period">
           <ResponsiveContainer width="100%" height={260}>
-            <AreaChart
-              data={cpqlChartData}
-              margin={{ top: 20, right: 32, left: 0, bottom: 0 }}
-            >
+            <AreaChart data={cpqlChartData} margin={{ top: 20, right: 32, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
               <XAxis dataKey="date" tick={{ fontSize: 14 }} />
               <YAxis tick={{ fontSize: 14 }} />
-              <Tooltip
-                contentStyle={{ borderRadius: 14, fontSize: 15 }}
-                labelStyle={{ fontWeight: 600, color: '#374151' }}
-              />
+              <Tooltip contentStyle={{ borderRadius: 14, fontSize: 15 }} labelStyle={{ fontWeight: 600, color: '#374151' }} />
               <Legend verticalAlign="top" height={36} />
               <Area type="monotone" dataKey="total" name="Total" stackId="1" stroke="#6366f1" fill="#6366f1" fillOpacity={0.23} />
               <Area type="monotone" dataKey="ppc" name="PPC" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.18} />
@@ -193,8 +216,17 @@ export default function ModernDashboard() {
         </SectionCard>
       </div>
 
-      {loading && <div className="fixed top-0 left-0 w-full h-full bg-white bg-opacity-60 flex items-center justify-center z-50">Loading...</div>}
-      {error && <div className="fixed top-0 left-0 w-full flex justify-center p-4"><div className="bg-red-100 text-red-600 px-4 py-2 rounded">{error}</div></div>}
+      {loading && (
+        <div className="fixed top-0 left-0 w-full h-full bg-white bg-opacity-60 flex items-center justify-center z-50">
+          Loading...
+        </div>
+      )}
+
+      {error && (
+        <div className="fixed top-0 left-0 w-full flex justify-center p-4">
+          <div className="bg-red-100 text-red-600 px-4 py-2 rounded">{error}</div>
+        </div>
+      )}
     </div>
   )
 }
