@@ -1,9 +1,9 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useEffect, useState } from 'react'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
+// ClientSelector Component
 function ClientSelector({ clients, selected, onSelect }) {
   return (
     <select
@@ -18,9 +18,10 @@ function ClientSelector({ clients, selected, onSelect }) {
         </option>
       ))}
     </select>
-  );
+  )
 }
 
+// DateSelector Component
 function DateSelector({ startDate, endDate, onChange }) {
   return (
     <div className="flex items-center gap-2">
@@ -38,74 +39,79 @@ function DateSelector({ startDate, endDate, onChange }) {
         onChange={e => onChange('endDate', e.target.value)}
       />
     </div>
-  );
+  )
 }
 
+// StatCard Component
 function StatCard({ label, value, sublabel, color = 'text-blue-600' }) {
   return (
-    <div className="bg-white rounded-2xl shadow-md px-6 py-4 flex flex-col items-center min-w-[120px]">
+    <div className="bg-white rounded-2xl shadow-md px-6 py-4 flex flex-col items-center min-w-[120px] transition hover:shadow-lg hover:bg-gray-50">
       <span className={`text-2xl font-bold ${color}`}>{value}</span>
       <span className="text-sm text-gray-500">{label}</span>
       {sublabel && <span className="text-xs text-gray-400">{sublabel}</span>}
     </div>
-  );
+  )
 }
 
+// SectionCard Component
 function SectionCard({ children, title }) {
   return (
     <section className="bg-white rounded-2xl shadow p-6 mb-8">
       {title && <h3 className="text-lg font-bold mb-4">{title}</h3>}
       {children}
     </section>
-  );
+  )
 }
 
 export default function ModernDashboard() {
-  const today = new Date().toISOString().slice(0, 10);
-  const [clients, setClients] = useState([]);
-  const [selectedClient, setSelectedClient] = useState('');
-  const [startDate, setStartDate] = useState('2025-05-01');
-  const [endDate, setEndDate] = useState(today);
-  const [metrics, setMetrics] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const today = new Date().toISOString().slice(0, 10)
+  const [clients, setClients] = useState([])
+  const [selectedClient, setSelectedClient] = useState('')
+  const [startDate, setStartDate] = useState('2025-05-01')
+  const [endDate, setEndDate] = useState(today)
+  const [metrics, setMetrics] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
-  // Fetch clients
+  // Fetch clients (API)
   useEffect(() => {
-    supabase
-      .from('clients_ffs')
-      .select('cr_client_id, cr_company_name')
-      .then(({ data }) => setClients(data || []));
-  }, []);
-
-  // Fetch metrics for selected client & date
-  useEffect(() => {
-    if (!selectedClient) return setMetrics(null);
-    setLoading(true);
-    supabase
-      .rpc('get_top_metrics', {
-        input_client_id: selectedClient,
-        input_start_date: startDate,
-        input_end_date: endDate,
+    fetch('/api/clients')
+      .then(res => res.json())
+      .then(({ data, error }) => {
+        if (error) throw new Error(error)
+        setClients(data || [])
       })
-      .then(({ data }) => {
-        setMetrics(data && data.length ? data[0] : null);
-        setLoading(false);
-      });
-  }, [selectedClient, startDate, endDate]);
+      .catch(err => setError(err.message))
+  }, [])
 
-  // Mock chart data for demo (replace with your actual data)
+  // Fetch metrics for selected client & date (API)
+  useEffect(() => {
+    if (!selectedClient) return setMetrics(null)
+    setLoading(true)
+    fetch(`/api/top-metrics?clientId=${selectedClient}&start=${startDate}&end=${endDate}`)
+      .then(res => res.json())
+      .then(({ data, error }) => {
+        if (error) throw new Error(error)
+        setMetrics(data && data.length ? data[0] : null)
+        setError(null)
+      })
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false))
+  }, [selectedClient, startDate, endDate])
+
+  // TODO: Replace with real chart data from API when Cory exposes it!
   const leadsChartData = [
     { date: '2025-05-01', total: 5, ppc: 1, lsa: 2, seo: 2 },
     { date: '2025-05-02', total: 15, ppc: 10, lsa: 3, seo: 2 },
-    // ... fill with real values
-  ];
-
+    // ...
+  ]
   const cpqlChartData = [
     { date: '2025-05-01', total: 80, ppc: 224, lsa: 0, seo: 0 },
     { date: '2025-06-01', total: 120, ppc: 180, lsa: 0, seo: 0 },
-    // ... fill with real values
-  ];
+    // ...
+  ]
 
+  // UI
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col px-0">
       {/* Controls */}
@@ -117,6 +123,7 @@ export default function ModernDashboard() {
           onChange={(type, val) => type === 'startDate' ? setStartDate(val) : setEndDate(val)}
         />
       </div>
+
       {/* Main Metrics */}
       <div className="flex flex-col md:flex-row gap-6 px-10 mt-6">
         <SectionCard>
@@ -125,8 +132,8 @@ export default function ModernDashboard() {
             <StatCard label="PPC Leads" value={metrics?.qualified_leads_ppc ?? '--'} color="text-green-600" />
             <StatCard label="LSA Leads" value={metrics?.qualified_leads_lsa ?? '--'} color="text-yellow-600" />
             <StatCard label="SEO Leads" value={metrics?.qualified_leads_seo ?? '--'} color="text-pink-600" />
-            <StatCard label="Total Spend" value={`$${metrics?.spend_total?.toLocaleString(undefined, {minimumFractionDigits:2}) ?? '--'}`} color="text-purple-700" />
-            <StatCard label="CPQL Total" value={`$${metrics?.cpql_total?.toLocaleString(undefined, {minimumFractionDigits:2}) ?? '--'}`} color="text-teal-600" />
+            <StatCard label="Total Spend" value={metrics?.spend_total != null ? `$${metrics.spend_total.toLocaleString(undefined, { minimumFractionDigits:2 })}` : '--'} color="text-purple-700" />
+            <StatCard label="CPQL Total" value={metrics?.cpql_total != null ? `$${metrics.cpql_total.toLocaleString(undefined, { minimumFractionDigits:2 })}` : '--'} color="text-teal-600" />
           </div>
         </SectionCard>
       </div>
@@ -183,6 +190,9 @@ export default function ModernDashboard() {
           </ResponsiveContainer>
         </SectionCard>
       </div>
+
+      {loading && <div className="fixed top-0 left-0 w-full h-full bg-white bg-opacity-60 flex items-center justify-center z-50">Loading...</div>}
+      {error && <div className="fixed top-0 left-0 w-full flex justify-center p-4"><div className="bg-red-100 text-red-600 px-4 py-2 rounded">{error}</div></div>}
     </div>
-  );
+  )
 }
