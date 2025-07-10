@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 function ClientSelector({ clients, selected, onSelect }) {
   return (
@@ -12,7 +12,7 @@ function ClientSelector({ clients, selected, onSelect }) {
     >
       <option value="">Select Client</option>
       {clients.map(c => (
-        <option key={c.client_id} value={c.client_id}>
+        <option key={c.client_id ?? c.cr_client_id} value={c.client_id ?? c.cr_client_id}>
           {c.cr_company_name}
         </option>
       ))}
@@ -63,8 +63,8 @@ export default function ModernDashboard() {
   const today = new Date().toISOString().slice(0, 10)
   const [clients, setClients] = useState([])
   const [selectedClient, setSelectedClient] = useState('')
-  const [startDate, setStartDate] = useState('2025-05-01')
-  const [endDate, setEndDate] = useState(today)
+  const [startDate, setStartDate] = useState('2024-12-01')
+  const [endDate, setEndDate] = useState('2024-12-12')
   const [metrics, setMetrics] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -91,14 +91,14 @@ export default function ModernDashboard() {
       .then(res => res.json())
       .then(({ data, error }) => {
         if (error) throw new Error(error)
-        setMetrics(Array.isArray(data) && data.length ? data[0] : null)
+        setMetrics(data ? data : null)
         setError(null)
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
   }, [selectedClient, startDate, endDate])
 
-  // Default to empty arrays if metrics not loaded yet
+  // Chart data
   const leadsChartData = metrics?.leads_chart || []
   const cpqlChartData = metrics?.cpql_chart || []
 
@@ -146,37 +146,49 @@ export default function ModernDashboard() {
         </SectionCard>
       </div>
 
-      {/* Charts */}
+      {/* Modern Stacked AreaCharts */}
       <div className="flex flex-col gap-6 px-10 pb-10 mt-4">
         <SectionCard title="Qualified Leads by Period">
-          <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={leadsChartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" />
-              <Line type="monotone" dataKey="ppc" stroke="#10b981" name="PPC" />
-              <Line type="monotone" dataKey="lsa" stroke="#f59e42" name="LSA" />
-              <Line type="monotone" dataKey="seo" stroke="#ec4899" name="SEO" />
-            </LineChart>
+          <ResponsiveContainer width="100%" height={260}>
+            <AreaChart
+              data={leadsChartData}
+              margin={{ top: 20, right: 32, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
+              <XAxis dataKey="date" tick={{ fontSize: 14 }} />
+              <YAxis tick={{ fontSize: 14 }} />
+              <Tooltip
+                contentStyle={{ borderRadius: 14, fontSize: 15 }}
+                labelStyle={{ fontWeight: 600, color: '#374151' }}
+              />
+              <Legend verticalAlign="top" height={36} />
+              <Area type="monotone" dataKey="total" name="Total" stackId="1" stroke="#6366f1" fill="#6366f1" fillOpacity={0.23} />
+              <Area type="monotone" dataKey="ppc" name="PPC" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.18} />
+              <Area type="monotone" dataKey="lsa" name="LSA" stackId="1" stroke="#f59e42" fill="#f59e42" fillOpacity={0.18} />
+              <Area type="monotone" dataKey="seo" name="SEO" stackId="1" stroke="#ec4899" fill="#ec4899" fillOpacity={0.18} />
+            </AreaChart>
           </ResponsiveContainer>
         </SectionCard>
-        
+
         <SectionCard title="Cost Per Qualified Lead by Period">
-          <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={cpqlChartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" />
-              <Line type="monotone" dataKey="ppc" stroke="#10b981" name="PPC" />
-              <Line type="monotone" dataKey="lsa" stroke="#f59e42" name="LSA" />
-              <Line type="monotone" dataKey="seo" stroke="#ec4899" name="SEO" />
-            </LineChart>
+          <ResponsiveContainer width="100%" height={260}>
+            <AreaChart
+              data={cpqlChartData}
+              margin={{ top: 20, right: 32, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
+              <XAxis dataKey="date" tick={{ fontSize: 14 }} />
+              <YAxis tick={{ fontSize: 14 }} />
+              <Tooltip
+                contentStyle={{ borderRadius: 14, fontSize: 15 }}
+                labelStyle={{ fontWeight: 600, color: '#374151' }}
+              />
+              <Legend verticalAlign="top" height={36} />
+              <Area type="monotone" dataKey="total" name="Total" stackId="1" stroke="#6366f1" fill="#6366f1" fillOpacity={0.23} />
+              <Area type="monotone" dataKey="ppc" name="PPC" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.18} />
+              <Area type="monotone" dataKey="lsa" name="LSA" stackId="1" stroke="#f59e42" fill="#f59e42" fillOpacity={0.18} />
+              <Area type="monotone" dataKey="seo" name="SEO" stackId="1" stroke="#ec4899" fill="#ec4899" fillOpacity={0.18} />
+            </AreaChart>
           </ResponsiveContainer>
         </SectionCard>
       </div>
