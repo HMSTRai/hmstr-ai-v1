@@ -12,7 +12,7 @@ function ClientSelector({ clients, selected, onSelect }) {
     >
       <option value="">Select Client</option>
       {clients.map(c => (
-        <option key={c.client_id_int} value={c.client_id_int}>
+        <option key={c.cr_client_id} value={c.cr_client_id}>
           {c.cr_company_name}
         </option>
       ))}
@@ -102,23 +102,6 @@ export default function ModernDashboard() {
   const leadsChartData = metrics?.leads_chart || []
   const cpqlChartData = metrics?.cpql_chart || []
 
-  // Helper for formatting money
-  const formatMoney = val =>
-    typeof val === "number"
-      ? `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-      : '--'
-
-  // Show a user-friendly message if all metrics are zero
-  function allZeroMetrics(obj) {
-    if (!obj) return false
-    const keys = [
-      'qualified_leads','qualified_leads_ppc','qualified_leads_lsa','qualified_leads_seo',
-      'spend_ppc','spend_lsa','spend_seo','spend_total',
-      'cpql_ppc','cpql_lsa','cpql_seo','cpql_total'
-    ]
-    return keys.every(k => Number(obj[k]) === 0)
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col px-0">
       {/* Controls */}
@@ -131,102 +114,75 @@ export default function ModernDashboard() {
         />
       </div>
 
-      {/* Loading/Error */}
-      {loading && (
-        <div className="w-full flex justify-center items-center py-10">
-          <span className="text-gray-400">Loading...</span>
-        </div>
-      )}
-      {error && (
-        <div className="w-full flex justify-center items-center py-10">
-          <div className="bg-red-100 text-red-600 px-4 py-2 rounded">{error}</div>
-        </div>
-      )}
-
-      {/* No Data State */}
-      {metrics === null && !loading && !error && (
-        <div className="w-full flex justify-center items-center py-10">
-          <span className="text-gray-400">No data available for this client and date range.</span>
-        </div>
-      )}
-
-      {/* All metrics zero (show no data message) */}
-      {metrics && allZeroMetrics(metrics) && !loading && !error && (
-        <div className="w-full flex justify-center items-center py-10">
-          <span className="text-gray-400">No results for this client and date range.</span>
-        </div>
-      )}
-
-      {/* Main Metrics (show only if not all zero) */}
-      {metrics && !allZeroMetrics(metrics) && (
-        <>
-          <div className="flex flex-col md:flex-row gap-6 px-10 mt-6">
-            <SectionCard>
-              <div className="flex flex-wrap gap-6 justify-between items-center">
-                <StatCard label="Qualified Leads" value={metrics?.qualified_leads ?? '--'} color="text-blue-700" />
-                <StatCard label="PPC Leads" value={metrics?.qualified_leads_ppc ?? '--'} color="text-green-600" />
-                <StatCard label="LSA Leads" value={metrics?.qualified_leads_lsa ?? '--'} color="text-yellow-600" />
-                <StatCard label="SEO Leads" value={metrics?.qualified_leads_seo ?? '--'} color="text-pink-600" />
-                <StatCard label="Total Spend" value={formatMoney(metrics?.spend_total)} color="text-purple-700" />
-                <StatCard label="CPQL Total" value={formatMoney(metrics?.cpql_total)} color="text-teal-600" />
-              </div>
-            </SectionCard>
+      {/* Main Metrics */}
+      <div className="flex flex-col md:flex-row gap-6 px-10 mt-6">
+        <SectionCard>
+          <div className="flex flex-wrap gap-6 justify-between items-center">
+            <StatCard label="Qualified Leads" value={metrics?.qualified_leads ?? '--'} color="text-blue-700" />
+            <StatCard label="PPC Leads" value={metrics?.qualified_leads_ppc ?? '--'} color="text-green-600" />
+            <StatCard label="LSA Leads" value={metrics?.qualified_leads_lsa ?? '--'} color="text-yellow-600" />
+            <StatCard label="SEO Leads" value={metrics?.qualified_leads_seo ?? '--'} color="text-pink-600" />
+            <StatCard label="Total Spend" value={metrics?.spend_total != null ? `$${metrics.spend_total.toLocaleString(undefined, { minimumFractionDigits:2 })}` : '--'} color="text-purple-700" />
+            <StatCard label="CPQL Total" value={metrics?.cpql_total != null ? `$${metrics.cpql_total.toLocaleString(undefined, { minimumFractionDigits:2 })}` : '--'} color="text-teal-600" />
           </div>
+        </SectionCard>
+      </div>
 
-          {/* Engagement Metrics */}
-          <div className="flex gap-6 px-10">
-            <SectionCard>
-              <div className="flex flex-row gap-12 items-center">
-                <div>
-                  <div className="text-gray-500 mb-1">Human Engagement Rate</div>
-                  <div className="text-2xl font-bold text-blue-700">{metrics?.human_engagement_rate ?? '--'}%</div>
-                  <div className="text-xs text-gray-400">{metrics?.human_engaged_count ?? '--'} of {metrics?.human_total_count ?? '--'}</div>
-                </div>
-                <div>
-                  <div className="text-gray-500 mb-1">AI Forward Rate</div>
-                  <div className="text-2xl font-bold text-green-700">{metrics?.ai_forward_rate ?? '--'}%</div>
-                  <div className="text-xs text-gray-400">{metrics?.ai_forward_count ?? '--'} of {metrics?.ai_total_count ?? '--'}</div>
-                </div>
-              </div>
-            </SectionCard>
+      {/* Engagement Metrics */}
+      <div className="flex gap-6 px-10">
+        <SectionCard>
+          <div className="flex flex-row gap-12 items-center">
+            <div>
+              <div className="text-gray-500 mb-1">Human Engagement Rate</div>
+              <div className="text-2xl font-bold text-blue-700">{metrics?.human_engagement_rate ?? '--'}%</div>
+              <div className="text-xs text-gray-400">{metrics?.human_engaged_count ?? '--'} of {metrics?.human_total_count ?? '--'}</div>
+            </div>
+            <div>
+              <div className="text-gray-500 mb-1">AI Forward Rate</div>
+              <div className="text-2xl font-bold text-green-700">{metrics?.ai_forward_rate ?? '--'}%</div>
+              <div className="text-xs text-gray-400">{metrics?.ai_forward_count ?? '--'} of {metrics?.ai_total_count ?? '--'}</div>
+            </div>
           </div>
+        </SectionCard>
+      </div>
 
-          {/* Charts */}
-          <div className="flex flex-col gap-6 px-10 pb-10 mt-4">
-            <SectionCard title="Qualified Leads by Period">
-              <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={leadsChartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" />
-                  <Line type="monotone" dataKey="ppc" stroke="#10b981" name="PPC" />
-                  <Line type="monotone" dataKey="lsa" stroke="#f59e42" name="LSA" />
-                  <Line type="monotone" dataKey="seo" stroke="#ec4899" name="SEO" />
-                </LineChart>
-              </ResponsiveContainer>
-            </SectionCard>
-            
-            <SectionCard title="Cost Per Qualified Lead by Period">
-              <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={cpqlChartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" />
-                  <Line type="monotone" dataKey="ppc" stroke="#10b981" name="PPC" />
-                  <Line type="monotone" dataKey="lsa" stroke="#f59e42" name="LSA" />
-                  <Line type="monotone" dataKey="seo" stroke="#ec4899" name="SEO" />
-                </LineChart>
-              </ResponsiveContainer>
-            </SectionCard>
-          </div>
-        </>
-      )}
+      {/* Charts */}
+      <div className="flex flex-col gap-6 px-10 pb-10 mt-4">
+        <SectionCard title="Qualified Leads by Period">
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={leadsChartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" />
+              <Line type="monotone" dataKey="ppc" stroke="#10b981" name="PPC" />
+              <Line type="monotone" dataKey="lsa" stroke="#f59e42" name="LSA" />
+              <Line type="monotone" dataKey="seo" stroke="#ec4899" name="SEO" />
+            </LineChart>
+          </ResponsiveContainer>
+        </SectionCard>
+        
+        <SectionCard title="Cost Per Qualified Lead by Period">
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={cpqlChartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" />
+              <Line type="monotone" dataKey="ppc" stroke="#10b981" name="PPC" />
+              <Line type="monotone" dataKey="lsa" stroke="#f59e42" name="LSA" />
+              <Line type="monotone" dataKey="seo" stroke="#ec4899" name="SEO" />
+            </LineChart>
+          </ResponsiveContainer>
+        </SectionCard>
+      </div>
+
+      {loading && <div className="fixed top-0 left-0 w-full h-full bg-white bg-opacity-60 flex items-center justify-center z-50">Loading...</div>}
+      {error && <div className="fixed top-0 left-0 w-full flex justify-center p-4"><div className="bg-red-100 text-red-600 px-4 py-2 rounded">{error}</div></div>}
     </div>
   )
 }
