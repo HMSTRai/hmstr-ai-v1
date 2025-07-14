@@ -266,9 +266,9 @@ export default function ModernDashboard() {
       </div>
 
       {/* Charts */}
-      <div className="flex flex-col gap-6 px-4 md:px-10 pb-10 mt-4 max-w-7xl mx-auto">
+      <div className="flex flex-col gap-6 px-4 md:px-10 pb-10 mt-10 max-w-7xl mx-auto">
         <SectionCard title="Qualified Leads by Period">
-          <ResponsiveContainer width="100%" height={260}>
+          <ResponsiveContainer width={1050} height={260}>
             <AreaChart data={leadsChartData} margin={{ top: 20, right: 32, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
               <XAxis dataKey="date" tick={{ fontSize: 14 }} />
