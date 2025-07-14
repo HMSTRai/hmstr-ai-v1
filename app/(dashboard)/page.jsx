@@ -22,7 +22,7 @@ function ClientSelector({ clients, selected, onSelect }) {
 
 function DateSelector({ startDate, endDate, onChange }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 flex-wrap">
       <input
         type="date"
         className="border rounded-lg px-2 py-2"
@@ -44,7 +44,7 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600' }) {
   return (
     <div className="bg-white rounded-2xl shadow-md px-6 py-4 flex flex-col items-center min-w-[120px] transition hover:shadow-lg hover:bg-gray-50">
       <span className={`text-2xl font-bold ${color}`}>{value}</span>
-      <span className="text-sm text-gray-500">{label}</span>
+      <span className="text-sm text-gray-500 text-center">{label}</span>
       {sublabel && <span className="text-xs text-gray-400">{sublabel}</span>}
     </div>
   )
@@ -59,7 +59,48 @@ function SectionCard({ children, title }) {
   )
 }
 
-// Helper to create zeroed data for the charts
+function CallEngagementMetrics({ metrics }) {
+  const formatPercent = (val) => (typeof val === 'number' ? `${val.toFixed(2)}%` : '--%')
+  const formatCount = (num, total) =>
+    typeof num === 'number' && typeof total === 'number' ? `${num} of ${total}` : '0 of 0'
+
+  const data = [
+    {
+      label: 'Human Engagement Rate',
+      value: formatPercent(metrics?.human_engagement_rate),
+      sublabel: formatCount(metrics?.human_engaged_count, metrics?.human_total_count),
+      color: 'text-blue-700',
+    },
+    {
+      label: 'AI Forward Rate',
+      value: formatPercent(metrics?.ai_forward_rate),
+      sublabel: formatCount(metrics?.ai_forward_count, metrics?.ai_total_count),
+      color: 'text-green-700',
+    },
+    {
+      label: 'Human Engaged',
+      value: formatCount(metrics?.human_engaged_count, metrics?.human_total_count),
+      color: 'text-blue-700',
+    },
+    {
+      label: 'AI Forwarded',
+      value: formatCount(metrics?.ai_forward_count, metrics?.ai_total_count),
+      color: 'text-green-700',
+    },
+  ]
+
+  return (
+    <div className="mt-12 ">
+      <h2 className="text-2xl font-semibold mb-6">Call Engagement Metrics</h2>
+      <div className="flex flex-wrap justify-start gap-6">
+        {data.map(({ label, value, sublabel, color }, i) => (
+          <StatCard key={i} label={label} value={value} sublabel={sublabel} color={color} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function createEmptyChartData(start, end) {
   if (!start || !end || start > end) return []
   const result = []
@@ -89,7 +130,6 @@ export default function ModernDashboard() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  // Fetch clients
   useEffect(() => {
     fetch('/api/clients')
       .then(res => res.json())
@@ -100,7 +140,6 @@ export default function ModernDashboard() {
       .catch(err => setError(err.message))
   }, [])
 
-  // Fetch metrics only if client selected and date range valid
   useEffect(() => {
     if (!selectedClient || !startDate || !endDate || startDate > endDate) {
       setMetrics(null)
@@ -118,7 +157,6 @@ export default function ModernDashboard() {
       .finally(() => setLoading(false))
   }, [selectedClient, startDate, endDate])
 
-  // Use zeroed data if no metrics or empty data
   const leadsChartData =
     metrics && metrics.leads_chart && metrics.leads_chart.length > 0
       ? metrics.leads_chart
@@ -134,13 +172,16 @@ export default function ModernDashboard() {
       ? `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
       : '--'
 
+  const formatNumber = (val) =>
+    typeof val === 'number' ? val.toLocaleString() : '--'
+
   const formatPercent = (val) =>
     typeof val === 'number' ? `${val.toFixed(2)}%` : '--%'
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col px-0">
       {/* Controls */}
-      <div className="flex flex-col md:flex-row md:items-center gap-4 px-10 pt-10">
+      <div className="flex flex-col md:flex-row md:items-center gap-4 px-4 md:px-10 pt-10">
         <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />
         <DateSelector
           startDate={startDate}
@@ -149,40 +190,83 @@ export default function ModernDashboard() {
         />
       </div>
 
-      {/* Main Metrics */}
-      <div className="flex flex-col md:flex-row gap-6 px-10 mt-6">
-        <SectionCard>
-          <div className="flex flex-wrap gap-6 justify-between items-center">
-            <StatCard label="Qualified Leads" value={metrics?.qualified_leads ?? '--'} color="text-blue-700" />
-            <StatCard label="PPC Leads" value={metrics?.qualified_leads_ppc ?? '--'} color="text-green-600" />
-            <StatCard label="LSA Leads" value={metrics?.qualified_leads_lsa ?? '--'} color="text-yellow-600" />
-            <StatCard label="SEO Leads" value={metrics?.qualified_leads_seo ?? '--'} color="text-pink-600" />
-            <StatCard label="Total Spend" value={formatCurrency(metrics?.spend_total)} color="text-purple-700" />
-            <StatCard label="CPQL Total" value={formatCurrency(metrics?.cpql_total)} color="text-teal-600" />
-          </div>
-        </SectionCard>
+      {/* Metrics Grid */}
+      <div className="px-4 md:px-10 mt-6 max-w-7xl mx-auto">
+        <h2 className="text-2xl font-semibold mb-6">Top Metrics</h2>
+        {/* First row */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 md:gap-6 mb-6">
+          <StatCard
+            label="Qualified Leads"
+            value={formatNumber(metrics?.qualified_leads)}
+            color="text-blue-700"
+          />
+          <StatCard
+            label="PPC Leads"
+            value={formatNumber(metrics?.qualified_leads_ppc)}
+            color="text-green-600"
+          />
+          <StatCard
+            label="LSA Leads"
+            value={formatNumber(metrics?.qualified_leads_lsa)}
+            color="text-yellow-600"
+          />
+          <StatCard
+            label="SEO Leads"
+            value={formatNumber(metrics?.qualified_leads_seo)}
+            color="text-pink-600"
+          />
+          <StatCard
+            label="Total Spend"
+            value={formatCurrency(metrics?.spend_total)}
+            color="text-purple-700"
+          />
+          <StatCard
+            label="Total PPC Spend"
+            value={formatCurrency(metrics?.spend_ppc)}
+            color="text-purple-700"
+          />
+        </div>
+
+        {/* Second row */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 md:gap-6">
+          <StatCard
+            label="LSA Spend"
+            value={formatCurrency(metrics?.spend_lsa)}
+            color="text-yellow-600"
+          />
+          <StatCard
+            label="SEO Spend"
+            value={formatCurrency(metrics?.spend_seo)}
+            color="text-pink-600"
+          />
+          <StatCard
+            label="CPQL Total"
+            value={formatCurrency(metrics?.cpql_total)}
+            color="text-teal-600"
+          />
+          <StatCard
+            label="CPQL PPC"
+            value={formatCurrency(metrics?.cpql_ppc)}
+            color="text-teal-600"
+          />
+          <StatCard
+            label="CPQL LSA"
+            value={formatCurrency(metrics?.cpql_lsa)}
+            color="text-teal-600"
+          />
+          <StatCard
+            label="CPQL SEO"
+            value={formatCurrency(metrics?.cpql_seo)}
+            color="text-teal-600"
+          />
+        </div>
+
+        {/* Call Engagement Metrics */}
+        <CallEngagementMetrics metrics={metrics} />
       </div>
 
-      {/* Engagement Metrics */}
-      <div className="flex gap-6 px-10">
-        <SectionCard>
-          <div className="flex flex-row gap-12 items-center">
-            <div>
-              <div className="text-gray-500 mb-1">Human Engagement Rate</div>
-              <div className="text-2xl font-bold text-blue-700">{formatPercent(metrics?.human_engagement_rate)}</div>
-              <div className="text-xs text-gray-400">{metrics?.human_engaged_count ?? '--'} of {metrics?.human_total_count ?? '--'}</div>
-            </div>
-            <div>
-              <div className="text-gray-500 mb-1">AI Forward Rate</div>
-              <div className="text-2xl font-bold text-green-700">{formatPercent(metrics?.ai_forward_rate)}</div>
-              <div className="text-xs text-gray-400">{metrics?.ai_forward_count ?? '--'} of {metrics?.ai_total_count ?? '--'}</div>
-            </div>
-          </div>
-        </SectionCard>
-      </div>
-
-      {/* Modern Stacked AreaCharts */}
-      <div className="flex flex-col gap-6 px-10 pb-10 mt-4">
+      {/* Charts */}
+      <div className="flex flex-col gap-6 px-4 md:px-10 pb-10 mt-4 max-w-7xl mx-auto">
         <SectionCard title="Qualified Leads by Period">
           <ResponsiveContainer width="100%" height={260}>
             <AreaChart data={leadsChartData} margin={{ top: 20, right: 32, left: 0, bottom: 0 }}>
