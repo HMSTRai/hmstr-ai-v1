@@ -11,7 +11,6 @@ export async function GET(req) {
     const clientId = Number(url.searchParams.get('clientId'))
     const start = url.searchParams.get('start')
     const end = url.searchParams.get('end')
-    const groupBy = 'day'
 
     if (!clientId || !start || !end) {
       return new Response(JSON.stringify({ error: 'Missing parameters' }), {
@@ -24,7 +23,7 @@ export async function GET(req) {
       input_client_id: clientId,
       input_start_date: start,
       input_end_date: end,
-      input_group_by: groupBy,
+      input_group_by: 'day',
     })
 
     if (error) {
