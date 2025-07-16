@@ -1,9 +1,13 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY // Use service role key or anon key if public
-)
+const supabaseUrl = process.env.SUPABASE_URL
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in environment variables')
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 export async function GET(req) {
   try {
@@ -14,7 +18,10 @@ export async function GET(req) {
     const groupBy = 'day' // or change as needed
 
     if (!clientId || !start || !end) {
-      return new Response(JSON.stringify({ error: 'Missing parameters' }), { status: 400 })
+      return new Response(JSON.stringify({ error: 'Missing parameters' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
 
     const { data, error } = await supabase.rpc('get_qleadcostper_linechart', {
@@ -25,11 +32,20 @@ export async function GET(req) {
     })
 
     if (error) {
-      return new Response(JSON.stringify({ error: error.message }), { status: 500 })
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
 
-    return new Response(JSON.stringify({ data }), { status: 200 })
+    return new Response(JSON.stringify({ data }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 })
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 }
