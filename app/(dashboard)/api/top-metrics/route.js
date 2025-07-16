@@ -17,7 +17,11 @@ export async function GET(req) {
   const start = searchParams.get('start')
   const end = searchParams.get('end')
 
-  // Call the new get_qlead_data RPC
+  if (!clientId || !start || !end) {
+    return Response.json({ error: 'Missing parameters' }, { status: 400 })
+  }
+
+  // Get leads and CPQL data from your RPC
   const { data, error } = await supabase.rpc('get_qlead_data', {
     input_client_id: clientId,
     input_start_date: start,
@@ -26,10 +30,7 @@ export async function GET(req) {
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
 
-  // Note: If you still need call engagement metrics from separate RPC, call it here as before
-  // Or if get_qlead_data returns these already, remove below section
-
-  // For now, I'll assume engagement metrics still come from the other RPC
+  // Get call engagement metrics from separate RPC
   const { data: engagementData, error: engagementError } = await supabase.rpc('get_call_engagement_metrics', {
     input_client_id: clientId,
     input_start_date: start,
@@ -40,10 +41,8 @@ export async function GET(req) {
     console.error('Engagement metrics error:', engagementError.message)
   }
 
-  // Generate dates array for charts
   const dates = getDatesInRange(start, end)
 
-  // Prepare leads_chart data
   const leads_chart = dates.map(date => {
     const dayData = data.find(d => d.date === date) || {}
     return {
@@ -55,7 +54,6 @@ export async function GET(req) {
     }
   })
 
-  // Prepare cpql_chart data
   const cpql_chart = dates.map(date => {
     const dayData = data.find(d => d.date === date) || {}
     return {
@@ -67,10 +65,7 @@ export async function GET(req) {
     }
   })
 
-  // Get totals from first data row or empty object
   const totals = data.length > 0 ? data[0] : {}
-
-  // Engagement metrics mapping from engagementData
   const engagementTotals = engagementData && engagementData.length > 0 ? engagementData[0] : {}
 
   const engagementMetrics = {
@@ -89,5 +84,5 @@ export async function GET(req) {
       leads_chart,
       cpql_chart,
     }
-  })
+  }, { status: 200 })
 }

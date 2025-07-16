@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY // Use service role key or anon key if public
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
 export async function GET(req) {
@@ -11,10 +11,13 @@ export async function GET(req) {
     const clientId = Number(url.searchParams.get('clientId'))
     const start = url.searchParams.get('start')
     const end = url.searchParams.get('end')
-    const groupBy = 'day' // or change as needed
+    const groupBy = 'day'
 
     if (!clientId || !start || !end) {
-      return new Response(JSON.stringify({ error: 'Missing parameters' }), { status: 400 })
+      return new Response(JSON.stringify({ error: 'Missing parameters' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
 
     const { data, error } = await supabase.rpc('get_qleadvolume_linechart', {
@@ -25,11 +28,20 @@ export async function GET(req) {
     })
 
     if (error) {
-      return new Response(JSON.stringify({ error: error.message }), { status: 500 })
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
 
-    return new Response(JSON.stringify({ data }), { status: 200 })
+    return new Response(JSON.stringify({ data }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 })
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
   }
 }
