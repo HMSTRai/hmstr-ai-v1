@@ -59,9 +59,9 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600' }) {
   )
 }
 
-function SectionCard({ children, title }) {
+function SectionCard({ children, title, className = '' }) {
   return (
-    <section className="bg-white rounded-2xl shadow p-6 mb-8">
+    <section className={`bg-white rounded-2xl shadow p-6 mb-8 ${className}`}>
       {title && <h3 className="text-lg font-bold mb-4">{title}</h3>}
       {children}
     </section>
@@ -171,6 +171,18 @@ export default function ModernDashboard() {
       .finally(() => setLoading(false))
   }, [selectedClient, startDate, endDate])
 
+  // Normalize RPC data to expected shape
+  function normalizeData(rawData) {
+    if (!Array.isArray(rawData)) return []
+    return rawData.map(d => ({
+      date: d.date || '',
+      total: Number(d.total) || 0,
+      ppc: Number(d.ppc) || 0,
+      lsa: Number(d.lsa) || 0,
+      seo: Number(d.seo) || 0,
+    }))
+  }
+
   // Fetch chart data for lead volume and cost per lead
   useEffect(() => {
     if (!selectedClient || !startDate || !endDate || startDate > endDate) {
@@ -193,8 +205,8 @@ export default function ModernDashboard() {
         const { data: leadCost, error: error2 } = await res2.json()
         if (error2) throw new Error(error2)
 
-        setLeadVolumeData(leadVolume || [])
-        setLeadCostData(leadCost || [])
+        setLeadVolumeData(normalizeData(leadVolume))
+        setLeadCostData(normalizeData(leadCost))
       } catch (err) {
         console.error(err)
         setError(err.message)
@@ -307,9 +319,9 @@ export default function ModernDashboard() {
       </div>
 
       {/* Charts */}
-      <div className="flex flex-col gap-6 px-4 md:px-10 pb-10 mt-6 max-w-7xl mx-auto">
-        <SectionCard title="get_qleadvolume_linechart">
-          <ResponsiveContainer width="100%" height={260}>
+      <div className="flex flex-col md:flex-row gap-6 px-4 md:px-10 pb-10 mt-6 max-w-[1200px] mx-auto">
+        <SectionCard title="get_qleadvolume_linechart" className="flex-1">
+          <ResponsiveContainer width="100%" height={320}>
             <AreaChart data={leadsChartData} margin={{ top: 10, right: 32, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
               <XAxis dataKey="date" tick={{ fontSize: 14 }} />
@@ -324,8 +336,8 @@ export default function ModernDashboard() {
           </ResponsiveContainer>
         </SectionCard>
 
-        <SectionCard title="get_qleadcostper_linechart">
-          <ResponsiveContainer width="100%" height={260}>
+        <SectionCard title="get_qleadcostper_linechart" className="flex-1">
+          <ResponsiveContainer width="100%" height={320}>
             <AreaChart data={cpqlChartData} margin={{ top: 10, right: 32, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
               <XAxis dataKey="date" tick={{ fontSize: 14 }} />
