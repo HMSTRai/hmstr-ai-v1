@@ -17,7 +17,7 @@ export async function GET(req) {
   const start = searchParams.get('start')
   const end = searchParams.get('end')
 
-  // Fetch qualified leads and CPQL
+  // Fetch qualified leads and CPQL data
   const { data: qleadData, error: qleadError } = await supabase.rpc('get_qlead_data', {
     input_client_id: clientId,
     input_start_date: start,
