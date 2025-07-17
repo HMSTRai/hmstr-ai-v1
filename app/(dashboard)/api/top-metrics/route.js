@@ -17,18 +17,16 @@ export async function GET(req) {
   const start = searchParams.get('start')
   const end = searchParams.get('end')
 
-  // Fetch qualified leads and CPQL
-  const { data: qleadData, error: qleadError } = await supabase.rpc('get_top_metrics', {
+  // Call your main top metrics RPC
+  const { data, error } = await supabase.rpc('get_qlead_data', {
     input_client_id: clientId,
     input_start_date: start,
     input_end_date: end,
   })
 
-  if (qleadError) {
-    return Response.json({ error: qleadError.message }, { status: 500 })
-  }
+  if (error) return Response.json({ error: error.message }, { status: 500 })
 
-  // Fetch call engagement metrics
+  // Call your call engagement metrics RPC separately
   const { data: engagementData, error: engagementError } = await supabase.rpc('get_call_engagement_metrics', {
     input_client_id: clientId,
     input_start_date: start,
@@ -36,90 +34,43 @@ export async function GET(req) {
   })
 
   if (engagementError) {
+    // Log error but continue returning main metrics
     console.error('Engagement metrics error:', engagementError.message)
   }
 
-  // Fetch qualified leads volume line chart data
-  const { data: volumeData, error: volumeError } = await supabase.rpc('get_qleadvolume_linechart', {
-    input_client_id: clientId,
-    input_start_date: start,
-    input_end_date: end,
-    input_group_by: 'day', // you can customize to week/month if needed
-  })
-
-  if (volumeError) {
-    console.error('Volume chart error:', volumeError.message)
-  }
-
-  // Fetch qualified leads cost per lead line chart data
-  const { data: costPerData, error: costPerError } = await supabase.rpc('get_qleadcostper_linechart', {
-    input_client_id: clientId,
-    input_start_date: start,
-    input_end_date: end,
-    input_group_by: 'day',
-  })
-
-  if (costPerError) {
-    console.error('Cost per lead chart error:', costPerError.message)
-  }
-
-  // Generate date array for chart filling
   const dates = getDatesInRange(start, end)
 
-  // Prepare leads_chart filling missing dates with zeros
-  const leads_chart = dates.map(date => {
-    const day = qleadData.find(d => d.date === date) || {}
+  // Prepare get_qleadvolume_linechart data
+  const get_qleadvolume_linechart = dates.map(date => {
+    const dayData = data.find(d => d.date === date)
     return {
       date,
-      total: day.qualified_leads ?? 0,
-      ppc: day.qualified_leads_ppc ?? 0,
-      lsa: day.qualified_leads_lsa ?? 0,
-      seo: day.qualified_leads_seo ?? 0,
+      total: dayData?.qualified_leads ?? 0,
+      ppc: dayData?.qualified_leads_ppc ?? 0,
+      lsa: dayData?.qualified_leads_lsa ?? 0,
+      seo: dayData?.qualified_leads_seo ?? 0,
     }
   })
 
-  // Prepare cpql_chart similarly
-  const cpql_chart = dates.map(date => {
-    const day = qleadData.find(d => d.date === date) || {}
+  // Prepare get_qleadcostper_linechart data
+  const get_qleadcostper_linechart = dates.map(date => {
+    const dayData = data.find(d => d.date === date)
     return {
       date,
-      total: day.cpql_total ?? 0,
-      ppc: day.cpql_ppc ?? 0,
-      lsa: day.cpql_lsa ?? 0,
-      seo: day.cpql_seo ?? 0,
+      total: dayData?.cpql_total ?? 0,
+      ppc: dayData?.cpql_ppc ?? 0,
+      lsa: dayData?.cpql_lsa ?? 0,
+      seo: dayData?.cpql_seo ?? 0,
     }
   })
 
-  // Prepare volume_chart filling missing dates with zeros
-  const volume_chart = dates.map(date => {
-    const day = volumeData.find(d => d.group_date === date) || {}
-    return {
-      date,
-      total: day.qualified_leads ?? 0,
-      ppc: day.qualified_leads_ppc ?? 0,
-      lsa: day.qualified_leads_lsa ?? 0,
-      seo: day.qualified_leads_seo ?? 0,
-    }
-  })
+  // Grab totals from first data row or empty object
+  const totals = data.length > 0 ? data[0] : {}
 
-  // Prepare cost_per_lead_chart similarly
-  const cost_per_lead_chart = dates.map(date => {
-    const day = costPerData.find(d => d.group_date === date) || {}
-    return {
-      date,
-      total: day.cpql_total ?? 0,
-      ppc: day.cpql_ppc ?? 0,
-      lsa: day.cpql_lsa ?? 0,
-      seo: day.cpql_seo ?? 0,
-    }
-  })
+  // For engagement metrics, just pick the first row of engagementData if available
+  const engagementTotals = (engagementData && engagementData.length > 0) ? engagementData[0] : {}
 
-  // Totals from first row of qualified leads data or empty object
-  const totals = qleadData.length > 0 ? qleadData[0] : {}
-
-  // Engagement metrics mapping
-  const engagementTotals = engagementData && engagementData.length > 0 ? engagementData[0] : {}
-
+  // Map your engagement fields to friendly names expected in frontend
   const engagementMetrics = {
     human_engagement_rate: engagementTotals.her_percent ?? null,
     ai_forward_rate: engagementTotals.aifr_percent ?? null,
@@ -133,10 +84,8 @@ export async function GET(req) {
     data: {
       ...totals,
       ...engagementMetrics,
-      leads_chart,
-      cpql_chart,
-      volume_chart,
-      cost_per_lead_chart,
-    },
+      get_qleadvolume_linechart,
+      get_qleadcostper_linechart,
+    }
   })
 }
