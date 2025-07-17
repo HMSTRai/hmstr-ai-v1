@@ -18,7 +18,7 @@ export async function GET(req) {
   const end = searchParams.get('end')
 
   // Fetch qualified leads and CPQL data
-  const { data: qleadData, error: qleadError } = await supabase.rpc('get_top_metrics', {
+  const { data: qleadData, error: qleadError } = await supabase.rpc('get_qlead_data', {
     input_client_id: clientId,
     input_start_date: start,
     input_end_date: end,
