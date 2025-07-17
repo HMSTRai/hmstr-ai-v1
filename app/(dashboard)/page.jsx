@@ -278,7 +278,7 @@ export default function ModernDashboard() {
       </div>
 
       {/* Charts */}
-      <div className="flex flex-col gap-6 px-4 md:px-10 pb-10 mt-6 max-w-7xl mx-auto">
+      <div className="flex flex-col gap-6 px-4 md:px-10 pb-10 mt-10 max-w-7xl mx-auto">
         <SectionCard title="Qualified Leads Volume by Period">
           <ResponsiveContainer width="100%" height={260}>
             <AreaChart
