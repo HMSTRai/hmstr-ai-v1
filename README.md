@@ -16,6 +16,7 @@ This tells npm to ignore peer dependency conflicts and proceed:
 ```bash
 npm install --legacy-peer-depsgit commit -m "updated"
 git push origin main
+npm install --legacy-peer-deps
 ```
 
 ## Push It to GitHub
