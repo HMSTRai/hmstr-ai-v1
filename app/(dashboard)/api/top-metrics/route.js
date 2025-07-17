@@ -17,8 +17,7 @@ export async function GET(req) {
   const start = searchParams.get('start')
   const end = searchParams.get('end')
 
-  // Call your main top metrics RPC
-  const { data, error } = await supabase.rpc('get_qlead_data', {
+  const { data, error } = await supabase.rpc('get_top_metrics', {
     input_client_id: clientId,
     input_start_date: start,
     input_end_date: end,
@@ -26,7 +25,6 @@ export async function GET(req) {
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
 
-  // Call your call engagement metrics RPC separately
   const { data: engagementData, error: engagementError } = await supabase.rpc('get_call_engagement_metrics', {
     input_client_id: clientId,
     input_start_date: start,
@@ -34,13 +32,11 @@ export async function GET(req) {
   })
 
   if (engagementError) {
-    // Log error but continue returning main metrics
     console.error('Engagement metrics error:', engagementError.message)
   }
 
   const dates = getDatesInRange(start, end)
 
-  // Prepare get_qleadvolume_linechart data
   const get_qleadvolume_linechart = dates.map(date => {
     const dayData = data.find(d => d.date === date)
     return {
@@ -52,7 +48,6 @@ export async function GET(req) {
     }
   })
 
-  // Prepare get_qleadcostper_linechart data
   const get_qleadcostper_linechart = dates.map(date => {
     const dayData = data.find(d => d.date === date)
     return {
@@ -64,13 +59,10 @@ export async function GET(req) {
     }
   })
 
-  // Grab totals from first data row or empty object
   const totals = data.length > 0 ? data[0] : {}
 
-  // For engagement metrics, just pick the first row of engagementData if available
   const engagementTotals = (engagementData && engagementData.length > 0) ? engagementData[0] : {}
 
-  // Map your engagement fields to friendly names expected in frontend
   const engagementMetrics = {
     human_engagement_rate: engagementTotals.her_percent ?? null,
     ai_forward_rate: engagementTotals.aifr_percent ?? null,
@@ -80,12 +72,15 @@ export async function GET(req) {
     ai_total_count: engagementTotals.total_forwarded ?? null,
   }
 
+  console.log('Top Metrics Data:', data)
+  console.log('Engagement Metrics:', engagementTotals)
+
   return Response.json({
     data: {
       ...totals,
       ...engagementMetrics,
-      get_qleadvolume_linechart,
-      get_qleadcostper_linechart,
+      volume_chart: get_qleadvolume_linechart,
+      cost_per_lead_chart: get_qleadcostper_linechart,
     }
   })
 }
