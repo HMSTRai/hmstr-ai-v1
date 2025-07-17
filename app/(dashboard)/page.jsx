@@ -1,16 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 function ClientSelector({ clients, selected, onSelect }) {
   return (
@@ -69,7 +60,7 @@ function SectionCard({ children, title }) {
 }
 
 function CallEngagementMetrics({ metrics }) {
-  const formatPercent = val => (typeof val === 'number' ? `${val.toFixed(2)}%` : '--%')
+  const formatPercent = (val) => (typeof val === 'number' ? `${val.toFixed(2)}%` : '--%')
   const formatCount = (num, total) =>
     typeof num === 'number' && typeof total === 'number' ? `${num} of ${total}` : '0 of 0'
 
@@ -77,23 +68,25 @@ function CallEngagementMetrics({ metrics }) {
     {
       label: 'Human Engagement Rate',
       value: formatPercent(metrics?.human_engagement_rate),
-      sublabel: formatCount(metrics?.human_engaged_count, metrics?.human_total_count),
+      count: formatCount(metrics?.human_engaged_count, metrics?.human_total_count),
       color: 'text-blue-700',
     },
     {
       label: 'AI Forward Rate',
       value: formatPercent(metrics?.ai_forward_rate),
-      sublabel: formatCount(metrics?.ai_forward_count, metrics?.ai_total_count),
+      count: formatCount(metrics?.ai_forward_count, metrics?.ai_total_count),
       color: 'text-green-700',
     },
     {
       label: 'Human Engaged',
       value: formatCount(metrics?.human_engaged_count, metrics?.human_total_count),
+      count: '',
       color: 'text-blue-700',
     },
     {
       label: 'AI Forwarded',
       value: formatCount(metrics?.ai_forward_count, metrics?.ai_total_count),
+      count: '',
       color: 'text-green-700',
     },
   ]
