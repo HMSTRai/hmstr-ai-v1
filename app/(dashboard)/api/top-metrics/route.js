@@ -18,7 +18,7 @@ export async function GET(req) {
   const end = searchParams.get('end')
 
   // Call your main top metrics RPC
-  const { data, error } = await supabase.rpc('get_top_metrics', {
+  const { data, error } = await supabase.rpc('get_qlead_data', {
     input_client_id: clientId,
     input_start_date: start,
     input_end_date: end,
