@@ -17,8 +17,15 @@ export async function GET(req) {
   const start = searchParams.get('start')
   const end = searchParams.get('end')
 
+  console.log('Calling RPC with params:', { clientId, start, end })
+
+  const clientIdNum = Number(clientId)
+  if (isNaN(clientIdNum)) {
+    return Response.json({ error: 'Invalid clientId parameter' }, { status: 400 })
+  }
+
   const { data, error } = await supabase.rpc('get_top_metrics', {
-    input_client_id: clientId,
+    input_client_id: clientIdNum,
     input_start_date: start,
     input_end_date: end,
   })
@@ -26,7 +33,7 @@ export async function GET(req) {
   if (error) return Response.json({ error: error.message }, { status: 500 })
 
   const { data: engagementData, error: engagementError } = await supabase.rpc('get_call_engagement_metrics', {
-    input_client_id: clientId,
+    input_client_id: clientIdNum,
     input_start_date: start,
     input_end_date: end,
   })
