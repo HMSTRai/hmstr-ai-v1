@@ -17,8 +17,8 @@ export async function GET(req) {
   const start = searchParams.get('start')
   const end = searchParams.get('end')
 
-  // Fetch qualified leads and CPQL data
-  const { data: qleadData, error: qleadError } = await supabase.rpc('get_qlead_data', {
+  // Fetch qualified leads and CPQL
+  const { data: qleadData, error: qleadError } = await supabase.rpc('get_top_metrics', {
     input_client_id: clientId,
     input_start_date: start,
     input_end_date: end,
@@ -56,7 +56,7 @@ export async function GET(req) {
     input_client_id: clientId,
     input_start_date: start,
     input_end_date: end,
-    input_group_by: 'day', // customize as needed
+    input_group_by: 'day',
   })
 
   if (costPerError) {
