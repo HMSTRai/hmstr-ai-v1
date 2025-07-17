@@ -59,9 +59,9 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600' }) {
   )
 }
 
-function SectionCard({ children, title, className = '' }) {
+function SectionCard({ children, title }) {
   return (
-    <section className={`bg-white rounded-2xl shadow p-6 mb-8 ${className}`}>
+    <section className="bg-white rounded-2xl shadow p-6 mb-8">
       {title && <h3 className="text-lg font-bold mb-4">{title}</h3>}
       {children}
     </section>
@@ -139,10 +139,6 @@ export default function ModernDashboard() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  const [leadVolumeData, setLeadVolumeData] = useState([])
-  const [leadCostData, setLeadCostData] = useState([])
-
-  // Fetch clients once
   useEffect(() => {
     fetch('/api/clients')
       .then(res => res.json())
@@ -153,7 +149,6 @@ export default function ModernDashboard() {
       .catch(err => setError(err.message))
   }, [])
 
-  // Fetch top metrics when client or date range changes
   useEffect(() => {
     if (!selectedClient || !startDate || !endDate || startDate > endDate) {
       setMetrics(null)
@@ -171,58 +166,27 @@ export default function ModernDashboard() {
       .finally(() => setLoading(false))
   }, [selectedClient, startDate, endDate])
 
-  // Normalize RPC data to expected shape
-  function normalizeData(rawData) {
-    if (!Array.isArray(rawData)) return []
-    return rawData.map(d => ({
-      date: d.date || '',
-      total: Number(d.total) || 0,
-      ppc: Number(d.ppc) || 0,
-      lsa: Number(d.lsa) || 0,
-      seo: Number(d.seo) || 0,
-    }))
-  }
+  // Use chart data returned from backend or empty fallback
+  const leadsChartData =
+    metrics && metrics.leads_chart && metrics.leads_chart.length > 0
+      ? metrics.leads_chart
+      : createEmptyChartData(startDate, endDate)
 
-  // Fetch chart data for lead volume and cost per lead
-  useEffect(() => {
-    if (!selectedClient || !startDate || !endDate || startDate > endDate) {
-      setLeadVolumeData([])
-      setLeadCostData([])
-      return
-    }
+  const cpqlChartData =
+    metrics && metrics.cpql_chart && metrics.cpql_chart.length > 0
+      ? metrics.cpql_chart
+      : createEmptyChartData(startDate, endDate)
 
-    async function fetchChartData() {
-      try {
-        const res1 = await fetch(
-          `/api/get-qleadvolume-linechart?clientId=${selectedClient}&start=${startDate}&end=${endDate}`
-        )
-        const { data: leadVolume, error: error1 } = await res1.json()
-        if (error1) throw new Error(error1)
+  // New charts returned from backend
+  const volumeChartData =
+    metrics && metrics.volume_chart && metrics.volume_chart.length > 0
+      ? metrics.volume_chart
+      : createEmptyChartData(startDate, endDate)
 
-        const res2 = await fetch(
-          `/api/get-qleadcostper-linechart?clientId=${selectedClient}&start=${startDate}&end=${endDate}`
-        )
-        const { data: leadCost, error: error2 } = await res2.json()
-        if (error2) throw new Error(error2)
-
-        setLeadVolumeData(normalizeData(leadVolume))
-        setLeadCostData(normalizeData(leadCost))
-      } catch (err) {
-        console.error(err)
-        setError(err.message)
-      }
-    }
-
-    fetchChartData()
-  }, [selectedClient, startDate, endDate])
-
-  const leadsChartData = leadVolumeData.length
-    ? leadVolumeData
-    : createEmptyChartData(startDate, endDate)
-
-  const cpqlChartData = leadCostData.length
-    ? leadCostData
-    : createEmptyChartData(startDate, endDate)
+  const costPerLeadChartData =
+    metrics && metrics.cost_per_lead_chart && metrics.cost_per_lead_chart.length > 0
+      ? metrics.cost_per_lead_chart
+      : createEmptyChartData(startDate, endDate)
 
   const formatCurrency = val =>
     typeof val === 'number'
@@ -230,6 +194,8 @@ export default function ModernDashboard() {
       : '--'
 
   const formatNumber = val => (typeof val === 'number' ? val.toLocaleString() : '--')
+
+  const formatPercent = val => (typeof val === 'number' ? `${val.toFixed(2)}%` : '--%')
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col px-0">
@@ -319,35 +285,113 @@ export default function ModernDashboard() {
       </div>
 
       {/* Charts */}
-      <div className="flex flex-col md:flex-row gap-6 px-4 md:px-10 pb-10 mt-6 max-w-[1200px] mx-auto">
-        <SectionCard title="get_qleadvolume_linechart" className="flex-1">
-          <ResponsiveContainer width="100%" height={320}>
-            <AreaChart data={leadsChartData} margin={{ top: 10, right: 32, left: 0, bottom: 0 }}>
+      <div className="flex flex-col gap-6 px-4 md:px-10 pb-10 mt-6 max-w-7xl mx-auto">
+        {/* New chart: Qualified Leads Volume by Period */}
+        <SectionCard title="Qualified Leads Volume by Period">
+          <ResponsiveContainer width="100%" height={260}>
+            <AreaChart
+              data={volumeChartData}
+              margin={{ top: 10, right: 32, left: 0, bottom: 0 }}
+            >
               <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
               <XAxis dataKey="date" tick={{ fontSize: 14 }} />
               <YAxis tick={{ fontSize: 14 }} />
-              <Tooltip contentStyle={{ borderRadius: 14, fontSize: 15 }} labelStyle={{ fontWeight: 600, color: '#374151' }} />
+              <Tooltip
+                contentStyle={{ borderRadius: 14, fontSize: 15 }}
+                labelStyle={{ fontWeight: 600, color: '#374151' }}
+              />
               <Legend verticalAlign="top" height={36} />
-              <Area type="monotone" dataKey="total" name="Total" stackId="1" stroke="#6366f1" fill="#6366f1" fillOpacity={0.23} />
-              <Area type="monotone" dataKey="ppc" name="PPC" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.18} />
-              <Area type="monotone" dataKey="lsa" name="LSA" stackId="1" stroke="#f59e42" fill="#f59e42" fillOpacity={0.18} />
-              <Area type="monotone" dataKey="seo" name="SEO" stackId="1" stroke="#ec4899" fill="#ec4899" fillOpacity={0.18} />
+              <Area
+                type="monotone"
+                dataKey="total"
+                name="Total"
+                stackId="1"
+                stroke="#6366f1"
+                fill="#6366f1"
+                fillOpacity={0.23}
+              />
+              <Area
+                type="monotone"
+                dataKey="ppc"
+                name="PPC"
+                stackId="1"
+                stroke="#10b981"
+                fill="#10b981"
+                fillOpacity={0.18}
+              />
+              <Area
+                type="monotone"
+                dataKey="lsa"
+                name="LSA"
+                stackId="1"
+                stroke="#f59e42"
+                fill="#f59e42"
+                fillOpacity={0.18}
+              />
+              <Area
+                type="monotone"
+                dataKey="seo"
+                name="SEO"
+                stackId="1"
+                stroke="#ec4899"
+                fill="#ec4899"
+                fillOpacity={0.18}
+              />
             </AreaChart>
           </ResponsiveContainer>
         </SectionCard>
 
-        <SectionCard title="get_qleadcostper_linechart" className="flex-1">
-          <ResponsiveContainer width="100%" height={320}>
-            <AreaChart data={cpqlChartData} margin={{ top: 10, right: 32, left: 0, bottom: 0 }}>
+        {/* New chart: Cost Per Lead by Period */}
+        <SectionCard title="Cost Per Lead by Period">
+          <ResponsiveContainer width={1000} height={260}>
+            <AreaChart
+              data={costPerLeadChartData}
+              margin={{ top: 10, right: 32, left: 0, bottom: 0 }}
+            >
               <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
               <XAxis dataKey="date" tick={{ fontSize: 14 }} />
               <YAxis tick={{ fontSize: 14 }} />
-              <Tooltip contentStyle={{ borderRadius: 14, fontSize: 15 }} labelStyle={{ fontWeight: 600, color: '#374151' }} />
+              <Tooltip
+                contentStyle={{ borderRadius: 14, fontSize: 15 }}
+                labelStyle={{ fontWeight: 600, color: '#374151' }}
+              />
               <Legend verticalAlign="top" height={36} />
-              <Area type="monotone" dataKey="total" name="Total" stackId="1" stroke="#6366f1" fill="#6366f1" fillOpacity={0.23} />
-              <Area type="monotone" dataKey="ppc" name="PPC" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.18} />
-              <Area type="monotone" dataKey="lsa" name="LSA" stackId="1" stroke="#f59e42" fill="#f59e42" fillOpacity={0.18} />
-              <Area type="monotone" dataKey="seo" name="SEO" stackId="1" stroke="#ec4899" fill="#ec4899" fillOpacity={0.18} />
+              <Area
+                type="monotone"
+                dataKey="total"
+                name="Total"
+                stackId="1"
+                stroke="#6366f1"
+                fill="#6366f1"
+                fillOpacity={0.23}
+              />
+              <Area
+                type="monotone"
+                dataKey="ppc"
+                name="PPC"
+                stackId="1"
+                stroke="#10b981"
+                fill="#10b981"
+                fillOpacity={0.18}
+              />
+              <Area
+                type="monotone"
+                dataKey="lsa"
+                name="LSA"
+                stackId="1"
+                stroke="#f59e42"
+                fill="#f59e42"
+                fillOpacity={0.18}
+              />
+              <Area
+                type="monotone"
+                dataKey="seo"
+                name="SEO"
+                stackId="1"
+                stroke="#ec4899"
+                fill="#ec4899"
+                fillOpacity={0.18}
+              />
             </AreaChart>
           </ResponsiveContainer>
         </SectionCard>
