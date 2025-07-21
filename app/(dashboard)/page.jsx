@@ -149,6 +149,7 @@ export default function ModernDashboard() {
       .then(({ data, error }) => {
         if (error) throw new Error(error)
         setMetrics(data || null)
+        console.log('Fetched Metrics:', data); // Add this line
         setError(null)
       })
       .catch(err => setError(err.message))
