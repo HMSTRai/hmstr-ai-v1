@@ -24,18 +24,20 @@ export async function GET(req) {
     return Response.json({ error: 'Invalid clientId parameter' }, { status: 400 });
   }
 
-  // et_qlead_data
+  // ✅ Get top metrics
   const { data, error } = await supabase.rpc('get_qlead_data', {
-    input_client_id: clientId,
+    input_client_id: clientIdNum,
     input_start_date: start,
     input_end_date: end,
   });
 
   if (error) return Response.json({ error: error.message }, { status: 500 });
 
-// get_call_engagement_metrics
+  const totals = data.length > 0 ? data[0] : {}
+
+  // ✅ Get engagement metrics
   const { data: engagementData, error: engagementError } = await supabase.rpc('get_call_engagement_metrics', {
-    input_client_id: clientId,
+    input_client_id: clientIdNum,
     input_start_date: start,
     input_end_date: end,
   });
@@ -44,33 +46,7 @@ export async function GET(req) {
     console.error('Engagement metrics error:', engagementError.message);
   }
 
-  const dates = getDatesInRange(start, end)
-
-  const get_qleadvolume_linechart = dates.map(date => {
-    const dayData = data.find(d => d.date === date)
-    return {
-      date,
-      total: dayData?.qualified_leads ?? 0,
-      ppc: dayData?.qualified_leads_ppc ?? 0,
-      lsa: dayData?.qualified_leads_lsa ?? 0,
-      seo: dayData?.qualified_leads_seo ?? 0,
-    }
-  })
-
-  const get_qleadcostper_linechart = dates.map(date => {
-    const dayData = data.find(d => d.date === date)
-    return {
-      date,
-      total: dayData?.cpql_total ?? 0,
-      ppc: dayData?.cpql_ppc ?? 0,
-      lsa: dayData?.cpql_lsa ?? 0,
-      seo: dayData?.cpql_seo ?? 0,
-    }
-  })
-
-  const totals = data.length > 0 ? data[0] : {}
-
-  const engagementTotals = (engagementData && engagementData.length > 0) ? engagementData[0] : {}
+  const engagementTotals = engagementData ?? {}
 
   const engagementMetrics = {
     human_engagement_rate: engagementTotals.her_percent ?? null,
@@ -81,7 +57,55 @@ export async function GET(req) {
     ai_total_count: engagementTotals.total_forwarded ?? null,
   }
 
-  console.log('Top Metrics Data:', data)
+  // ✅ Get real chart data from Supabase
+  const { data: volumeData, error: volumeError } = await supabase.rpc('get_qleadvolume_linechart', {
+    input_client_id: clientIdNum,
+    input_start_date: start,
+    input_end_date: end,
+    input_group_by: 'day',
+  });
+
+  if (volumeError) {
+    console.error('Volume chart error:', volumeError.message);
+  }
+
+  const { data: costData, error: costError } = await supabase.rpc('get_qleadcostper_linechart', {
+    input_client_id: clientIdNum,
+    input_start_date: start,
+    input_end_date: end,
+    input_group_by: 'day',
+  });
+
+  if (costError) {
+    console.error('Cost chart error:', costError.message);
+  }
+
+  // ✅ Match dates using your existing logic
+  const dates = getDatesInRange(start, end)
+
+  const get_qleadvolume_linechart = dates.map(date => {
+    const dayData = (volumeData ?? []).find(d => d.group_date === date)
+    return {
+      date,
+      total: dayData?.qualified_leads ?? 0,
+      ppc: dayData?.qualified_leads_ppc ?? 0,
+      lsa: dayData?.qualified_leads_lsa ?? 0,
+      seo: dayData?.qualified_leads_seo ?? 0,
+    }
+  });
+
+  const get_qleadcostper_linechart = dates.map(date => {
+    const dayData = (costData ?? []).find(d => d.group_date === date)
+    return {
+      date,
+      total: dayData?.cpql_all ?? 0,
+      ppc: dayData?.cpql_ppc ?? 0,
+      lsa: dayData?.cpql_lsa ?? 0,
+      seo: dayData?.cpql_seo ?? 0,
+    }
+  });
+
+  console.log('Top Metrics Data:', totals)
   console.log('Engagement Metrics:', engagementTotals)
 
   return Response.json({
