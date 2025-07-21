@@ -68,25 +68,21 @@ function CallEngagementMetrics({ metrics }) {
     {
       label: 'Human Engagement Rate',
       value: formatPercent(metrics?.human_engagement_rate),
-      count: formatCount(metrics?.human_engaged_count, metrics?.human_total_count),
       color: 'text-blue-700',
     },
     {
       label: 'AI Forward Rate',
       value: formatPercent(metrics?.ai_forward_rate),
-      count: formatCount(metrics?.ai_forward_count, metrics?.ai_total_count),
       color: 'text-green-700',
     },
     {
       label: 'Human Engaged',
       value: formatCount(metrics?.human_engaged_count, metrics?.human_total_count),
-      count: '',
       color: 'text-blue-700',
     },
     {
       label: 'AI Forwarded',
       value: formatCount(metrics?.ai_forward_count, metrics?.ai_total_count),
-      count: '',
       color: 'text-green-700',
     },
   ]
@@ -152,34 +148,16 @@ export default function ModernDashboard() {
       .then(res => res.json())
       .then(({ data, error }) => {
         if (error) throw new Error(error)
-        setMetrics(data ? data : null)
+        setMetrics(data || null)
         setError(null)
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
   }, [selectedClient, startDate, endDate])
 
-  // Use chart data returned from backend or empty fallback
-  const leadsChartData =
-    metrics && metrics.leads_chart && metrics.leads_chart.length > 0
-      ? metrics.leads_chart
-      : createEmptyChartData(startDate, endDate)
-
-  const cpqlChartData =
-    metrics && metrics.cpql_chart && metrics.cpql_chart.length > 0
-      ? metrics.cpql_chart
-      : createEmptyChartData(startDate, endDate)
-
-  // New charts returned from backend
-  const volumeChartData =
-    metrics && metrics.volume_chart && metrics.volume_chart.length > 0
-      ? metrics.volume_chart
-      : createEmptyChartData(startDate, endDate)
-
-  const costPerLeadChartData =
-    metrics && metrics.cost_per_lead_chart && metrics.cost_per_lead_chart.length > 0
-      ? metrics.cost_per_lead_chart
-      : createEmptyChartData(startDate, endDate)
+  // Use chart data from backend or empty fallback
+  const volumeChartData = metrics?.volume_chart?.length > 0 ? metrics.volume_chart : createEmptyChartData(startDate, endDate);
+  const costPerLeadChartData = metrics?.cost_per_lead_chart?.length > 0 ? metrics.cost_per_lead_chart : createEmptyChartData(startDate, endDate);
 
   const formatCurrency = val =>
     typeof val === 'number'
@@ -208,31 +186,37 @@ export default function ModernDashboard() {
         {/* First row */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 md:gap-6 mb-6">
           <StatCard
+            key="qualified-leads"
             label="Qualified Leads"
             value={formatNumber(metrics?.qualified_leads)}
             color="text-blue-700"
           />
           <StatCard
+            key="ppc-leads"
             label="PPC Leads"
             value={formatNumber(metrics?.qualified_leads_ppc)}
             color="text-green-600"
           />
           <StatCard
+            key="lsa-leads"
             label="LSA Leads"
             value={formatNumber(metrics?.qualified_leads_lsa)}
             color="text-yellow-600"
           />
           <StatCard
+            key="seo-leads"
             label="SEO Leads"
             value={formatNumber(metrics?.qualified_leads_seo)}
             color="text-pink-600"
           />
           <StatCard
+            key="total-spend"
             label="Total Spend"
             value={formatCurrency(metrics?.spend_total)}
             color="text-purple-700"
           />
           <StatCard
+            key="ppc-spend"
             label="Total PPC Spend"
             value={formatCurrency(metrics?.spend_ppc)}
             color="text-purple-700"
@@ -242,31 +226,37 @@ export default function ModernDashboard() {
         {/* Second row */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 md:gap-6">
           <StatCard
+            key="lsa-spend"
             label="LSA Spend"
             value={formatCurrency(metrics?.spend_lsa)}
             color="text-yellow-600"
           />
           <StatCard
+            key="seo-spend"
             label="SEO Spend"
             value={formatCurrency(metrics?.spend_seo)}
             color="text-pink-600"
           />
           <StatCard
+            key="cpql-total"
             label="CPQL Total"
             value={formatCurrency(metrics?.cpql_total)}
             color="text-teal-600"
           />
           <StatCard
+            key="cpql-ppc"
             label="CPQL PPC"
             value={formatCurrency(metrics?.cpql_ppc)}
             color="text-teal-600"
           />
           <StatCard
+            key="cpql-lsa"
             label="CPQL LSA"
             value={formatCurrency(metrics?.cpql_lsa)}
             color="text-teal-600"
           />
           <StatCard
+            key="cpql-seo"
             label="CPQL SEO"
             value={formatCurrency(metrics?.cpql_seo)}
             color="text-teal-600"
@@ -335,7 +325,7 @@ export default function ModernDashboard() {
 
         {/* New chart: Cost Per Lead by Period */}
         <SectionCard title="Cost Per Lead by Period">
-          <ResponsiveContainer width={1000} height={260}>
+          <ResponsiveContainer width="100%" height={260}>
             <AreaChart
               data={costPerLeadChartData}
               margin={{ top: 10, right: 32, left: 0, bottom: 0 }}

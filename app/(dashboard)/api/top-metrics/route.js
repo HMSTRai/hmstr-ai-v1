@@ -12,108 +12,109 @@ function getDatesInRange(start, end) {
 }
 
 export async function GET(req) {
-  const { searchParams } = new URL(req.url);
-  const clientId = searchParams.get('clientId');
-  const start = searchParams.get('start');
-  const end = searchParams.get('end');
+  const { searchParams } = new URL(req.url)
+  const clientId = searchParams.get('clientId')
+  const start = searchParams.get('start')
+  const end = searchParams.get('end')
 
-  console.log('Calling RPC with params:', { clientId, start, end });
-
-  const clientIdNum = Number(clientId);
+  const clientIdNum = Number(clientId)
   if (isNaN(clientIdNum)) {
-    return Response.json({ error: 'Invalid clientId parameter' }, { status: 400 });
+    return Response.json({ error: 'Invalid clientId parameter' }, { status: 400 })
   }
 
-  // ✅ Get top metrics
-  const { data, error } = await supabase.rpc('get_qlead_data', {
+  let errors = [] // Collect errors for response (optional)
+
+  // 1. Top metrics
+  const { data: topData, error: topError } = await supabase.rpc('get_qlead_data', {
     input_client_id: clientIdNum,
     input_start_date: start,
-    input_end_date: end,
-  });
+    input_end_date: end
+  })
 
-  if (error) return Response.json({ error: error.message }, { status: 500 });
+  if (topError) {
+    errors.push(topError.message)
+    return Response.json({ error: 'Failed to fetch top metrics', details: errors }, { status: 500 })
+  }
+  const totals = topData?.[0] ?? {}
 
-  const totals = data.length > 0 ? data[0] : {}
-
-  // ✅ Get engagement metrics
+  // 2. Call engagement metrics
   const { data: engagementData, error: engagementError } = await supabase.rpc('get_call_engagement_metrics', {
     input_client_id: clientIdNum,
     input_start_date: start,
-    input_end_date: end,
-  });
+    input_end_date: end
+  })
 
   if (engagementError) {
-    console.error('Engagement metrics error:', engagementError.message);
+    console.error('Engagement metrics error:', engagementError.message)
+    errors.push(engagementError.message)
   }
 
-  const engagementTotals = engagementData ?? {}
-
+  const engagementTotals = engagementData?.[0] ?? {} // Fixed: Index [0] for single-row result
   const engagementMetrics = {
-    human_engagement_rate: engagementTotals.her_percent ?? null,
-    ai_forward_rate: engagementTotals.aifr_percent ?? null,
-    human_engaged_count: engagementTotals.human_engaged_true ?? null,
-    human_total_count: engagementTotals.total_engagements ?? null,
-    ai_forward_count: engagementTotals.ai_forwarded ?? null,
-    ai_total_count: engagementTotals.total_forwarded ?? null,
-  }
+  human_engagement_rate: engagementTotals.her_percent ?? null,
+  ai_forward_rate: engagementTotals.aifr_percent ?? null,  // Changed to aifr_percent
+  human_engaged_count: engagementTotals.human_engaged_true ?? null,
+  human_total_count: engagementTotals.total_engagements ?? null,
+  ai_forward_count: engagementTotals.ai_forwarded ?? null,
+  ai_total_count: engagementTotals.total_forwarded ?? null
+}
 
-  // ✅ Get real chart data from Supabase
+  // 3. Chart data (Removed input_group_by – not expected by function)
   const { data: volumeData, error: volumeError } = await supabase.rpc('get_qleadvolume_linechart', {
     input_client_id: clientIdNum,
     input_start_date: start,
-    input_end_date: end,
-    input_group_by: 'day',
-  });
-
-  if (volumeError) {
-    console.error('Volume chart error:', volumeError.message);
-  }
+    input_end_date: end
+  })
 
   const { data: costData, error: costError } = await supabase.rpc('get_qleadcostper_linechart', {
     input_client_id: clientIdNum,
     input_start_date: start,
-    input_end_date: end,
-    input_group_by: 'day',
-  });
+    input_end_date: end
+  })
 
+  if (volumeError) {
+    console.error('Volume chart error:', volumeError.message)
+    errors.push(volumeError.message)
+  }
   if (costError) {
-    console.error('Cost chart error:', costError.message);
+    console.error('Cost chart error:', costError.message)
+    errors.push(costError.message)
   }
 
-  // ✅ Match dates using your existing logic
+  // 4. Normalize chart rows by date
   const dates = getDatesInRange(start, end)
 
-  const get_qleadvolume_linechart = dates.map(date => {
-    const dayData = (volumeData ?? []).find(d => d.group_date === date)
+  const volume_chart = dates.map(date => {
+    const row = (volumeData ?? []).find(r => r.group_date?.slice(0, 10) === date)
     return {
       date,
-      total: dayData?.qualified_leads ?? 0,
-      ppc: dayData?.qualified_leads_ppc ?? 0,
-      lsa: dayData?.qualified_leads_lsa ?? 0,
-      seo: dayData?.qualified_leads_seo ?? 0,
-    }
-  });
-
-  const get_qleadcostper_linechart = dates.map(date => {
-    const dayData = (costData ?? []).find(d => d.group_date === date)
-    return {
-      date,
-      total: dayData?.cpql_all ?? 0,
-      ppc: dayData?.cpql_ppc ?? 0,
-      lsa: dayData?.cpql_lsa ?? 0,
-      seo: dayData?.cpql_seo ?? 0,
-    }
-  });
-
-  console.log('Top Metrics Data:', totals)
-  console.log('Engagement Metrics:', engagementTotals)
-
-  return Response.json({
-    data: {
-      ...totals,
-      ...engagementMetrics,
-      volume_chart: get_qleadvolume_linechart,
-      cost_per_lead_chart: get_qleadcostper_linechart,
+      total: row?.qualified_leads ?? 0,
+      ppc: row?.qualified_leads_ppc ?? 0,
+      lsa: row?.qualified_leads_lsa ?? 0,
+      seo: row?.qualified_leads_seo ?? 0
     }
   })
+
+  const cost_per_lead_chart = dates.map(date => {
+    const row = (costData ?? []).find(r => r.group_date?.slice(0, 10) === date)
+    return {
+      date,
+      total: row?.cpql_all ?? 0,
+      ppc: row?.cpql_ppc ?? 0,
+      lsa: row?.cpql_lsa ?? 0,
+      seo: row?.cpql_seo ?? 0
+    }
+  })
+
+  // 5. Combine all payload
+  const responsePayload = {
+    ...totals,
+    ...engagementMetrics,
+    volume_chart,
+    cost_per_lead_chart
+  }
+
+  console.log('✅ Final response payload:', responsePayload)
+
+  return Response.json({ data: responsePayload, errors: errors.length > 0 ? errors : undefined })
 }
