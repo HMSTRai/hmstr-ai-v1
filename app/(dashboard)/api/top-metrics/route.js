@@ -1,3 +1,4 @@
+// api/top-metrics/route.js
 import { supabaseServer } from '@/lib/supabaseClient'; // Use the server-side client
 
 function getDatesInRange(start, end) {
@@ -14,31 +15,50 @@ function getDatesInRange(start, end) {
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const clientId = searchParams.get('clientId');
-  const start = searchParams.get('start');
-  const end = searchParams.get('end');
+  const startParam = searchParams.get('start');
+  const endParam = searchParams.get('end');
 
   const clientIdNum = Number(clientId);
   if (isNaN(clientIdNum)) {
     return Response.json({ error: 'Invalid clientId parameter' }, { status: 400 });
   }
 
-  console.log('API Request: clientId =', clientIdNum, 'start =', start, 'end =', end);
+  // Parse and format dates to YYYY-MM-DD
+  const startDate = new Date(startParam);
+  const endDate = new Date(endParam);
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+    return Response.json({ error: 'Invalid date parameters' }, { status: 400 });
+  }
+  const formattedStart = startDate.toISOString().slice(0, 10);
+  const formattedEnd = endDate.toISOString().slice(0, 10);
+
+  console.log('API Request: clientId =', clientIdNum, 'start =', formattedStart, 'end =', formattedEnd);
 
   // 1. Top metrics
   const { data: topData, error: topError } = await supabaseServer.rpc('get_qlead_data', {
     input_client_id: clientIdNum,
-    input_start_date: start,
-    input_end_date: end
+    input_start_date: formattedStart,
+    input_end_date: formattedEnd
   });
 
   if (topError) return Response.json({ error: topError.message }, { status: 500 });
-  const totals = topData?.[0] ?? {};
+  const topMetrics = topData?.[0] ?? {};
+
+  // 1b. Source top metrics
+  const { data: sourceTopData, error: sourceTopError } = await supabaseServer.rpc('get_qlead_data_source', {
+    input_client_id: clientIdNum,
+    input_start_date: formattedStart,
+    input_end_date: formattedEnd
+  });
+
+  if (sourceTopError) return Response.json({ error: sourceTopError.message }, { status: 500 });
+  const sourceMetrics = sourceTopData?.[0] ?? {};
 
   // 2. Call engagement metrics
   const { data: engagementData, error: engagementError } = await supabaseServer.rpc('get_call_engagement_metrics', {
     input_client_id: clientIdNum,
-    input_start_date: start,
-    input_end_date: end
+    input_start_date: formattedStart,
+    input_end_date: formattedEnd
   });
   console.log('Engagement RPC Result:', engagementData, 'Error:', engagementError);
   if (engagementError) {
@@ -58,21 +78,23 @@ export async function GET(req) {
   // 3. Chart data
   const { data: volumeData, error: volumeError } = await supabaseServer.rpc('get_qleadvolume_linechart', {
     input_client_id: clientIdNum,
-    input_start_date: start,
-    input_end_date: end
+    input_start_date: formattedStart,
+    input_end_date: formattedEnd
   });
+  console.log('Volume RPC Result:', volumeData, 'Error:', volumeError);
 
   const { data: costData, error: costError } = await supabaseServer.rpc('get_qleadcostper_linechart', {
     input_client_id: clientIdNum,
-    input_start_date: start,
-    input_end_date: end
+    input_start_date: formattedStart,
+    input_end_date: formattedEnd
   });
+  console.log('Cost RPC Result:', costData, 'Error:', costError);
 
   if (volumeError) console.error('Volume chart error:', volumeError.message);
   if (costError) console.error('Cost chart error:', costError.message);
 
   // 4. Normalize chart rows by date
-  const dates = getDatesInRange(start, end);
+  const dates = getDatesInRange(formattedStart, formattedEnd);
 
   const volume_chart = dates.map(date => {
     const row = (volumeData ?? []).find(r => r.group_date?.slice(0, 10) === date);
@@ -98,8 +120,9 @@ export async function GET(req) {
 
   // 5. Combine all payload
   const responsePayload = {
-    ...totals,
-    ...engagementMetrics,
+    topMetrics,
+    sourceMetrics,
+    engagementMetrics,
     volume_chart,
     cost_per_lead_chart
   };
