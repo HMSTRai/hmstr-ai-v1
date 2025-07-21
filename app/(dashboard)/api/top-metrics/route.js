@@ -24,6 +24,7 @@ export async function GET(req) {
     return Response.json({ error: 'Invalid clientId parameter' }, { status: 400 });
   }
 
+  // et_qlead_data
   const { data, error } = await supabase.rpc('get_qlead_data', {
     input_client_id: clientId,
     input_start_date: start,
@@ -32,6 +33,7 @@ export async function GET(req) {
 
   if (error) return Response.json({ error: error.message }, { status: 500 });
 
+// get_call_engagement_metrics
   const { data: engagementData, error: engagementError } = await supabase.rpc('get_call_engagement_metrics', {
     input_client_id: clientId,
     input_start_date: start,
