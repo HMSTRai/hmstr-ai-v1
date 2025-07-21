@@ -184,7 +184,7 @@ export default function ModernDashboard() {
 
       {/* Metrics Grid */}
       <div className="px-4 md:px-10 mt-6 max-w-7xl mx-auto">
-        <h2 className="text-2xl font-semibold mb-6">Source Name</h2>
+        <h2 className="text-2xl font-semibold mb-6">Source Nam [get_qlead_data]</h2>
         {/* First row */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 md:gap-6 mb-6">
           <StatCard
@@ -266,7 +266,7 @@ export default function ModernDashboard() {
         </div>
 
         {/* New Source Section */}
-        <h2 className="text-2xl font-semibold mb-6 mt-12">Source Data</h2>
+        <h2 className="text-2xl font-semibold mb-6 mt-12">Source Data [get_qlead_data_source]</h2>
         {/* First row for source */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 md:gap-6 mb-6">
           <StatCard
