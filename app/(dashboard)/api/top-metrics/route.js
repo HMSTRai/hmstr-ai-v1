@@ -79,28 +79,32 @@ export async function GET(req) {
   const { data: volumeData, error: volumeError } = await supabaseServer.rpc('get_qleadvolume_linechart', {
     input_client_id: clientIdNum,
     input_start_date: formattedStart,
-    input_end_date: formattedEnd
+    input_end_date: formattedEnd,
+    input_group_by: 'day'
   });
   console.log('Volume RPC Result:', volumeData, 'Error:', volumeError);
 
   const { data: costData, error: costError } = await supabaseServer.rpc('get_qleadcostper_linechart', {
     input_client_id: clientIdNum,
     input_start_date: formattedStart,
-    input_end_date: formattedEnd
+    input_end_date: formattedEnd,
+    input_group_by: 'day'
   });
   console.log('Cost RPC Result:', costData, 'Error:', costError);
 
   const { data: costLineData, error: costLineError } = await supabaseServer.rpc('get_cost_line_chart_metrics', {
     input_client_id: clientIdNum,
     input_start_date: formattedStart,
-    input_end_date: formattedEnd
+    input_end_date: formattedEnd,
+    input_group_by: 'day'
   });
   console.log('Cost Line RPC Result:', costLineData, 'Error:', costLineError);
 
   const { data: cpqlLineData, error: cpqlLineError } = await supabaseServer.rpc('get_cpql_line_chart_metrics', {
     input_client_id: clientIdNum,
     input_start_date: formattedStart,
-    input_end_date: formattedEnd
+    input_end_date: formattedEnd,
+    input_group_by: 'day'
   });
   console.log('CPQL Line RPC Result:', cpqlLineData, 'Error:', cpqlLineError);
 

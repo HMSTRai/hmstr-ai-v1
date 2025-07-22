@@ -2,7 +2,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { AreaChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 function ClientSelector({ clients, selected, onSelect }) {
   return (
@@ -354,218 +354,94 @@ export default function ModernDashboard() {
       </div>
 
       {/* Charts */}
-      <div className="flex flex-col gap-6 px-4 md:px-10 pb-10 mt-10 max-w-7xl mx-auto">
+      <div className="flex flex-col gap-6 px-4 md:px-10 pb-10 mt-10 max-w-7xl mx-auto w-full">
         <SectionCard title="Qualified Leads Volume by Period">
-          <ResponsiveContainer width="100%" height={260}>
+          <ResponsiveContainer width="100%" height={400}>
             <AreaChart
               data={volumeChartData}
               margin={{ top: 10, right: 32, left: 0, bottom: 0 }}
             >
-              <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
+              <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" tick={{ fontSize: 14 }} />
-              <YAxis tick={{ fontSize: 14 }} />
+              <YAxis allowDecimals={false} tick={{ fontSize: 14 }} domain={[0, 'auto']} />
               <Tooltip
                 contentStyle={{ borderRadius: 14, fontSize: 15 }}
                 labelStyle={{ fontWeight: 600, color: '#374151' }}
               />
               <Legend verticalAlign="top" height={36} />
-              <Area
-                type="monotone"
-                dataKey="total"
-                name="Total"
-                stackId="1"
-                stroke="#6366f1"
-                fill="#6366f1"
-                fillOpacity={0.23}
-              />
-              <Area
-                type="monotone"
-                dataKey="ppc"
-                name="PPC"
-                stackId="1"
-                stroke="#10b981"
-                fill="#10b981"
-                fillOpacity={0.18}
-              />
-              <Area
-                type="monotone"
-                dataKey="lsa"
-                name="LSA"
-                stackId="1"
-                stroke="#f59e42"
-                fill="#f59e42"
-                fillOpacity={0.18}
-              />
-              <Area
-                type="monotone"
-                dataKey="seo"
-                name="SEO"
-                stackId="1"
-                stroke="#ec4899"
-                fill="#ec4899"
-                fillOpacity={0.18}
-              />
+              <Area type="monotone" dataKey="ppc" stackId="1" stroke="#16a34a" fill="#16a34a" fillOpacity={0.6} name="PPC" />
+              <Area type="monotone" dataKey="lsa" stackId="1" stroke="#ca8a04" fill="#ca8a04" fillOpacity={0.6} name="LSA" />
+              <Area type="monotone" dataKey="seo" stackId="1" stroke="#db2777" fill="#db2777" fillOpacity={0.6} name="SEO" />
+              <Line type="monotone" dataKey="total" stroke="#2563eb" name="Total" strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </SectionCard>
 
         <SectionCard title="Cost Per Lead by Period">
-          <ResponsiveContainer width="100%" height={260}>
+          <ResponsiveContainer width="100%" height={400}>
             <AreaChart
               data={costPerLeadChartData}
               margin={{ top: 10, right: 32, left: 0, bottom: 0 }}
             >
-              <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
+              <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" tick={{ fontSize: 14 }} />
-              <YAxis tick={{ fontSize: 14 }} />
+              <YAxis tick={{ fontSize: 14 }} domain={[0, 'auto']} />
               <Tooltip
                 contentStyle={{ borderRadius: 14, fontSize: 15 }}
                 labelStyle={{ fontWeight: 600, color: '#374151' }}
+                formatter={(value) => `$${value.toFixed(2)}`}
               />
               <Legend verticalAlign="top" height={36} />
-              <Area
-                type="monotone"
-                dataKey="total"
-                name="Total"
-                stackId="1"
-                stroke="#6366f1"
-                fill="#6366f1"
-                fillOpacity={0.23}
-              />
-              <Area
-                type="monotone"
-                dataKey="ppc"
-                name="PPC"
-                stackId="1"
-                stroke="#10b981"
-                fill="#10b981"
-                fillOpacity={0.18}
-              />
-              <Area
-                type="monotone"
-                dataKey="lsa"
-                name="LSA"
-                stackId="1"
-                stroke="#f59e42"
-                fill="#f59e42"
-                fillOpacity={0.18}
-              />
-              <Area
-                type="monotone"
-                dataKey="seo"
-                name="SEO"
-                stackId="1"
-                stroke="#ec4899"
-                fill="#ec4899"
-                fillOpacity={0.18}
-              />
+              <Area type="monotone" dataKey="ppc" stackId="1" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} name="PPC" />
+              <Area type="monotone" dataKey="lsa" stackId="1" stroke="#ffc658" fill="#ffc658" fillOpacity={0.6} name="LSA" />
+              <Area type="monotone" dataKey="seo" stackId="1" stroke="#ff7300" fill="#ff7300" fillOpacity={0.6} name="SEO" />
+              <Line type="monotone" dataKey="total" stroke="#8884d8" name="Total" strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </SectionCard>
+
         <SectionCard title="Cost by Period">
-          <ResponsiveContainer width="100%" height={260}>
+          <ResponsiveContainer width="100%" height={400}>
             <AreaChart
               data={costChartData}
               margin={{ top: 10, right: 32, left: 0, bottom: 0 }}
             >
-              <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
+              <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" tick={{ fontSize: 14 }} />
-              <YAxis tick={{ fontSize: 14 }} />
+              <YAxis tick={{ fontSize: 14 }} domain={[0, 'auto']} />
               <Tooltip
                 contentStyle={{ borderRadius: 14, fontSize: 15 }}
                 labelStyle={{ fontWeight: 600, color: '#374151' }}
+                formatter={(value) => `$${value.toFixed(2)}`}
               />
               <Legend verticalAlign="top" height={36} />
-              <Area
-                type="monotone"
-                dataKey="total"
-                name="Total"
-                stackId="1"
-                stroke="#6366f1"
-                fill="#6366f1"
-                fillOpacity={0.23}
-              />
-              <Area
-                type="monotone"
-                dataKey="ppc"
-                name="PPC"
-                stackId="1"
-                stroke="#10b981"
-                fill="#10b981"
-                fillOpacity={0.18}
-              />
-              <Area
-                type="monotone"
-                dataKey="lsa"
-                name="LSA"
-                stackId="1"
-                stroke="#f59e42"
-                fill="#f59e42"
-                fillOpacity={0.18}
-              />
-              <Area
-                type="monotone"
-                dataKey="seo"
-                name="SEO"
-                stackId="1"
-                stroke="#ec4899"
-                fill="#ec4899"
-                fillOpacity={0.18}
-              />
+              <Area type="monotone" dataKey="ppc" stackId="1" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} name="PPC" />
+              <Area type="monotone" dataKey="lsa" stackId="1" stroke="#ffc658" fill="#ffc658" fillOpacity={0.6} name="LSA" />
+              <Area type="monotone" dataKey="seo" stackId="1" stroke="#ff7300" fill="#ff7300" fillOpacity={0.6} name="SEO" />
+              <Line type="monotone" dataKey="total" stroke="#8884d8" name="Total" strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </SectionCard>
 
         <SectionCard title="CPQL by Period">
-          <ResponsiveContainer width="100%" height={260}>
+          <ResponsiveContainer width="100%" height={400}>
             <AreaChart
               data={cpqlChartData}
               margin={{ top: 10, right: 32, left: 0, bottom: 0 }}
             >
-              <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
+              <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" tick={{ fontSize: 14 }} />
-              <YAxis tick={{ fontSize: 14 }} />
+              <YAxis tick={{ fontSize: 14 }} domain={[0, 'auto']} />
               <Tooltip
                 contentStyle={{ borderRadius: 14, fontSize: 15 }}
                 labelStyle={{ fontWeight: 600, color: '#374151' }}
+                formatter={(value) => `$${value.toFixed(2)}`}
               />
               <Legend verticalAlign="top" height={36} />
-              <Area
-                type="monotone"
-                dataKey="total"
-                name="Total"
-                stackId="1"
-                stroke="#6366f1"
-                fill="#6366f1"
-                fillOpacity={0.23}
-              />
-              <Area
-                type="monotone"
-                dataKey="ppc"
-                name="PPC"
-                stackId="1"
-                stroke="#10b981"
-                fill="#10b981"
-                fillOpacity={0.18}
-              />
-              <Area
-                type="monotone"
-                dataKey="lsa"
-                name="LSA"
-                stackId="1"
-                stroke="#f59e42"
-                fill="#f59e42"
-                fillOpacity={0.18}
-              />
-              <Area
-                type="monotone"
-                dataKey="seo"
-                name="SEO"
-                stackId="1"
-                stroke="#ec4899"
-                fill="#ec4899"
-                fillOpacity={0.18}
-              />
+              <Area type="monotone" dataKey="ppc" stackId="1" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} name="PPC" />
+              <Area type="monotone" dataKey="lsa" stackId="1" stroke="#ffc658" fill="#ffc658" fillOpacity={0.6} name="LSA" />
+              <Area type="monotone" dataKey="seo" stackId="1" stroke="#ff7300" fill="#ff7300" fillOpacity={0.6} name="SEO" />
+              <Line type="monotone" dataKey="total" stroke="#8884d8" name="Total" strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </SectionCard>
