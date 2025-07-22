@@ -128,6 +128,10 @@ export default function ModernDashboard() {
   const [metrics, setMetrics] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [volumeGroupBy, setVolumeGroupBy] = useState('day')
+  const [costPerLeadGroupBy, setCostPerLeadGroupBy] = useState('day')
+  const [costGroupBy, setCostGroupBy] = useState('day')
+  const [cpqlGroupBy, setCpqlGroupBy] = useState('day')
 
   useEffect(() => {
     fetch('/api/clients')
@@ -145,7 +149,7 @@ export default function ModernDashboard() {
       return
     }
     setLoading(true)
-    fetch(`/api/top-metrics?clientId=${selectedClient}&start=${startDate}&end=${endDate}`)
+    fetch(`/api/top-metrics?clientId=${selectedClient}&start=${startDate}&end=${endDate}&groupBy=${volumeGroupBy}`)
       .then(res => res.json())
       .then(({ data, error }) => {
         if (error) throw new Error(error)
@@ -155,7 +159,7 @@ export default function ModernDashboard() {
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
-  }, [selectedClient, startDate, endDate])
+  }, [selectedClient, startDate, endDate, volumeGroupBy, costPerLeadGroupBy, costGroupBy, cpqlGroupBy])
 
   // Use chart data from backend or empty fallback
   const volumeChartData = metrics?.volume_chart?.length > 0 ? metrics.volume_chart : createEmptyChartData(startDate, endDate);
@@ -356,14 +360,25 @@ export default function ModernDashboard() {
       {/* Charts */}
       <div className="flex flex-col gap-6 px-4 md:px-10 pb-10 mt-10 max-w-7xl mx-auto w-full">
         <SectionCard title="Qualified Leads Volume by Period">
-          <ResponsiveContainer width="100%" height={280}>
+          <div className="flex justify-end mb-4">
+            <select
+              className="border rounded-lg px-4 py-2 text-base shadow-sm focus:outline-none"
+              value={volumeGroupBy}
+              onChange={e => setVolumeGroupBy(e.target.value)}
+            >
+              <option value="day">Daily</option>
+              <option value="week">Weekly</option>
+              <option value="month">Monthly</option>
+            </select>
+          </div>
+          <ResponsiveContainer width="100%" height={260}>
             <ComposedChart
               data={volumeChartData}
               margin={{ top: 10, right: 32, left: 0, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
               <XAxis dataKey="date" tick={{ fontSize: 14 }} />
-              <YAxis label={{ angle: -90, position: 'insideLeft' }} allowDecimals={false} tick={{ fontSize: 14 }} domain={[0, 'auto']} />
+              <YAxis label={{ value: 'Leads', angle: -90, position: 'insideLeft' }} allowDecimals={false} tick={{ fontSize: 14 }} domain={[0, 'auto']} />
               <Tooltip
                 contentStyle={{ borderRadius: 14, fontSize: 15 }}
                 labelStyle={{ fontWeight: 600, color: '#374151' }}
@@ -379,14 +394,25 @@ export default function ModernDashboard() {
         </SectionCard>
 
         <SectionCard title="Cost Per Lead by Period">
-          <ResponsiveContainer width="100%" height={280}>
+          <div className="flex justify-end mb-4">
+            <select
+              className="border rounded-lg px-4 py-2 text-base shadow-sm focus:outline-none"
+              value={costPerLeadGroupBy}
+              onChange={e => setCostPerLeadGroupBy(e.target.value)}
+            >
+              <option value="day">Daily</option>
+              <option value="week">Weekly</option>
+              <option value="month">Monthly</option>
+            </select>
+          </div>
+          <ResponsiveContainer width="100%" height={260}>
             <ComposedChart
               data={costPerLeadChartData}
               margin={{ top: 10, right: 32, left: 0, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
               <XAxis dataKey="date" tick={{ fontSize: 14 }} />
-              <YAxis label={{angle: -90, position: 'insideLeft' }} tick={{ fontSize: 14 }} domain={[0, 'auto']} />
+              <YAxis label={{ value: 'Cost Per Lead', angle: -90, position: 'insideLeft' }} tick={{ fontSize: 14 }} domain={[0, 'auto']} />
               <Tooltip
                 contentStyle={{ borderRadius: 14, fontSize: 15 }}
                 labelStyle={{ fontWeight: 600, color: '#374151' }}
@@ -403,14 +429,25 @@ export default function ModernDashboard() {
         </SectionCard>
 
         <SectionCard title="Cost by Period">
-          <ResponsiveContainer width="100%" height={280}>
+          <div className="flex justify-end mb-4">
+            <select
+              className="border rounded-lg px-4 py-2 text-base shadow-sm focus:outline-none"
+              value={costGroupBy}
+              onChange={e => setCostGroupBy(e.target.value)}
+            >
+              <option value="day">Daily</option>
+              <option value="week">Weekly</option>
+              <option value="month">Monthly</option>
+            </select>
+          </div>
+          <ResponsiveContainer width="100%" height={260}>
             <ComposedChart
               data={costChartData}
               margin={{ top: 10, right: 32, left: 0, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
               <XAxis dataKey="date" tick={{ fontSize: 14 }} />
-              <YAxis label={{ angle: -90, position: 'insideLeft' }} tick={{ fontSize: 14 }} domain={[0, 'auto']} />
+              <YAxis label={{ value: 'Cost', angle: -90, position: 'insideLeft' }} tick={{ fontSize: 14 }} domain={[0, 'auto']} />
               <Tooltip
                 contentStyle={{ borderRadius: 14, fontSize: 15 }}
                 labelStyle={{ fontWeight: 600, color: '#374151' }}
@@ -420,21 +457,32 @@ export default function ModernDashboard() {
               <Area type="monotone" dataKey="ppc" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.18} name="PPC" />
               <Area type="monotone" dataKey="lsa" stackId="1" stroke="#f59e42" fill="#f59e42" fillOpacity={0.18} name="LSA" />
               <Area type="monotone" dataKey="seo" stackId="1" stroke="#ec4899" fill="#ec4899" fillOpacity={0.18} name="SEO" />
-              <Line type="monotone" dataKey="total" stroke="#2f304aff" name="Total" strokeWidth={2} />
+              <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" strokeWidth={2} />
               <Brush />
             </ComposedChart>
           </ResponsiveContainer>
         </SectionCard>
 
         <SectionCard title="CPQL by Period">
-          <ResponsiveContainer width="100%" height={280}>
+          <div className="flex justify-end mb-4">
+            <select
+              className="border rounded-lg px-4 py-2 text-base shadow-sm focus:outline-none"
+              value={cpqlGroupBy}
+              onChange={e => setCpqlGroupBy(e.target.value)}
+            >
+              <option value="day">Daily</option>
+              <option value="week">Weekly</option>
+              <option value="month">Monthly</option>
+            </select>
+          </div>
+          <ResponsiveContainer width="100%" height={260}>
             <ComposedChart
               data={cpqlChartData}
               margin={{ top: 10, right: 32, left: 0, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
               <XAxis dataKey="date" tick={{ fontSize: 14 }} />
-              <YAxis label={{ angle: -90, position: 'insideLeft' }} tick={{ fontSize: 14 }} domain={[0, 'auto']} />
+              <YAxis label={{ value: 'CPQL', angle: -90, position: 'insideLeft' }} tick={{ fontSize: 14 }} domain={[0, 'auto']} />
               <Tooltip
                 contentStyle={{ borderRadius: 14, fontSize: 15 }}
                 labelStyle={{ fontWeight: 600, color: '#374151' }}

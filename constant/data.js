@@ -14,7 +14,7 @@ export const topMenu = [
     link: "/app/home",
     child: [
       {
-        childtitle: "Analytics Dashboard",
+        childtitle: "HMSTR Dashboard",
         childlink: "analytics",
         childicon: "heroicons:presentation-chart-line",
       },

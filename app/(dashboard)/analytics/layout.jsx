@@ -7,7 +7,7 @@ export const metadata = {
 
 const layout = ({ children }) => {
   return (
-    <DashboardSectionLayout title="Analytics Overview">
+    <DashboardSectionLayout title="HMSTR Dashboard">
       {children}
     </DashboardSectionLayout>
   );

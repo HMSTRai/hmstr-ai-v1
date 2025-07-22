@@ -1,13 +1,32 @@
 // api/top-metrics/route.js
 import { supabaseServer } from '@/lib/supabaseClient'; // Use the server-side client
 
-function getDatesInRange(start, end) {
+function getDatesInRange(start, end, groupBy = 'day') {
   const dates = [];
   let current = new Date(start);
   const endDate = new Date(end);
+
   while (current <= endDate) {
-    dates.push(current.toISOString().slice(0, 10));
-    current.setDate(current.getDate() + 1);
+    let dateStr = current.toISOString().slice(0, 10);
+    if (groupBy === 'week') {
+      // Set to the start of the week (e.g., Sunday)
+      const day = current.getDay();
+      current.setDate(current.getDate() - day);
+      dateStr = current.toISOString().slice(0, 10);
+    } else if (groupBy === 'month') {
+      current.setDate(1); // Set to the first of the month
+      dateStr = current.toISOString().slice(0, 10);
+    }
+    if (!dates.includes(dateStr) && new Date(dateStr) <= endDate) {
+      dates.push(dateStr);
+    }
+    if (groupBy === 'week') {
+      current.setDate(current.getDate() + 7);
+    } else if (groupBy === 'month') {
+      current.setMonth(current.getMonth() + 1);
+    } else {
+      current.setDate(current.getDate() + 1);
+    }
   }
   return dates;
 }
@@ -17,6 +36,7 @@ export async function GET(req) {
   const clientId = searchParams.get('clientId');
   const startParam = searchParams.get('start');
   const endParam = searchParams.get('end');
+  const groupBy = searchParams.get('groupBy') || 'day'; // Default to 'day' if not provided
 
   const clientIdNum = Number(clientId);
   if (isNaN(clientIdNum)) {
@@ -32,7 +52,7 @@ export async function GET(req) {
   const formattedStart = startDate.toISOString().slice(0, 10);
   const formattedEnd = endDate.toISOString().slice(0, 10);
 
-  console.log('API Request: clientId =', clientIdNum, 'start =', formattedStart, 'end =', formattedEnd);
+  console.log('API Request: clientId =', clientIdNum, 'start =', formattedStart, 'end =', formattedEnd, 'groupBy =', groupBy);
 
   // 1. Top metrics
   const { data: topData, error: topError } = await supabaseServer.rpc('get_qlead_data', {
@@ -75,12 +95,12 @@ export async function GET(req) {
     ai_total_count: engagementTotals.total_forwarded ?? null
   };
 
-  // 3. Chart data
+  // 3. Chart data with dynamic groupBy
   const { data: volumeData, error: volumeError } = await supabaseServer.rpc('get_qleadvolume_linechart', {
     input_client_id: clientIdNum,
     input_start_date: formattedStart,
     input_end_date: formattedEnd,
-    input_group_by: 'day'
+    input_group_by: groupBy
   });
   console.log('Volume RPC Result:', volumeData, 'Error:', volumeError);
 
@@ -88,7 +108,7 @@ export async function GET(req) {
     input_client_id: clientIdNum,
     input_start_date: formattedStart,
     input_end_date: formattedEnd,
-    input_group_by: 'day'
+    input_group_by: groupBy
   });
   console.log('Cost RPC Result:', costData, 'Error:', costError);
 
@@ -96,7 +116,7 @@ export async function GET(req) {
     input_client_id: clientIdNum,
     input_start_date: formattedStart,
     input_end_date: formattedEnd,
-    input_group_by: 'day'
+    input_group_by: groupBy
   });
   console.log('Cost Line RPC Result:', costLineData, 'Error:', costLineError);
 
@@ -104,7 +124,7 @@ export async function GET(req) {
     input_client_id: clientIdNum,
     input_start_date: formattedStart,
     input_end_date: formattedEnd,
-    input_group_by: 'day'
+    input_group_by: groupBy
   });
   console.log('CPQL Line RPC Result:', cpqlLineData, 'Error:', cpqlLineError);
 
@@ -113,8 +133,8 @@ export async function GET(req) {
   if (costLineError) console.error('Cost line chart error:', costLineError.message);
   if (cpqlLineError) console.error('CPQL line chart error:', cpqlLineError.message);
 
-  // 4. Normalize chart rows by date
-  const dates = getDatesInRange(formattedStart, formattedEnd);
+  // 4. Normalize chart rows by date based on groupBy
+  const dates = getDatesInRange(formattedStart, formattedEnd, groupBy);
 
   const volume_chart = dates.map(date => {
     const row = (volumeData ?? []).find(r => r.group_date?.slice(0, 10) === date);
