@@ -160,6 +160,8 @@ export default function ModernDashboard() {
   // Use chart data from backend or empty fallback
   const volumeChartData = metrics?.volume_chart?.length > 0 ? metrics.volume_chart : createEmptyChartData(startDate, endDate);
   const costPerLeadChartData = metrics?.cost_per_lead_chart?.length > 0 ? metrics.cost_per_lead_chart : createEmptyChartData(startDate, endDate);
+  const costChartData = metrics?.cost_chart?.length > 0 ? metrics.cost_chart : createEmptyChartData(startDate, endDate);
+  const cpqlChartData = metrics?.cpql_chart?.length > 0 ? metrics.cpql_chart : createEmptyChartData(startDate, endDate);
 
   const formatCurrency = val =>
     typeof val === 'number'
@@ -407,11 +409,117 @@ export default function ModernDashboard() {
           </ResponsiveContainer>
         </SectionCard>
 
-        {/* New chart: Cost Per Lead by Period */}
         <SectionCard title="Cost Per Lead by Period">
           <ResponsiveContainer width="100%" height={260}>
             <AreaChart
               data={costPerLeadChartData}
+              margin={{ top: 10, right: 32, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
+              <XAxis dataKey="date" tick={{ fontSize: 14 }} />
+              <YAxis tick={{ fontSize: 14 }} />
+              <Tooltip
+                contentStyle={{ borderRadius: 14, fontSize: 15 }}
+                labelStyle={{ fontWeight: 600, color: '#374151' }}
+              />
+              <Legend verticalAlign="top" height={36} />
+              <Area
+                type="monotone"
+                dataKey="total"
+                name="Total"
+                stackId="1"
+                stroke="#6366f1"
+                fill="#6366f1"
+                fillOpacity={0.23}
+              />
+              <Area
+                type="monotone"
+                dataKey="ppc"
+                name="PPC"
+                stackId="1"
+                stroke="#10b981"
+                fill="#10b981"
+                fillOpacity={0.18}
+              />
+              <Area
+                type="monotone"
+                dataKey="lsa"
+                name="LSA"
+                stackId="1"
+                stroke="#f59e42"
+                fill="#f59e42"
+                fillOpacity={0.18}
+              />
+              <Area
+                type="monotone"
+                dataKey="seo"
+                name="SEO"
+                stackId="1"
+                stroke="#ec4899"
+                fill="#ec4899"
+                fillOpacity={0.18}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </SectionCard>
+        <SectionCard title="Cost by Period">
+          <ResponsiveContainer width="100%" height={260}>
+            <AreaChart
+              data={costChartData}
+              margin={{ top: 10, right: 32, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
+              <XAxis dataKey="date" tick={{ fontSize: 14 }} />
+              <YAxis tick={{ fontSize: 14 }} />
+              <Tooltip
+                contentStyle={{ borderRadius: 14, fontSize: 15 }}
+                labelStyle={{ fontWeight: 600, color: '#374151' }}
+              />
+              <Legend verticalAlign="top" height={36} />
+              <Area
+                type="monotone"
+                dataKey="total"
+                name="Total"
+                stackId="1"
+                stroke="#6366f1"
+                fill="#6366f1"
+                fillOpacity={0.23}
+              />
+              <Area
+                type="monotone"
+                dataKey="ppc"
+                name="PPC"
+                stackId="1"
+                stroke="#10b981"
+                fill="#10b981"
+                fillOpacity={0.18}
+              />
+              <Area
+                type="monotone"
+                dataKey="lsa"
+                name="LSA"
+                stackId="1"
+                stroke="#f59e42"
+                fill="#f59e42"
+                fillOpacity={0.18}
+              />
+              <Area
+                type="monotone"
+                dataKey="seo"
+                name="SEO"
+                stackId="1"
+                stroke="#ec4899"
+                fill="#ec4899"
+                fillOpacity={0.18}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </SectionCard>
+
+        <SectionCard title="CPQL by Period">
+          <ResponsiveContainer width="100%" height={260}>
+            <AreaChart
+              data={cpqlChartData}
               margin={{ top: 10, right: 32, left: 0, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />

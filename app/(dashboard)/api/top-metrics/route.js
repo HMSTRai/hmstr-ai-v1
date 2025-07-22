@@ -90,8 +90,24 @@ export async function GET(req) {
   });
   console.log('Cost RPC Result:', costData, 'Error:', costError);
 
+  const { data: costLineData, error: costLineError } = await supabaseServer.rpc('get_cost_line_chart_metrics', {
+    input_client_id: clientIdNum,
+    input_start_date: formattedStart,
+    input_end_date: formattedEnd
+  });
+  console.log('Cost Line RPC Result:', costLineData, 'Error:', costLineError);
+
+  const { data: cpqlLineData, error: cpqlLineError } = await supabaseServer.rpc('get_cpql_line_chart_metrics', {
+    input_client_id: clientIdNum,
+    input_start_date: formattedStart,
+    input_end_date: formattedEnd
+  });
+  console.log('CPQL Line RPC Result:', cpqlLineData, 'Error:', cpqlLineError);
+
   if (volumeError) console.error('Volume chart error:', volumeError.message);
   if (costError) console.error('Cost chart error:', costError.message);
+  if (costLineError) console.error('Cost line chart error:', costLineError.message);
+  if (cpqlLineError) console.error('CPQL line chart error:', cpqlLineError.message);
 
   // 4. Normalize chart rows by date
   const dates = getDatesInRange(formattedStart, formattedEnd);
@@ -118,13 +134,37 @@ export async function GET(req) {
     };
   });
 
+  const cost_chart = dates.map(date => {
+    const row = (costLineData ?? []).find(r => r.group_date?.slice(0, 10) === date);
+    return {
+      date,
+      total: row?.spend_total ?? 0,
+      ppc: row?.spend_ppc ?? 0,
+      lsa: row?.spend_lsa ?? 0,
+      seo: row?.spend_seo ?? 0
+    };
+  });
+
+  const cpql_chart = dates.map(date => {
+    const row = (cpqlLineData ?? []).find(r => r.group_date?.slice(0, 10) === date);
+    return {
+      date,
+      total: row?.cpql_all ?? 0,
+      ppc: row?.cpql_ppc ?? 0,
+      lsa: row?.cpql_lsa ?? 0,
+      seo: row?.cpql_seo ?? 0
+    };
+  });
+
   // 5. Combine all payload
   const responsePayload = {
     topMetrics,
     sourceMetrics,
     engagementMetrics,
     volume_chart,
-    cost_per_lead_chart
+    cost_per_lead_chart,
+    cost_chart,
+    cpql_chart
   };
 
   console.log('Final Response Payload:', responsePayload);
