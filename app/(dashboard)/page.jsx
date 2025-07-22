@@ -420,7 +420,7 @@ export default function ModernDashboard() {
               <Area type="monotone" dataKey="ppc" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.18} name="PPC" />
               <Area type="monotone" dataKey="lsa" stackId="1" stroke="#f59e42" fill="#f59e42" fillOpacity={0.18} name="LSA" />
               <Area type="monotone" dataKey="seo" stackId="1" stroke="#ec4899" fill="#ec4899" fillOpacity={0.18} name="SEO" />
-              <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" strokeWidth={2} />
+              <Line type="monotone" dataKey="total" stroke="#2f304aff" name="Total" strokeWidth={2} />
               <Brush />
             </ComposedChart>
           </ResponsiveContainer>
