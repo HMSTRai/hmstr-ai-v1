@@ -54,7 +54,7 @@ export async function GET(req) {
 
   console.log('API Request: clientId =', clientIdNum, 'start =', formattedStart, 'end =', formattedEnd, 'groupBy =', groupBy);
 
-  // Top Metrics
+  // Qualified Leads
   const { data: sourceTopData, error: sourceTopError } = await supabaseServer.rpc('get_qlead_data_source', {
     input_client_id: clientIdNum,
     input_start_date: formattedStart,

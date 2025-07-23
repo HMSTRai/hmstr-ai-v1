@@ -1,4 +1,3 @@
-// page.jsx
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -154,7 +153,7 @@ export default function ModernDashboard() {
       .then(({ data, error }) => {
         if (error) throw new Error(error)
         setMetrics(data || null)
-        console.log('Fetched Metrics:', data); // Add this line
+        console.log('Fetched Metrics:', data);
         setError(null)
       })
       .catch(err => setError(err.message))
@@ -164,8 +163,6 @@ export default function ModernDashboard() {
   // Use chart data from backend or empty fallback
   const volumeChartData = metrics?.volume_chart?.length > 0 ? metrics.volume_chart : createEmptyChartData(startDate, endDate);
   const costPerLeadChartData = metrics?.cost_per_lead_chart?.length > 0 ? metrics.cost_per_lead_chart : createEmptyChartData(startDate, endDate);
-  const costChartData = metrics?.cost_chart?.length > 0 ? metrics.cost_chart : createEmptyChartData(startDate, endDate);
-  const cpqlChartData = metrics?.cpql_chart?.length > 0 ? metrics.cpql_chart : createEmptyChartData(startDate, endDate);
 
   const formatCurrency = val =>
     typeof val === 'number'
@@ -188,11 +185,10 @@ export default function ModernDashboard() {
         />
       </div>
 
-      {/* Metrics Grid */}
+      {/* Qualified Leads */}
       <div className="px-4 md:px-10 mt-6 max-w-7xl mx-auto">
-        {/* New Source Section */}
         <h2 className="text-2xl font-semibold mb-6 mt-4">Qualified Leads</h2>
-        {/* First row for source */}
+        {/* First row */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 md:gap-6 mb-6">
           <StatCard
             key="source-qualified-leads"
@@ -232,7 +228,7 @@ export default function ModernDashboard() {
           />
         </div>
 
-        {/* Second row for source */}
+        {/* Second row */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 md:gap-6">
           <StatCard
             key="source-lsa-spend"
@@ -274,10 +270,13 @@ export default function ModernDashboard() {
 
         {/* Call Engagement Metrics */}
         <CallEngagementMetrics metrics={metrics?.engagementMetrics} />
+        
       </div>
 
       {/* Charts */}
       <div className="flex flex-col gap-6 px-4 md:px-10 pb-10 mt-10 max-w-7xl mx-auto w-full">
+        
+        {/* Qualified Leads Volume by Period */}
         <SectionCard title="Qualified Leads Volume by Period">
           <div className="flex justify-end mb-4">
             <select
@@ -295,23 +294,36 @@ export default function ModernDashboard() {
               data={volumeChartData}
               margin={{ top: 10, right: 32, left: 0, bottom: 0 }}
             >
-              <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
+              <defs>
+                <linearGradient id="colorPpc" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="colorLsa" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="colorSeo" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#ec4899" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#ec4899" stopOpacity={0} />
+                </linearGradient>
+              </defs>
               <XAxis dataKey="date" tick={{ fontSize: 14 }} />
               <YAxis label={{ angle: -90, position: 'insideLeft' }} allowDecimals={false} tick={{ fontSize: 14 }} domain={[0, 'auto']} />
               <Tooltip
                 contentStyle={{ borderRadius: 14, fontSize: 15 }}
                 labelStyle={{ fontWeight: 600, color: '#374151' }}
               />
-              <Legend verticalAlign="top" height={36} />
-              <Area type="monotone" dataKey="ppc" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.18} name="PPC" />
-              <Area type="monotone" dataKey="lsa" stackId="1" stroke="#f59e42" fill="#f59e42" fillOpacity={0.18} name="LSA" />
-              <Area type="monotone" dataKey="seo" stackId="1" stroke="#ec4899" fill="#ec4899" fillOpacity={0.18} name="SEO" />
-              <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" strokeWidth={1} />
-              <Brush />
+              <Legend verticalAlign="bottom" height={36} />
+              <Area type="monotone" dataKey="ppc" stackId="1" stroke="#10b981" strokeWidth={2} fill="url(#colorPpc)" name="PPC" />
+              <Area type="monotone" dataKey="lsa" stackId="1" stroke="#f59e0b" strokeWidth={2} fill="url(#colorLsa)" name="LSA" />
+              <Area type="monotone" dataKey="seo" stackId="1" stroke="#ec4899" strokeWidth={2} fill="url(#colorSeo)" name="SEO" />
+              <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" strokeWidth={2} />
             </ComposedChart>
           </ResponsiveContainer>
         </SectionCard>
 
+        {/* Cost Per Lead by Period */}
         <SectionCard title="Cost Per Lead by Period">
           <div className="flex justify-end mb-4">
             <select
@@ -329,7 +341,20 @@ export default function ModernDashboard() {
               data={costPerLeadChartData}
               margin={{ top: 10, right: 32, left: 0, bottom: 0 }}
             >
-              <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
+              <defs>
+                <linearGradient id="colorPpc" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="colorLsa" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="colorSeo" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#ec4899" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#ec4899" stopOpacity={0} />
+                </linearGradient>
+              </defs>
               <XAxis dataKey="date" tick={{ fontSize: 14 }} />
               <YAxis label={{ angle: -90, position: 'insideLeft' }} tick={{ fontSize: 14 }} domain={[0, 'auto']} />
               <Tooltip
@@ -337,12 +362,11 @@ export default function ModernDashboard() {
                 labelStyle={{ fontWeight: 600, color: '#374151' }}
                 formatter={(value) => `$${value.toFixed(2)}`}
               />
-              <Legend verticalAlign="top" height={36} />
-              <Area type="monotone" dataKey="ppc" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.18} name="PPC" />
-              <Area type="monotone" dataKey="lsa" stackId="1" stroke="#f59e42" fill="#f59e42" fillOpacity={0.18} name="LSA" />
-              <Area type="monotone" dataKey="seo" stackId="1" stroke="#ec4899" fill="#ec4899" fillOpacity={0.18} name="SEO" />
-              <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" strokeWidth={1} />
-              <Brush />
+              <Legend verticalAlign="bottom" height={36} />
+              <Area type="monotone" dataKey="ppc" stroke="#10b981" strokeWidth={2} fill="url(#colorPpc)" name="PPC" />
+              <Area type="monotone" dataKey="lsa" stroke="#f59e0b" strokeWidth={2} fill="url(#colorLsa)" name="LSA" />
+              <Area type="monotone" dataKey="seo" stroke="#ec4899" strokeWidth={2} fill="url(#colorSeo)" name="SEO" />
+              <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" strokeWidth={2} />
             </ComposedChart>
           </ResponsiveContainer>
         </SectionCard>
