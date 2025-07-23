@@ -15,7 +15,7 @@ export const topMenu = [
     child: [
       {
         childtitle: "HMSTR Dashboard",
-        childlink: "analytics",
+        childlink: "qualified-leads",
         childicon: "heroicons:presentation-chart-line",
       },
       {

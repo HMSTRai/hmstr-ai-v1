@@ -1,13 +1,13 @@
 import DashboardSectionLayout from '@/components/ui/DashboardSectionLayout';
 
 export const metadata = {
-  title: 'Analytics | HMSTR Dashboard',
+  title: 'Qualified Leads | HMSTR Dashboard',
   description: 'Explore analytical insights and trends.',
 };
 
 const layout = ({ children }) => {
   return (
-    <DashboardSectionLayout title="HMSTR Dashboard">
+    <DashboardSectionLayout title="">
       {children}
     </DashboardSectionLayout>
   );

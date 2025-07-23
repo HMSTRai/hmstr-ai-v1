@@ -42,7 +42,7 @@ function DateSelector({ startDate, endDate, onChange }) {
 
 function StatCard({ label, value, sublabel, color = 'text-blue-600' }) {
   return (
-    <div className="bg-white rounded-2xl shadow-md px-6 py-4 flex flex-col items-center min-w-[120px] transition hover:shadow-lg hover:bg-gray-50">
+    <div className="bg-white rounded-2xl shadow-md px-6 py-4 flex flex-col items-center min-w-[120px] transition hover:shadow-lg hover:bg-white">
       <span className={`text-2xl font-bold ${color}`}>{value}</span>
       <span className="text-sm text-gray-500 text-center">{label}</span>
       {sublabel && <span className="text-xs text-gray-400">{sublabel}</span>}
