@@ -190,89 +190,8 @@ export default function ModernDashboard() {
 
       {/* Metrics Grid */}
       <div className="px-4 md:px-10 mt-6 max-w-7xl mx-auto">
-        <h2 className="text-2xl font-semibold mb-6">Source Name [get_qlead_data]</h2>
-        {/* First row */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 md:gap-6 mb-6">
-          <StatCard
-            key="qualified-leads"
-            label="Qualified Leads"
-            value={formatNumber(metrics?.topMetrics?.qualified_leads)}
-            color="text-blue-700"
-          />
-          <StatCard
-            key="ppc-leads"
-            label="PPC Leads"
-            value={formatNumber(metrics?.topMetrics?.qualified_leads_ppc)}
-            color="text-green-600"
-          />
-          <StatCard
-            key="lsa-leads"
-            label="LSA Leads"
-            value={formatNumber(metrics?.topMetrics?.qualified_leads_lsa)}
-            color="text-yellow-600"
-          />
-          <StatCard
-            key="seo-leads"
-            label="SEO Leads"
-            value={formatNumber(metrics?.topMetrics?.qualified_leads_seo)}
-            color="text-pink-600"
-          />
-          <StatCard
-            key="total-spend"
-            label="Total Spend"
-            value={formatCurrency(metrics?.topMetrics?.spend_total)}
-            color="text-purple-700"
-          />
-          <StatCard
-            key="ppc-spend"
-            label="Total PPC Spend"
-            value={formatCurrency(metrics?.topMetrics?.spend_ppc)}
-            color="text-purple-700"
-          />
-        </div>
-
-        {/* Second row */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 md:gap-6">
-          <StatCard
-            key="lsa-spend"
-            label="LSA Spend"
-            value={formatCurrency(metrics?.topMetrics?.spend_lsa)}
-            color="text-yellow-600"
-          />
-          <StatCard
-            key="seo-spend"
-            label="SEO Spend"
-            value={formatCurrency(metrics?.topMetrics?.spend_seo)}
-            color="text-pink-600"
-          />
-          <StatCard
-            key="cpql-total"
-            label="CPQL Total"
-            value={formatCurrency(metrics?.topMetrics?.cpql_total)}
-            color="text-teal-600"
-          />
-          <StatCard
-            key="cpql-ppc"
-            label="CPQL PPC"
-            value={formatCurrency(metrics?.topMetrics?.cpql_ppc)}
-            color="text-teal-600"
-          />
-          <StatCard
-            key="cpql-lsa"
-            label="CPQL LSA"
-            value={formatCurrency(metrics?.topMetrics?.cpql_lsa)}
-            color="text-teal-600"
-          />
-          <StatCard
-            key="cpql-seo"
-            label="CPQL SEO"
-            value={formatCurrency(metrics?.topMetrics?.cpql_seo)}
-            color="text-teal-600"
-          />
-        </div>
-
         {/* New Source Section */}
-        <h2 className="text-2xl font-semibold mb-6 mt-12">Source Data [get_qlead_data_source]</h2>
+        <h2 className="text-2xl font-semibold mb-6 mt-4">Qualified Leads</h2>
         {/* First row for source */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 md:gap-6 mb-6">
           <StatCard
@@ -371,14 +290,14 @@ export default function ModernDashboard() {
               <option value="month">Monthly</option>
             </select>
           </div>
-          <ResponsiveContainer width="100%" height={260}>
+          <ResponsiveContainer width="100%" height={300}>
             <ComposedChart
               data={volumeChartData}
               margin={{ top: 10, right: 32, left: 0, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
               <XAxis dataKey="date" tick={{ fontSize: 14 }} />
-              <YAxis label={{ value: 'Leads', angle: -90, position: 'insideLeft' }} allowDecimals={false} tick={{ fontSize: 14 }} domain={[0, 'auto']} />
+              <YAxis label={{ angle: -90, position: 'insideLeft' }} allowDecimals={false} tick={{ fontSize: 14 }} domain={[0, 'auto']} />
               <Tooltip
                 contentStyle={{ borderRadius: 14, fontSize: 15 }}
                 labelStyle={{ fontWeight: 600, color: '#374151' }}
@@ -387,7 +306,7 @@ export default function ModernDashboard() {
               <Area type="monotone" dataKey="ppc" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.18} name="PPC" />
               <Area type="monotone" dataKey="lsa" stackId="1" stroke="#f59e42" fill="#f59e42" fillOpacity={0.18} name="LSA" />
               <Area type="monotone" dataKey="seo" stackId="1" stroke="#ec4899" fill="#ec4899" fillOpacity={0.18} name="SEO" />
-              <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" strokeWidth={2} />
+              <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" strokeWidth={1} />
               <Brush />
             </ComposedChart>
           </ResponsiveContainer>
@@ -405,14 +324,14 @@ export default function ModernDashboard() {
               <option value="month">Monthly</option>
             </select>
           </div>
-          <ResponsiveContainer width="100%" height={260}>
+          <ResponsiveContainer width="100%" height={300}>
             <ComposedChart
               data={costPerLeadChartData}
               margin={{ top: 10, right: 32, left: 0, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
               <XAxis dataKey="date" tick={{ fontSize: 14 }} />
-              <YAxis label={{ value: 'Cost Per Lead', angle: -90, position: 'insideLeft' }} tick={{ fontSize: 14 }} domain={[0, 'auto']} />
+              <YAxis label={{ angle: -90, position: 'insideLeft' }} tick={{ fontSize: 14 }} domain={[0, 'auto']} />
               <Tooltip
                 contentStyle={{ borderRadius: 14, fontSize: 15 }}
                 labelStyle={{ fontWeight: 600, color: '#374151' }}
@@ -422,77 +341,7 @@ export default function ModernDashboard() {
               <Area type="monotone" dataKey="ppc" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.18} name="PPC" />
               <Area type="monotone" dataKey="lsa" stackId="1" stroke="#f59e42" fill="#f59e42" fillOpacity={0.18} name="LSA" />
               <Area type="monotone" dataKey="seo" stackId="1" stroke="#ec4899" fill="#ec4899" fillOpacity={0.18} name="SEO" />
-              <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" strokeWidth={2} />
-              <Brush />
-            </ComposedChart>
-          </ResponsiveContainer>
-        </SectionCard>
-
-        <SectionCard title="Cost by Period">
-          <div className="flex justify-end mb-4">
-            <select
-              className="border rounded-lg px-4 py-2 text-base shadow-sm focus:outline-none"
-              value={costGroupBy}
-              onChange={e => setCostGroupBy(e.target.value)}
-            >
-              <option value="day">Daily</option>
-              <option value="week">Weekly</option>
-              <option value="month">Monthly</option>
-            </select>
-          </div>
-          <ResponsiveContainer width="100%" height={260}>
-            <ComposedChart
-              data={costChartData}
-              margin={{ top: 10, right: 32, left: 0, bottom: 0 }}
-            >
-              <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
-              <XAxis dataKey="date" tick={{ fontSize: 14 }} />
-              <YAxis label={{ value: 'Cost', angle: -90, position: 'insideLeft' }} tick={{ fontSize: 14 }} domain={[0, 'auto']} />
-              <Tooltip
-                contentStyle={{ borderRadius: 14, fontSize: 15 }}
-                labelStyle={{ fontWeight: 600, color: '#374151' }}
-                formatter={(value) => `$${value.toFixed(2)}`}
-              />
-              <Legend verticalAlign="top" height={36} />
-              <Area type="monotone" dataKey="ppc" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.18} name="PPC" />
-              <Area type="monotone" dataKey="lsa" stackId="1" stroke="#f59e42" fill="#f59e42" fillOpacity={0.18} name="LSA" />
-              <Area type="monotone" dataKey="seo" stackId="1" stroke="#ec4899" fill="#ec4899" fillOpacity={0.18} name="SEO" />
-              <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" strokeWidth={2} />
-              <Brush />
-            </ComposedChart>
-          </ResponsiveContainer>
-        </SectionCard>
-
-        <SectionCard title="CPQL by Period">
-          <div className="flex justify-end mb-4">
-            <select
-              className="border rounded-lg px-4 py-2 text-base shadow-sm focus:outline-none"
-              value={cpqlGroupBy}
-              onChange={e => setCpqlGroupBy(e.target.value)}
-            >
-              <option value="day">Daily</option>
-              <option value="week">Weekly</option>
-              <option value="month">Monthly</option>
-            </select>
-          </div>
-          <ResponsiveContainer width="100%" height={260}>
-            <ComposedChart
-              data={cpqlChartData}
-              margin={{ top: 10, right: 32, left: 0, bottom: 0 }}
-            >
-              <CartesianGrid strokeDasharray="8 8" stroke="#ececec" />
-              <XAxis dataKey="date" tick={{ fontSize: 14 }} />
-              <YAxis label={{ value: 'CPQL', angle: -90, position: 'insideLeft' }} tick={{ fontSize: 14 }} domain={[0, 'auto']} />
-              <Tooltip
-                contentStyle={{ borderRadius: 14, fontSize: 15 }}
-                labelStyle={{ fontWeight: 600, color: '#374151' }}
-                formatter={(value) => `$${value.toFixed(2)}`}
-              />
-              <Legend verticalAlign="top" height={36} />
-              <Area type="monotone" dataKey="ppc" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.18} name="PPC" />
-              <Area type="monotone" dataKey="lsa" stackId="1" stroke="#f59e42" fill="#f59e42" fillOpacity={0.18} name="LSA" />
-              <Area type="monotone" dataKey="seo" stackId="1" stroke="#ec4899" fill="#ec4899" fillOpacity={0.18} name="SEO" />
-              <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" strokeWidth={2} />
+              <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" strokeWidth={1} />
               <Brush />
             </ComposedChart>
           </ResponsiveContainer>
