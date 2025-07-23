@@ -315,9 +315,9 @@ export default function ModernDashboard() {
                 labelStyle={{ fontWeight: 600, color: '#374151' }}
               />
               <Legend verticalAlign="bottom" height={36} />
-              <Area type="monotone" dataKey="ppc" stackId="1" stroke="#10b981" strokeWidth={2} fill="url(#colorPpc)" name="PPC" />
-              <Area type="monotone" dataKey="lsa" stackId="1" stroke="#f59e0b" strokeWidth={2} fill="url(#colorLsa)" name="LSA" />
-              <Area type="monotone" dataKey="seo" stackId="1" stroke="#ec4899" strokeWidth={2} fill="url(#colorSeo)" name="SEO" />
+              <Area type="monotone" dataKey="ppc" stroke="#10b981" strokeWidth={2} fill="url(#colorPpc)" name="PPC" />
+              <Area type="monotone" dataKey="lsa" stroke="#f59e0b" strokeWidth={2} fill="url(#colorLsa)" name="LSA" />
+              <Area type="monotone" dataKey="seo" stroke="#ec4899" strokeWidth={2} fill="url(#colorSeo)" name="SEO" />
               <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" strokeWidth={2} />
             </ComposedChart>
           </ResponsiveContainer>
