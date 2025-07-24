@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'HMSTR Dashboard',
-  description: 'Dashcode is a popular dashboard template.',
+  description: '',
 }
 
 const layout = ({ children }) => {
