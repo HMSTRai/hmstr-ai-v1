@@ -23,6 +23,14 @@ export const topMenu = [
         childlink: "project",
         childicon: "heroicons:briefcase",
       },
+      {
+        childtitle: " CRM Dashbaord",
+        childlink: "crm",
+      },
+      {
+        childtitle: "Banking Dashboard",
+        childlink: "banking",
+      },
     ],
   },
   {
