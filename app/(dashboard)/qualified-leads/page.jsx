@@ -422,8 +422,6 @@ export default function ModernDashboard() {
             </ResponsiveContainer>
           </div>
         </SectionCard>
-
-        <LeadsTable leads={leads} />
       </div>
 
       {loading && (
