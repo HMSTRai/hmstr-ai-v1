@@ -36,7 +36,8 @@ export async function GET(req) {
   const clientId = searchParams.get('clientId');
   const startParam = searchParams.get('start');
   const endParam = searchParams.get('end');
-  const groupBy = searchParams.get('groupBy') || 'day'; // Default to 'day' if not provided
+  const volumeGroupBy = searchParams.get('volumeGroupBy') || 'day';
+  const costPerLeadGroupBy = searchParams.get('costPerLeadGroupBy') || 'day';
 
   const clientIdNum = Number(clientId);
   if (isNaN(clientIdNum)) {
@@ -52,7 +53,7 @@ export async function GET(req) {
   const formattedStart = startDate.toISOString().slice(0, 10);
   const formattedEnd = endDate.toISOString().slice(0, 10);
 
-  console.log('API Request: clientId =', clientIdNum, 'start =', formattedStart, 'end =', formattedEnd, 'groupBy =', groupBy);
+  console.log('API Request: clientId =', clientIdNum, 'start =', formattedStart, 'end =', formattedEnd, 'volumeGroupBy =', volumeGroupBy, 'costPerLeadGroupBy =', costPerLeadGroupBy);
 
   // Qualified Leads
   const { data: sourceTopData, error: sourceTopError } = await supabaseServer.rpc('get_qlead_data_source', {
@@ -90,7 +91,7 @@ export async function GET(req) {
     input_client_id: clientIdNum,
     input_start_date: formattedStart,
     input_end_date: formattedEnd,
-    input_group_by: groupBy
+    input_group_by: volumeGroupBy
   });
   console.log('Volume RPC Result:', volumeData, 'Error:', volumeError);
 
@@ -99,7 +100,7 @@ export async function GET(req) {
     input_client_id: clientIdNum,
     input_start_date: formattedStart,
     input_end_date: formattedEnd,
-    input_group_by: groupBy
+    input_group_by: costPerLeadGroupBy
   });
   console.log('Cost RPC Result:', costData, 'Error:', costError);
 
@@ -107,9 +108,10 @@ export async function GET(req) {
   if (costError) console.error('Cost chart error:', costError.message);
 
   // Normalize chart rows by date based on groupBy
-  const dates = getDatesInRange(formattedStart, formattedEnd, groupBy);
+  const volumeDates = getDatesInRange(formattedStart, formattedEnd, volumeGroupBy);
+  const costDates = getDatesInRange(formattedStart, formattedEnd, costPerLeadGroupBy);
 
-  const volume_chart = dates.map(date => {
+  const volume_chart = volumeDates.map(date => {
     const row = (volumeData ?? []).find(r => r.group_date?.slice(0, 10) === date);
     return {
       date,
@@ -120,7 +122,7 @@ export async function GET(req) {
     };
   });
 
-  const cost_per_lead_chart = dates.map(date => {
+  const cost_per_lead_chart = costDates.map(date => {
     const row = (costData ?? []).find(r => r.group_date?.slice(0, 10) === date);
     return {
       date,
