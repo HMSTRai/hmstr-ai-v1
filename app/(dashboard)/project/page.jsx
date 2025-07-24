@@ -48,9 +48,77 @@ function SectionCard({ children, title }) {
   )
 }
 
+function highlightText(text, query) {
+  if (!query) return text
+  const parts = text.toString().split(new RegExp(`(${query})`, 'gi'))
+  return (
+    <>
+      {parts.map((part, i) => (
+        <span key={i} className={part.toLowerCase() === query.toLowerCase() ? 'bg-yellow-200' : ''}>
+          {part}
+        </span>
+      ))}
+    </>
+  )
+}
+
 function LeadsTable({ leads }) {
+  const [currentPage, setCurrentPage] = useState(1)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const filteredLeads = leads.filter(lead =>
+    Object.values(lead).some(value =>
+      value && value.toString().toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  )
+
+  const indexOfLastLead = currentPage * rowsPerPage
+  const indexOfFirstLead = indexOfLastLead - rowsPerPage
+  const currentLeads = filteredLeads.slice(indexOfFirstLead, indexOfLastLead)
+
+  const totalPages = Math.ceil(filteredLeads.length / rowsPerPage)
+
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return
+    setCurrentPage(page)
+  }
+
+  const pageNumbers = []
+  for (let i = 1; i <= totalPages; i++) {
+    pageNumbers.push(i)
+  }
+
   return (
     <SectionCard title="Qualified Leads Table">
+      <div className="flex justify-between items-center mb-4">
+        <input
+          type="text"
+          placeholder="Search leads..."
+          className="w-full sm:w-1/3 border rounded-lg px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.target.value)
+            setCurrentPage(1)
+          }}
+        />
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-600">Show</span>
+          <select
+            className="border rounded-lg px-2 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            value={rowsPerPage}
+            onChange={(e) => {
+              setRowsPerPage(Number(e.target.value))
+              setCurrentPage(1)
+            }}
+          >
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+        </div>
+      </div>
       <div className="overflow-x-auto w-full">
         <table className="min-w-full bg-white border border-gray-200 rounded-lg">
           <thead className="bg-gray-100">
@@ -68,19 +136,19 @@ function LeadsTable({ leads }) {
             </tr>
           </thead>
           <tbody>
-            {leads.length > 0 ? (
-              leads.map((lead, index) => (
+            {currentLeads.length > 0 ? (
+              currentLeads.map((lead, index) => (
                 <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.first_contact_date || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.customer_phone_number || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.customer_name || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.customer_city || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.customer_state || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.service_inquired || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.lead_score_max || 0}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.close_score_max || 0}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.human_engaged ? 'Yes' : 'No'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.first_source || '--'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{highlightText(lead.first_contact_date || '--', searchQuery)}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{highlightText(lead.customer_phone_number || '--', searchQuery)}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{highlightText(lead.customer_name || '--', searchQuery)}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{highlightText(lead.customer_city || '--', searchQuery)}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{highlightText(lead.customer_state || '--', searchQuery)}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{highlightText(lead.service_inquired || '--', searchQuery)}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{highlightText(lead.lead_score_max || 0, searchQuery)}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{highlightText(lead.close_score_max || 0, searchQuery)}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{highlightText(lead.human_engaged ? 'Yes' : 'No', searchQuery)}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{highlightText(lead.first_source || '--', searchQuery)}</td>
                 </tr>
               ))
             ) : (
@@ -92,6 +160,49 @@ function LeadsTable({ leads }) {
             )}
           </tbody>
         </table>
+      </div>
+      <div className="flex justify-between items-center mt-4">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-600">Show</span>
+          <select
+            className="border rounded-lg px-2 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            value={rowsPerPage}
+            onChange={(e) => {
+              setRowsPerPage(Number(e.target.value))
+              setCurrentPage(1)
+            }}
+          >
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+        </div>
+        <div className="flex items-center gap-1 sm:gap-2">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`px-2 py-1 text-sm text-gray-600 ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : ''}`}
+          >
+            Prev
+          </button>
+          {pageNumbers.map((page) => (
+            <button
+              key={page}
+              onClick={() => handlePageChange(page)}
+              className={`px-2 py-1 text-sm ${currentPage === page ? 'bg-indigo-500 text-white rounded' : 'text-gray-600'}`}
+            >
+              {page}
+            </button>
+          ))}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-2 py-1 text-sm text-gray-600 ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : ''}`}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </SectionCard>
   )
