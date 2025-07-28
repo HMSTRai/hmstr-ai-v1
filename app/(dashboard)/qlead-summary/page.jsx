@@ -44,7 +44,7 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600', changeText,
   const getIcon = (type) => {
     if (type === 'bar') {
       return (
-        <svg className={`w-6 h-6 ${color}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg className={`w-5 h-5 ${color}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
           <rect x="4" y="10" width="4" height="10" />
           <rect x="10" y="4" width="4" height="16" />
           <rect x="16" y="8" width="4" height="12" />
@@ -53,7 +53,7 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600', changeText,
     }
     if (type === 'wallet') {
       return (
-        <svg className={`w-6 h-6 ${color}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg className={`w-5 h-5 ${color}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
           <path d="M20 7V17C20 18.1046 19.1046 19 18 19H6C4.89543 19 4 18.1046 4 17V7C4 5.89543 4.89543 5 6 5H18C19.1046 5 20 5.89543 20 7ZM4 10H20" />
           <circle cx="18" cy="12" r="1" />
         </svg>
@@ -61,7 +61,7 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600', changeText,
     }
     if (type === 'dollar') {
       return (
-        <svg className={`w-6 h-6 ${color}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg className={`w-5 h-5 ${color}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
           <line x1="12" y1="1" x2="12" y2="23" />
           <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
         </svg>
