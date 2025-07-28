@@ -14,13 +14,13 @@ export const topMenu = [
     link: "/app/home",
     child: [
       {
-        childtitle: "HMSTR Dashboard",
-        childlink: "qualified-leads",
+        childtitle: "QLead Summary",
+        childlink: "qlead-summary",
         childicon: "heroicons:presentation-chart-line",
       },
       {
-        childtitle: "Project  Dashboard",
-        childlink: "project",
+        childtitle: "QLead Table",
+        childlink: "qlead-table",
         childicon: "heroicons:briefcase",
       },
       {

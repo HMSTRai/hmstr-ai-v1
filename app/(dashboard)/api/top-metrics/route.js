@@ -9,9 +9,10 @@ function getDatesInRange(start, end, groupBy = 'day') {
   while (current <= endDate) {
     let dateStr = current.toISOString().slice(0, 10);
     if (groupBy === 'week') {
-      // Set to the start of the week (e.g., Sunday)
+      // Set to the start of the week (Monday to match PostgreSQL date_trunc('week'))
       const day = current.getDay();
-      current.setDate(current.getDate() - day);
+      const daysToSubtract = day === 0 ? 6 : day - 1;
+      current.setDate(current.getDate() - daysToSubtract);
       dateStr = current.toISOString().slice(0, 10);
     } else if (groupBy === 'month') {
       current.setDate(1); // Set to the first of the month

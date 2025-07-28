@@ -42,10 +42,15 @@ function DateSelector({ startDate, endDate, onChange }) {
 
 function StatCard({ label, value, sublabel, color = 'text-blue-600' }) {
   return (
-    <div className="bg-white rounded-2xl shadow-md px-3 sm:px-4 py-2 sm:py-3 flex flex-col items-center min-w-[90px] sm:min-w-[120px] transition hover:shadow-lg hover:bg-white">
-      <span className={`text-lg sm:text-2xl font-bold ${color}`}>{value}</span>
-      <span className="text-xs sm:text-sm text-gray-500 text-center">{label}</span>
-      {sublabel && <span className="text-xs text-gray-400">{sublabel}</span>}
+    <div className="bg-white rounded-2xl shadow-md px-4 py-4 flex flex-col items-start min-w-[120px] transition hover:shadow-lg hover:bg-orange-50">
+      <span className="text-sm text-gray-600">{label}</span>
+      {sublabel && <span className="text-xs text-gray-500">{sublabel}</span>}
+      <span className={`text-2xl sm:text-3xl font-bold ${color}`}>{value}</span>
+      <div className="w-full h-8 mt-2">
+        <svg className={`w-full h-full ${color}`} viewBox="0 0 100 30" preserveAspectRatio="none">
+          <polyline points="0,25 20,20 40,25 60,15 80,20 100,10" fill="none" stroke="currentColor" strokeWidth="2" />
+        </svg>
+      </div>
     </div>
   )
 }
@@ -244,81 +249,78 @@ export default function ModernDashboard() {
       {/* Qualified Leads */}
       <div className="w-full px-2 sm:px-4 md:px-6">
         <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 md:mb-6 mt-2 sm:mt-4">Qualified Leads</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-3 md:gap-4 mb-3 sm:mb-4 md:mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-3 sm:mb-4 md:mb-6">
           <StatCard
             key="source-qualified-leads"
             label="Qualified Leads"
             value={formatNumber(metrics?.sourceMetrics?.qualified_leads)}
-            color="text-blue-700"
+            color="text-orange-600"
           />
           <StatCard
             key="source-ppc-leads"
             label="PPC Leads"
             value={formatNumber(metrics?.sourceMetrics?.qualified_leads_ppc)}
-            color="text-green-600"
+            color="text-orange-600"
           />
           <StatCard
             key="source-lsa-leads"
             label="LSA Leads"
             value={formatNumber(metrics?.sourceMetrics?.qualified_leads_lsa)}
-            color="text-yellow-600"
+            color="text-orange-600"
           />
           <StatCard
             key="source-seo-leads"
             label="SEO Leads"
             value={formatNumber(metrics?.sourceMetrics?.qualified_leads_seo)}
-            color="text-pink-600"
+            color="text-orange-600"
           />
           <StatCard
             key="source-total-spend"
             label="Total Spend"
             value={formatCurrency(metrics?.sourceMetrics?.spend_total)}
-            color="text-purple-700"
+            color="text-orange-600"
           />
           <StatCard
             key="source-ppc-spend"
             label="Total PPC Spend"
             value={formatCurrency(metrics?.sourceMetrics?.spend_ppc)}
-            color="text-purple-700"
+            color="text-orange-600"
           />
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-3 md:gap-4">
           <StatCard
             key="source-lsa-spend"
             label="LSA Spend"
             value={formatCurrency(metrics?.sourceMetrics?.spend_lsa)}
-            color="text-yellow-600"
+            color="text-orange-600"
           />
           <StatCard
             key="source-seo-spend"
             label="SEO Spend"
             value={formatCurrency(metrics?.sourceMetrics?.spend_seo)}
-            color="text-pink-600"
+            color="text-orange-600"
           />
           <StatCard
             key="source-cpql-total"
             label="CPQL Total"
             value={formatCurrency(metrics?.sourceMetrics?.cpql_total)}
-            color="text-teal-600"
+            color="text-orange-600"
           />
           <StatCard
             key="source-cpql-ppc"
             label="CPQL PPC"
             value={formatCurrency(metrics?.sourceMetrics?.cpql_ppc)}
-            color="text-teal-600"
+            color="text-orange-600"
           />
           <StatCard
             key="source-cpql-lsa"
             label="CPQL LSA"
             value={formatCurrency(metrics?.sourceMetrics?.cpql_lsa)}
-            color="text-teal-600"
+            color="text-orange-600"
           />
           <StatCard
             key="source-cpql-seo"
             label="CPQL SEO"
             value={formatCurrency(metrics?.sourceMetrics?.cpql_seo)}
-            color="text-teal-600"
+            color="text-orange-600"
           />
         </div>
 

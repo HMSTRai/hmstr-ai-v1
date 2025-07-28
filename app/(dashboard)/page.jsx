@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'; // Import useRouter for navigation
 export default function HeroSection() {
   const router = useRouter(); // Initialize useRouter
   const handleGetStarted = () => {
-    router.push('/qualified-leads'); // Navigate to /qualified-leads page
+    router.push('/qlead-summary'); // Navigate to /qualified-leads page
   };
 
   return (
