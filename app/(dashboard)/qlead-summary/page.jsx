@@ -129,7 +129,7 @@ function CallEngagementMetrics({ metrics }) {
   return (
     <div className="mt-4 sm:mt-6 md:mt-12">
       <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 md:mb-6">Call Engagement Metrics</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 md:gap-6">
         {data.map(({ label, value, sublabel, color }, i) => (
           <StatCard key={i} label={label} value={value} sublabel={sublabel} color={color} />
         ))}
@@ -313,7 +313,7 @@ export default function ModernDashboard() {
       {/* Qualified Leads */}
       <div className="w-full px-2 sm:px-4 md:px-6">
         <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 md:mb-6 mt-2 sm:mt-4">Qualified Leads</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-3 sm:mb-4 md:mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 md:gap-6 mb-3 sm:mb-4 md:mb-6">
           {stats.map(({ label, field, iconType }) => {
             const currentValue = metrics?.sourceMetrics?.[field] ?? 0
             const previousValue = previousMetrics?.sourceMetrics?.[field] ?? 0
