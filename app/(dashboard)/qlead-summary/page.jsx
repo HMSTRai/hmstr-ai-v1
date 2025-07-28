@@ -40,19 +40,53 @@ function DateSelector({ startDate, endDate, onChange }) {
   )
 }
 
-function StatCard({ label, value, sublabel, color = 'text-blue-600' }) {
-  return (
-    <div className="bg-white rounded-2xl shadow-md px-4 py-4 flex flex-col items-start min-w-[120px] transition hover:shadow-lg hover:bg-orange-50">
-      <span className="text-sm text-gray-600">{label}</span>
-      {sublabel && <span className="text-xs text-gray-500">{sublabel}</span>}
-      <span className={`text-2xl sm:text-3xl font-bold ${color}`}>{value}</span>
-      <div className="w-full h-8 mt-2">
-        <svg className={`w-full h-full ${color}`} viewBox="0 0 100 30" preserveAspectRatio="none">
-          <polyline points="0,25 20,20 40,25 60,15 80,20 100,10" fill="none" stroke="currentColor" strokeWidth="2" />
+function StatCard({ label, value, sublabel, color = 'text-blue-600', changeText, changeColor, iconType }) {
+  const getIcon = (type) => {
+    if (type === 'bar') {
+      return (
+        <svg className={`w-6 h-6 ${color}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <rect x="4" y="10" width="4" height="10" />
+          <rect x="10" y="4" width="4" height="16" />
+          <rect x="16" y="8" width="4" height="12" />
         </svg>
+      );
+    }
+    if (type === 'wallet') {
+      return (
+        <svg className={`w-6 h-6 ${color}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M20 7V17C20 18.1046 19.1046 19 18 19H6C4.89543 19 4 18.1046 4 17V7C4 5.89543 4.89543 5 6 5H18C19.1046 5 20 5.89543 20 7ZM4 10H20" />
+          <circle cx="18" cy="12" r="1" />
+        </svg>
+      );
+    }
+    if (type === 'dollar') {
+      return (
+        <svg className={`w-6 h-6 ${color}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="12" y1="1" x2="12" y2="23" />
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+        </svg>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <div className="bg-white rounded-xl shadow-md p-4 flex justify-between items-start min-w-[120px] transition hover:shadow-lg hover:bg-orange-50">
+      <div className="flex flex-col">
+        <span className="text-sm text-gray-600">{label}</span>
+        {sublabel && <span className="text-xs text-gray-500">{sublabel}</span>}
+        <span className={`text-2xl sm:text-3xl font-bold ${color}`}>{value}</span>
+        {changeText && <span className={`text-sm font-medium ${changeColor}`}>{changeText}</span>}
       </div>
+      {iconType && (
+        <div className="ml-4">
+          <div className="w-10 h-10 rounded-full border border-orange-300 flex items-center justify-center">
+            {getIcon(iconType)}
+          </div>
+        </div>
+      )}
     </div>
-  )
+  );
 }
 
 function SectionCard({ children, title }) {
@@ -179,6 +213,7 @@ export default function ModernDashboard() {
   const [startDate, setStartDate] = useState(today)
   const [endDate, setEndDate] = useState(today)
   const [metrics, setMetrics] = useState(null)
+  const [previousMetrics, setPreviousMetrics] = useState(null)
   const [leads, setLeads] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -198,26 +233,40 @@ export default function ModernDashboard() {
   useEffect(() => {
     if (!selectedClient || !startDate || !endDate || startDate > endDate) {
       setMetrics(null)
+      setPreviousMetrics(null)
       setLeads([])
       return
     }
+
+    const currentStartDate = new Date(startDate)
+    const currentEndDate = new Date(endDate)
+    const length = Math.floor((currentEndDate - currentStartDate) / (1000 * 60 * 60 * 24)) + 1
+
+    const previousEndDateObj = new Date(currentStartDate)
+    previousEndDateObj.setDate(previousEndDateObj.getDate() - 1)
+    const previousEnd = previousEndDateObj.toISOString().slice(0, 10)
+
+    const previousStartDateObj = new Date(previousEndDateObj)
+    previousStartDateObj.setDate(previousStartDateObj.getDate() - length + 1)
+    const previousStart = previousStartDateObj.toISOString().slice(0, 10)
+
     setLoading(true)
     Promise.all([
       fetch(`/api/top-metrics?clientId=${selectedClient}&start=${startDate}&end=${endDate}&volumeGroupBy=${volumeGroupBy}&costPerLeadGroupBy=${costPerLeadGroupBy}`)
-        .then(res => res.json())
-        .then(({ data, error }) => {
-          if (error) throw new Error(error)
-          setMetrics(data || null)
-          console.log('Fetched Metrics:', data)
-        }),
+        .then(res => res.json()),
       fetch(`/api/qualified-leads?clientId=${selectedClient}&start=${startDate}&end=${endDate}`)
+        .then(res => res.json()),
+      fetch(`/api/top-metrics?clientId=${selectedClient}&start=${previousStart}&end=${previousEnd}&volumeGroupBy=${volumeGroupBy}&costPerLeadGroupBy=${costPerLeadGroupBy}`)
         .then(res => res.json())
-        .then(({ data, error }) => {
-          if (error) throw new Error(error)
-          setLeads(data || [])
-          console.log('Fetched Leads:', data)
-        })
     ])
+      .then(([currentRes, leadsRes, previousRes]) => {
+        if (currentRes.error) throw new Error(currentRes.error)
+        if (leadsRes.error) throw new Error(leadsRes.error)
+        if (previousRes.error) throw new Error(previousRes.error)
+        setMetrics(currentRes.data || null)
+        setLeads(leadsRes.data || [])
+        setPreviousMetrics(previousRes.data || null)
+      })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
   }, [selectedClient, startDate, endDate, volumeGroupBy, costPerLeadGroupBy])
@@ -233,6 +282,21 @@ export default function ModernDashboard() {
   const formatNumber = val => (typeof val === 'number' ? val.toLocaleString() : '--')
 
   const formatPercent = val => (typeof val === 'number' ? `${val.toFixed(2)}%` : '--%')
+
+  const stats = [
+    { label: 'Qualified Leads', field: 'qualified_leads', iconType: 'bar' },
+    { label: 'PPC Leads', field: 'qualified_leads_ppc', iconType: 'bar' },
+    { label: 'LSA Leads', field: 'qualified_leads_lsa', iconType: 'bar' },
+    { label: 'SEO Leads', field: 'qualified_leads_seo', iconType: 'bar' },
+    { label: 'Total Spend', field: 'spend_total', iconType: 'wallet' },
+    { label: 'Total PPC Spend', field: 'spend_ppc', iconType: 'wallet' },
+    { label: 'LSA Spend', field: 'spend_lsa', iconType: 'wallet' },
+    { label: 'SEO Spend', field: 'spend_seo', iconType: 'wallet' },
+    { label: 'CPQL Total', field: 'cpql_total', iconType: 'dollar' },
+    { label: 'CPQL PPC', field: 'cpql_ppc', iconType: 'dollar' },
+    { label: 'CPQL LSA', field: 'cpql_lsa', iconType: 'dollar' },
+    { label: 'CPQL SEO', field: 'cpql_seo', iconType: 'dollar' },
+  ]
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col px-2 sm:px-4 md:px-6 lg:px-8">
@@ -250,78 +314,28 @@ export default function ModernDashboard() {
       <div className="w-full px-2 sm:px-4 md:px-6">
         <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 md:mb-6 mt-2 sm:mt-4">Qualified Leads</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-3 sm:mb-4 md:mb-6">
-          <StatCard
-            key="source-qualified-leads"
-            label="Qualified Leads"
-            value={formatNumber(metrics?.sourceMetrics?.qualified_leads)}
-            color="text-orange-600"
-          />
-          <StatCard
-            key="source-ppc-leads"
-            label="PPC Leads"
-            value={formatNumber(metrics?.sourceMetrics?.qualified_leads_ppc)}
-            color="text-orange-600"
-          />
-          <StatCard
-            key="source-lsa-leads"
-            label="LSA Leads"
-            value={formatNumber(metrics?.sourceMetrics?.qualified_leads_lsa)}
-            color="text-orange-600"
-          />
-          <StatCard
-            key="source-seo-leads"
-            label="SEO Leads"
-            value={formatNumber(metrics?.sourceMetrics?.qualified_leads_seo)}
-            color="text-orange-600"
-          />
-          <StatCard
-            key="source-total-spend"
-            label="Total Spend"
-            value={formatCurrency(metrics?.sourceMetrics?.spend_total)}
-            color="text-orange-600"
-          />
-          <StatCard
-            key="source-ppc-spend"
-            label="Total PPC Spend"
-            value={formatCurrency(metrics?.sourceMetrics?.spend_ppc)}
-            color="text-orange-600"
-          />
-          <StatCard
-            key="source-lsa-spend"
-            label="LSA Spend"
-            value={formatCurrency(metrics?.sourceMetrics?.spend_lsa)}
-            color="text-orange-600"
-          />
-          <StatCard
-            key="source-seo-spend"
-            label="SEO Spend"
-            value={formatCurrency(metrics?.sourceMetrics?.spend_seo)}
-            color="text-orange-600"
-          />
-          <StatCard
-            key="source-cpql-total"
-            label="CPQL Total"
-            value={formatCurrency(metrics?.sourceMetrics?.cpql_total)}
-            color="text-orange-600"
-          />
-          <StatCard
-            key="source-cpql-ppc"
-            label="CPQL PPC"
-            value={formatCurrency(metrics?.sourceMetrics?.cpql_ppc)}
-            color="text-orange-600"
-          />
-          <StatCard
-            key="source-cpql-lsa"
-            label="CPQL LSA"
-            value={formatCurrency(metrics?.sourceMetrics?.cpql_lsa)}
-            color="text-orange-600"
-          />
-          <StatCard
-            key="source-cpql-seo"
-            label="CPQL SEO"
-            value={formatCurrency(metrics?.sourceMetrics?.cpql_seo)}
-            color="text-orange-600"
-          />
+          {stats.map(({ label, field, iconType }) => {
+            const currentValue = metrics?.sourceMetrics?.[field] ?? 0
+            const previousValue = previousMetrics?.sourceMetrics?.[field] ?? 0
+            const change = previousValue === 0 ? 0 : ((currentValue - previousValue) / previousValue * 100)
+            const changeAbs = Math.abs(change).toFixed(0)
+            const changeText = change === 0 ? '0%' : (change > 0 ? `↑ ${changeAbs}%` : `↓ ${changeAbs}%`)
+            const changeColor = change > 0 ? 'text-green-600' : change < 0 ? 'text-red-600' : 'text-gray-600'
+            const isCurrency = field.includes('spend') || field.includes('cpql')
+            const formattedValue = isCurrency ? formatCurrency(currentValue) : formatNumber(currentValue)
+
+            return (
+              <StatCard
+                key={field}
+                label={label}
+                value={formattedValue}
+                color="text-orange-600"
+                changeText={changeText}
+                changeColor={changeColor}
+                iconType={iconType}
+              />
+            )
+          })}
         </div>
 
         <CallEngagementMetrics metrics={metrics?.engagementMetrics} />
