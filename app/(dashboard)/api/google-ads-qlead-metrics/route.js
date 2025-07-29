@@ -57,7 +57,6 @@ export async function GET(req) {
 
   if (qleadCampaignError) console.error('Campaign metrics error:', qleadCampaignError.message);
 
-  // Normalize campaign data (no grouping needed, just ensure all campaigns are included)
   const campaignData = qleadCampaignData ?? [];
 
   // Combine all payload
