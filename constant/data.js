@@ -24,8 +24,8 @@ export const topMenu = [
         childicon: "heroicons:briefcase",
       },
       {
-        childtitle: " CRM Dashbaord",
-        childlink: "crm",
+        childtitle: "Google Ads QLead Metrics",
+        childlink: "googleads_qleads",
       },
       {
         childtitle: "Banking Dashboard",

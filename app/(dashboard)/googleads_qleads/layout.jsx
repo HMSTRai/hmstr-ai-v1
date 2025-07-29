@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'HMSTR Dashboard',
+  title: 'Google Ads QLead Metrics',
   description: '',
 }
 
