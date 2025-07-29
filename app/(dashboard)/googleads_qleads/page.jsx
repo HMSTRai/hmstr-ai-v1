@@ -134,6 +134,9 @@ function GoogleAdsQLeadTable({ campaigns }) {
       ? `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
       : '--';
 
+  // Function to format numbers to 2 decimal places
+  const formatDecimal = (val) => (typeof val === 'number' ? val.toFixed(2) : '--');
+
   return (
     <SectionCard title="Google Ads QLead Metrics by Campaign">
       <div className="overflow-x-auto w-full">
@@ -160,8 +163,8 @@ function GoogleAdsQLeadTable({ campaigns }) {
                   <td className="px-6 py-4 text-sm text-gray-900 border-b">
                     {formatCurrency(campaign.cpql)}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{campaign.avg_lead_score || 0}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{campaign.avg_close_score || 0}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{formatDecimal(campaign.avg_lead_score)}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{formatDecimal(campaign.avg_close_score)}</td>
                 </tr>
               ))
             ) : (
@@ -182,7 +185,7 @@ export default function GoogleAdsQLead() {
   const today = new Date().toISOString().slice(0, 10); // July 29, 2025
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState('');
-  const [startDate, setStartDate] = useState('2025-02-01'); // Matches screenshot
+  const [startDate, setStartDate] = useState(today); // Updated to current date
   const [endDate, setEndDate] = useState(today);
   const [metrics, setMetrics] = useState(null);
   const [campaigns, setCampaigns] = useState([]);
