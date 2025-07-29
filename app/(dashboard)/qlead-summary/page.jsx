@@ -71,7 +71,7 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600', changeText,
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-4 flex justify-between items-start min-w-[120px] transition hover:shadow-lg hover:bg-orange-50">
+    <div className="bg-white rounded-xl shadow p-4 flex justify-between items-start min-w-[120px] transition hover:shadow-lg hover:bg-orange-50">
       <div className="flex flex-col">
         <span className="text-sm text-gray-600">{label}</span>
         {sublabel && <span className="text-xs text-gray-500">{sublabel}</span>}
