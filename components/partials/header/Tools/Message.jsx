@@ -1,9 +1,13 @@
+"use client";
 import React from "react";
 import Dropdown from "@/components/ui/Dropdown";
 import Icon from "@/components/ui/Icon";
 import Link from "next/link";
 import { Menu } from "@headlessui/react";
-import { message } from "@/constant/data";
+import { message as messageData } from "@/constant/data";
+
+// Use fallback if messageData is undefined
+const newMessage = Array.isArray(messageData) ? messageData.slice(0, 4) : [];
 
 const messagelabel = () => {
   return (
@@ -15,8 +19,6 @@ const messagelabel = () => {
     </span>
   );
 };
-// message slice  0-4
-const newMessage = message.slice(0, 4);
 
 const Message = () => {
   return (
@@ -35,7 +37,7 @@ const Message = () => {
         </div>
       </div>
       <div className="divide-y divide-slate-100 dark:divide-slate-800">
-        {newMessage?.map((item, i) => (
+        {newMessage.map((item, i) => (
           <Menu.Item key={i}>
             {({ active }) => (
               <div
@@ -61,7 +63,7 @@ const Message = () => {
                     </div>
                   </div>
                   <div className="flex-1">
-                    <div className="text-slate-800 dark:text-slate-300 text-sm font-medium mb-1`">
+                    <div className="text-slate-800 dark:text-slate-300 text-sm font-medium mb-1">
                       {item.title}
                     </div>
                     <div className="text-xs hover:text-[#68768A] text-slate-600 dark:text-slate-300 mb-1">

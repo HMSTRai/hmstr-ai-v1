@@ -1,4 +1,3 @@
-
 import "react-toastify/dist/ReactToastify.css";
 import "simplebar-react/dist/simplebar.min.css";
 import "flatpickr/dist/themes/light.css";
@@ -7,24 +6,28 @@ import "leaflet/dist/leaflet.css";
 import "./scss/app.scss";
 
 export const metadata = {
-  title: 'HMSTR Dashboard',
-  description: 'HMSTR is a popular dashboard template.',
-}
+  title: "HMSTR Dashboard",
+  description: "HMSTR is a popular dashboard template.",
+};
 
-import ThemeProvider from "./theme-provider"
+import { Suspense } from "react";
+import { ToastContainer } from "react-toastify";
+import ThemeProvider from "./theme-provider.jsx";
+
 export default function RootLayout({ children }) {
   return (
-    <>
-      <html lang="en">
-         <head>
-          <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        </head>
-        <body className="font-inter  custom-tippy -app">
-          <ThemeProvider>
+    <html lang="en">
+      <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+      </head>
+      <body className="font-inter custom-tippy -app">
+        <ThemeProvider>
+          <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
             {children}
-          </ThemeProvider>
-        </body>
-      </html>
-    </>
+          </Suspense>
+        </ThemeProvider>
+        <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
+      </body>
+    </html>
   );
 }
