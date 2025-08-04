@@ -8,17 +8,17 @@ export default function HeroSection() {
   };
 
   return (
-    <div className="relative bg-white py-20 px-4 md:px-10 lg:px-16 overflow-hidden">
+    <div className="relative bg-white dark:bg-slate-900 py-20 px-4 md:px-10 lg:px-16 overflow-hidden">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between space-y-8 md:space-y-0 md:space-x-12">
         {/* Text Section */}
         <div className="flex-1 text-center md:text-left">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-relaxed">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4 leading-relaxed">
             Welcome to HMSTR ai Dashboard
           </h1>
-          <p className="text-lg md:text-l text-gray-600 mb-6 leading-relaxed">
+          <p className="text-lg md:text-l text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
             Track your metrics, analyze performance, and optimize your business with real-time insights.
           </p>
-          <p className="text-sm text-gray-500 mb-6 leading-loose">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 leading-loose">
             HMSTR fixes all of it — automatically
           </p>
           <button
@@ -40,8 +40,8 @@ export default function HeroSection() {
       </div>
 
       {/* Decorative Elements */}
-      <div className="absolute top-0 left-0 w-64 h-64 bg-orange-200 rounded-full filter blur-2xl opacity-30 -z-10 animate-pulse"></div>
-      <div className="absolute bottom-0 right-0 w-80 h-80 bg-indigo-200 rounded-full filter blur-2xl opacity-30 -z-10 animate-pulse delay-200"></div>
+      <div className="absolute top-0 left-0 w-64 h-64 bg-orange-200 dark:bg-orange-800 rounded-full filter blur-2xl opacity-30 -z-10 animate-pulse"></div>
+      <div className="absolute bottom-0 right-0 w-80 h-80 bg-indigo-200 dark:bg-indigo-800 rounded-full filter blur-2xl opacity-30 -z-10 animate-pulse delay-200"></div>
     </div>
   );
 }
