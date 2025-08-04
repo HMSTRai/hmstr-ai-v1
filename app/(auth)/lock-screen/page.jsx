@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 export default function LockScreen() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-6 space-y-4">
+      <div className="space-y-4">
         <div className="text-center">
           <img src="/HMSTR-official-logo.png" alt="HMSTR.ai Logo" className="mx-auto h-24" />
         </div>
