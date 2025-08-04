@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 function ClientSelector({ clients, selected, onSelect }) {
   return (
     <select
-      className="w-full sm:w-auto border rounded-lg px-3 sm:px-4 py-2 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      className="w-full sm:w-auto border rounded-lg px-3 sm:px-4 py-2 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200"
       value={selected}
       onChange={(e) => onSelect(e.target.value)}
     >
@@ -24,14 +24,14 @@ function DateSelector({ startDate, endDate, onChange }) {
     <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
       <input
         type="date"
-        className="w-full sm:w-auto border rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+        className="w-full sm:w-auto border rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200"
         value={startDate}
         onChange={(e) => onChange('startDate', e.target.value)}
       />
-      <span className="mx-2 text-gray-400">to</span>
+      <span className="mx-2 text-gray-400 dark:text-gray-500">to</span>
       <input
         type="date"
-        className="w-full sm:w-auto border rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+        className="w-full sm:w-auto border rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200"
         value={endDate}
         onChange={(e) => onChange('endDate', e.target.value)}
       />
@@ -70,16 +70,16 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600', changeText,
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border p-4 flex justify-between items-start min-w-[120px] transition hover:shadow-lg hover:bg-orange-50">
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-600 p-4 flex justify-between items-start min-w-[120px] transition hover:shadow-lg hover:bg-orange-50 dark:hover:bg-slate-700">
       <div className="flex flex-col">
-        <span className="text-sm text-gray-600">{label}</span>
-        {sublabel && <span className="text-xs text-gray-500">{sublabel}</span>}
+        <span className="text-sm text-gray-600 dark:text-gray-300">{label}</span>
+        {sublabel && <span className="text-xs text-gray-500 dark:text-gray-400">{sublabel}</span>}
         <span className={`text-2xl sm:text-3xl font-bold ${color}`}>{value}</span>
         {changeText && <span className={`text-sm font-medium ${changeColor}`}>{changeText}</span>}
       </div>
       {iconType && (
         <div className="ml-4">
-          <div className="w-10 h-10 rounded-full border border-orange-300 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full border border-orange-300 dark:border-orange-600 flex items-center justify-center">
             {getIcon(iconType)}
           </div>
         </div>
@@ -90,8 +90,8 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600', changeText,
 
 function SectionCard({ children, title }) {
   return (
-    <section className="bg-white rounded-2xl shadow p-3 sm:p-4 md:p-6 mb-3 sm:mb-4 md:mb-8">
-      {title && <h3 className="text-base sm:text-lg md:text-xl font-bold mb-2 sm:mb-3 md:mb-4 text-gray-800">{title}</h3>}
+    <section className="bg-white dark:bg-slate-800 rounded-2xl shadow p-3 sm:p-4 md:p-6 mb-3 sm:mb-4 md:mb-8">
+      {title && <h3 className="text-base sm:text-lg md:text-xl font-bold mb-2 sm:mb-3 md:mb-4 text-gray-800 dark:text-gray-200">{title}</h3>}
       {children}
     </section>
   );
@@ -119,7 +119,7 @@ function GoogleAdsQLeadMetrics({ metrics }) {
             key={field}
             label={label}
             value={format(metrics?.[field] ?? 0)}
-            color="text-orange-600"
+            color="text-orange-600 dark:text-orange-400"
             iconType={iconType}
           />
         ))}
@@ -140,36 +140,36 @@ function GoogleAdsQLeadTable({ campaigns }) {
   return (
     <SectionCard title="Google Ads QLead Metrics by Campaign">
       <div className="overflow-x-auto w-full">
-        <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-          <thead className="bg-gray-100">
+        <table className="min-w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg">
+          <thead className="bg-gray-100 dark:bg-slate-700">
             <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-b">Campaign</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-b">Spend</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-b">QLeads</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-b">CPQL</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-b">Avg Leads Score</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-b">Avg Close Score</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Campaign</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Spend</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">QLeads</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">CPQL</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Avg Leads Score</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Avg Close Score</th>
             </tr>
           </thead>
           <tbody>
             {campaigns.length > 0 ? (
               campaigns.map((campaign, index) => (
-                <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{campaign.campaign || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">
+                <tr key={index} className={index % 2 === 0 ? 'bg-gray-50 dark:bg-slate-700' : 'bg-white dark:bg-slate-800'}>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{campaign.campaign || '--'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">
                     {formatCurrency(campaign.spend)}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{campaign.qleads || 0}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{campaign.qleads || 0}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">
                     {formatCurrency(campaign.cpql)}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{formatDecimal(campaign.avg_lead_score)}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{formatDecimal(campaign.avg_close_score)}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{formatDecimal(campaign.avg_lead_score)}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{formatDecimal(campaign.avg_close_score)}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500">
+                <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                   No campaign data found for the selected period.
                 </td>
               </tr>
@@ -224,7 +224,7 @@ export default function GoogleAdsQLead() {
   }, [selectedClient, startDate, endDate]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col px-2 sm:px-4 md:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex flex-col px-2 sm:px-4 md:px-6 lg:px-8">
       {/* Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 py-3 sm:py-4 md:py-6 px-2 sm:px-4 md:px-6">
         <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />
@@ -242,14 +242,14 @@ export default function GoogleAdsQLead() {
       </div>
 
       {loading && (
-        <div className="fixed top-0 left-0 w-full h-full bg-white bg-opacity-60 flex items-center justify-center z-50">
+        <div className="fixed top-0 left-0 w-full h-full bg-white dark:bg-slate-900 bg-opacity-60 flex items-center justify-center z-50 text-gray-900 dark:text-gray-100">
           Loading...
         </div>
       )}
 
       {error && (
         <div className="fixed top-0 left-0 w-full flex justify-center p-2 sm:p-3 md:p-4">
-          <div className="bg-red-100 text-red-600 px-2 sm:px-3 md:px-4 py-1 sm:py-2 md:py-2 rounded">{error}</div>
+          <div className="bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 px-2 sm:px-3 md:px-4 py-1 sm:py-2 md:py-2 rounded">{error}</div>
         </div>
       )}
     </div>

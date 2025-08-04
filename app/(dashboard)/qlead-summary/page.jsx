@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import useDarkmode from "@/hooks/useDarkMode";
 
 function ClientSelector({ clients, selected, onSelect }) {
   return (
     <select
-      className="w-full sm:w-auto border rounded-lg px-3 sm:px-4 py-2 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      className="w-full sm:w-auto border rounded-lg px-3 sm:px-4 py-2 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200"
       value={selected}
       onChange={e => onSelect(e.target.value)}
     >
@@ -25,14 +26,14 @@ function DateSelector({ startDate, endDate, onChange }) {
     <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
       <input
         type="date"
-        className="w-full sm:w-auto border rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+        className="w-full sm:w-auto border rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200"
         value={startDate}
         onChange={e => onChange('startDate', e.target.value)}
       />
-      <span className="mx-2 text-gray-400">to</span>
+      <span className="mx-2 text-gray-400 dark:text-gray-500">to</span>
       <input
         type="date"
-        className="w-full sm:w-auto border rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+        className="w-full sm:w-auto border rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200"
         value={endDate}
         onChange={e => onChange('endDate', e.target.value)}
       />
@@ -71,16 +72,16 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600', changeText,
   };
 
   return (
-    <div className="bg-white rounded-xl shadow p-4 flex justify-between items-start min-w-[120px] transition hover:shadow-lg hover:bg-orange-50">
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow p-4 flex justify-between items-start min-w-[120px] transition hover:shadow-lg hover:bg-orange-50 dark:hover:bg-slate-700">
       <div className="flex flex-col">
-        <span className="text-sm text-gray-600">{label}</span>
-        {sublabel && <span className="text-xs text-gray-500">{sublabel}</span>}
+        <span className="text-sm text-gray-600 dark:text-gray-300">{label}</span>
+        {sublabel && <span className="text-xs text-gray-500 dark:text-gray-400">{sublabel}</span>}
         <span className={`text-2xl sm:text-3xl font-bold ${color}`}>{value}</span>
         {changeText && <span className={`text-sm font-medium ${changeColor}`}>{changeText}</span>}
       </div>
       {iconType && (
         <div className="ml-4">
-          <div className="w-10 h-10 rounded-full border border-orange-300 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full border border-orange-300 dark:border-orange-600 flex items-center justify-center">
             {getIcon(iconType)}
           </div>
         </div>
@@ -91,8 +92,8 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600', changeText,
 
 function SectionCard({ children, title }) {
   return (
-    <section className="bg-white rounded-2xl shadow p-3 sm:p-4 md:p-6 mb-3 sm:mb-4 md:mb-8">
-      {title && <h3 className="text-base sm:text-lg md:text-xl font-bold mb-2 sm:mb-3 md:mb-4 text-gray-800">{title}</h3>}
+    <section className="bg-white dark:bg-slate-800 rounded-2xl shadow p-3 sm:p-4 md:p-6 mb-3 sm:mb-4 md:mb-8">
+      {title && <h3 className="text-base sm:text-lg md:text-xl font-bold mb-2 sm:mb-3 md:mb-4 text-gray-800 dark:text-gray-200">{title}</h3>}
       {children}
     </section>
   )
@@ -107,28 +108,28 @@ function CallEngagementMetrics({ metrics }) {
     {
       label: 'Human Engagement Rate',
       value: formatPercent(metrics?.human_engagement_rate),
-      color: 'text-blue-700',
+      color: 'text-blue-700 dark:text-blue-300',
     },
     {
       label: 'AI Forward Rate',
       value: formatPercent(metrics?.ai_forward_rate),
-      color: 'text-green-700',
+      color: 'text-green-700 dark:text-green-300',
     },
     {
       label: 'Human Engaged',
       value: formatCount(metrics?.human_engaged_count, metrics?.human_total_count),
-      color: 'text-blue-700',
+      color: 'text-blue-700 dark:text-blue-300',
     },
     {
       label: 'AI Forwarded',
       value: formatCount(metrics?.ai_forward_count, metrics?.ai_total_count),
-      color: 'text-green-700',
+      color: 'text-green-700 dark:text-green-300',
     },
   ]
 
   return (
     <div className="mt-4 sm:mt-6 md:mt-12">
-      <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 md:mb-6">Call Engagement Metrics</h2>
+      <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 md:mb-6 text-gray-900 dark:text-gray-100">Call Engagement Metrics</h2>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 md:gap-6">
         {data.map(({ label, value, sublabel, color }, i) => (
           <StatCard key={i} label={label} value={value} sublabel={sublabel} color={color} />
@@ -142,40 +143,40 @@ function LeadsTable({ leads }) {
   return (
     <SectionCard title="Qualified Leads Table">
       <div className="overflow-x-auto w-full">
-        <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-          <thead className="bg-gray-100">
+        <table className="min-w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg">
+          <thead className="bg-gray-100 dark:bg-slate-700">
             <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-b">First Contact Date</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-b">Customer Phone</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-b">Customer Name</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-b">Customer City</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-b">Customer State</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-b">Service Inquired</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-b">Lead Score</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-b">Close Score</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-b">Human Engaged</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-b">First Source</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">First Contact Date</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Customer Phone</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Customer Name</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Customer City</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Customer State</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Service Inquired</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Lead Score</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Close Score</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Human Engaged</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">First Source</th>
             </tr>
           </thead>
           <tbody>
             {leads.length > 0 ? (
               leads.map((lead, index) => (
-                <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.first_contact_date || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.customer_phone_number || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.customer_name || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.customer_city || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.customer_state || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.service_inquired || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.lead_score_max || 0}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.close_score_max || 0}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.human_engaged ? 'Yes' : 'No'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 border-b">{lead.first_source || '--'}</td>
+                <tr key={index} className={index % 2 === 0 ? 'bg-gray-50 dark:bg-slate-700' : 'bg-white dark:bg-slate-800'}>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.first_contact_date || '--'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_phone_number || '--'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_name || '--'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_city || '--'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_state || '--'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.service_inquired || '--'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.lead_score_max || 0}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.close_score_max || 0}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.human_engaged ? 'Yes' : 'No'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.first_source || '--'}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="10" className="px-6 py-4 text-center text-sm text-gray-500">
+                <td colSpan="10" className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                   No qualified leads found for the selected period.
                 </td>
               </tr>
@@ -207,6 +208,7 @@ function createEmptyChartData(start, end) {
 }
 
 export default function ModernDashboard() {
+  const [isDark] = useDarkmode();
   const today = new Date().toISOString().slice(0, 10)
   const [clients, setClients] = useState([])
   const [selectedClient, setSelectedClient] = useState('')
@@ -298,8 +300,13 @@ export default function ModernDashboard() {
     { label: 'CPQL SEO', field: 'cpql_seo', iconType: 'dollar' },
   ]
 
+  const textColor = isDark ? '#e5e7eb' : '#374151';
+  const gridColor = isDark ? '#374151' : '#e5e7eb';
+  const tooltipBg = isDark ? '#1f2937' : '#ffffff';
+  const tooltipText = isDark ? '#ffffff' : '#374151';
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col px-2 sm:px-4 md:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex flex-col px-2 sm:px-4 md:px-6 lg:px-8">
       {/* Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 py-3 sm:py-4 md:py-6 px-2 sm:px-4 md:px-6">
         <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />
@@ -312,7 +319,7 @@ export default function ModernDashboard() {
 
       {/* Qualified Leads */}
       <div className="w-full px-2 sm:px-4 md:px-6">
-        <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 md:mb-6 mt-2 sm:mt-4">Qualified Leads</h2>
+        <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 md:mb-6 mt-2 sm:mt-4 text-gray-900 dark:text-gray-100">Qualified Leads</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 md:gap-6 mb-3 sm:mb-4 md:mb-6">
           {stats.map(({ label, field, iconType }) => {
             const currentValue = metrics?.sourceMetrics?.[field] ?? 0
@@ -320,7 +327,7 @@ export default function ModernDashboard() {
             const change = previousValue === 0 ? 0 : ((currentValue - previousValue) / previousValue * 100)
             const changeAbs = Math.abs(change).toFixed(0)
             const changeText = change === 0 ? '0%' : (change > 0 ? `↑ ${changeAbs}%` : `↓ ${changeAbs}%`)
-            const changeColor = change > 0 ? 'text-green-600' : change < 0 ? 'text-red-600' : 'text-gray-600'
+            const changeColor = change > 0 ? 'text-green-600 dark:text-green-400' : change < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400'
             const isCurrency = field.includes('spend') || field.includes('cpql')
             const formattedValue = isCurrency ? formatCurrency(currentValue) : formatNumber(currentValue)
 
@@ -329,7 +336,7 @@ export default function ModernDashboard() {
                 key={field}
                 label={label}
                 value={formattedValue}
-                color="text-orange-600"
+                color="text-orange-600 dark:text-orange-400"
                 changeText={changeText}
                 changeColor={changeColor}
                 iconType={iconType}
@@ -345,7 +352,7 @@ export default function ModernDashboard() {
         <SectionCard title="Qualified Leads Volume by Period">
           <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
             <select
-              className="w-full sm:w-auto border rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full sm:w-auto border rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200"
               value={volumeGroupBy}
               onChange={e => setVolumeGroupBy(e.target.value)}
             >
@@ -354,7 +361,7 @@ export default function ModernDashboard() {
               <option value="month">Monthly</option>
             </select>
           </div>
-          <div className="h-[200px] sm:h-[250px] md:h-[300px]">
+          <div className="h-[200px] sm:h-[250px] md:h-[300px] bg-white dark:bg-slate-800 rounded-lg">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart
                 data={volumeChartData}
@@ -374,11 +381,12 @@ export default function ModernDashboard() {
                     <stop offset="95%" stopColor="#ec4899" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="date" tick={{ fontSize: 13}} interval="preserveStartEnd" />
-                <YAxis label={{ angle: -90, position: 'insideLeft' }} allowDecimals={false} tick={{ fontSize: 13 }} domain={[0, 'auto']} />
+                <XAxis dataKey="date" tick={{ fontSize: 13, fill: textColor }} interval="preserveStartEnd" />
+                <YAxis label={{ angle: -90, position: 'insideLeft', fill: textColor }} allowDecimals={false} tick={{ fontSize: 13, fill: textColor }} domain={[0, 'auto']} />
+                <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                 <Tooltip
-                  contentStyle={{ borderRadius: 10, fontSize: 15 }}
-                  labelStyle={{ fontWeight: 600, color: '#374151' }}
+                  contentStyle={{ borderRadius: 10, fontSize: 15, backgroundColor: tooltipBg, color: tooltipText, border: 'none' }}
+                  labelStyle={{ fontWeight: 600, color: tooltipText }}
                 />
                 <Legend verticalAlign="bottom" height={20} wrapperStyle={{ paddingTop: '10px' }} />
                 <Area type="monotone" dataKey="ppc" stroke="#10b981" strokeWidth={2} fill="url(#colorPpc)" name="PPC" />
@@ -393,7 +401,7 @@ export default function ModernDashboard() {
         <SectionCard title="Cost Per Lead by Period">
           <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
             <select
-              className="w-full sm:w-auto border rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full sm:w-auto border rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200"
               value={costPerLeadGroupBy}
               onChange={e => setCostPerLeadGroupBy(e.target.value)}
             >
@@ -402,7 +410,7 @@ export default function ModernDashboard() {
               <option value="month">Monthly</option>
             </select>
           </div>
-          <div className="h-[200px] sm:h-[250px] md:h-[300px]">
+          <div className="h-[200px] sm:h-[250px] md:h-[300px] bg-white dark:bg-slate-800 rounded-lg">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart
                 data={costPerLeadChartData}
@@ -422,11 +430,12 @@ export default function ModernDashboard() {
                     <stop offset="95%" stopColor="#ec4899" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="date" tick={{ fontSize: 13 }} interval="preserveStartEnd" />
-                <YAxis label={{ angle: -90, position: 'insideLeft' }} tick={{ fontSize: 13 }} domain={[0, 'auto']} />
+                <XAxis dataKey="date" tick={{ fontSize: 13, fill: textColor }} interval="preserveStartEnd" />
+                <YAxis label={{ angle: -90, position: 'insideLeft', fill: textColor }} tick={{ fontSize: 13, fill: textColor }} domain={[0, 'auto']} />
+                <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                 <Tooltip
-                  contentStyle={{ borderRadius: 10, fontSize: 15 }}
-                  labelStyle={{ fontWeight: 600, color: '#374151' }}
+                  contentStyle={{ borderRadius: 10, fontSize: 15, backgroundColor: tooltipBg, color: tooltipText, border: 'none' }}
+                  labelStyle={{ fontWeight: 600, color: tooltipText }}
                   formatter={(value) => `$${value.toFixed(2)}`}
                 />
                 <Legend verticalAlign="bottom" height={20} wrapperStyle={{ paddingTop: '10px' }} />
@@ -441,14 +450,14 @@ export default function ModernDashboard() {
       </div>
 
       {loading && (
-        <div className="fixed top-0 left-0 w-full h-full bg-white bg-opacity-60 flex items-center justify-center z-50">
+        <div className="fixed top-0 left-0 w-full h-full bg-white dark:bg-slate-900 bg-opacity-60 flex items-center justify-center z-50 text-gray-900 dark:text-gray-100">
           Loading...
         </div>
       )}
 
       {error && (
         <div className="fixed top-0 left-0 w-full flex justify-center p-2 sm:p-3 md:p-4">
-          <div className="bg-red-100 text-red-600 px-2 sm:px-3 md:px-4 py-1 sm:py-2 md:py-2 rounded">{error}</div>
+          <div className="bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 px-2 sm:px-3 md:px-4 py-1 sm:py-2 md:py-2 rounded">{error}</div>
         </div>
       )}
     </div>
