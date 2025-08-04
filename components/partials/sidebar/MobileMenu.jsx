@@ -1,4 +1,7 @@
+"use client"; // Add this to make it a client component for hooks and Clerk
+
 import React, { useRef, useEffect, useState } from "react";
+import { UserButton } from "@clerk/nextjs"; // Add this import for UserButton (logout on mobile)
 
 import Navmenu from "./Navmenu";
 import { menuItems } from "@/constant/data";
@@ -70,6 +73,7 @@ const MobileMenu = ({ className = "custom-class" }) => {
         scrollableNodeProps={{ ref: scrollableNodeRef }}
       >
          <Navmenu menus={topMenu} />
+         {/* Add UserButton at the bottom for profile/logout on mobile */}
       </SimpleBar>
     </div>
   );
