@@ -25,7 +25,7 @@ const Footer = ({ className = "custom-class" }) => {
             <a
               href="https://fastforwardsearch.com/"
               target="_blank"
-              className="text-primary-500 font-semibold"
+              className="font-semibold text-orange-600"
             >
               Fast Forward Search
             </a>
