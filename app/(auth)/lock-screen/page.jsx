@@ -8,13 +8,9 @@ import "react-toastify/dist/ReactToastify.css";
 export default function LockScreen() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
+      <div className="w-full max-w-md p-6 space-y-6 bg-white rounded-lg shadow-md">
         <div className="text-center">
           <img src="/HMSTR-official-logo.png" alt="HMSTR.ai Logo" className="mx-auto h-24" />
-          <h2 className="mt-4 text-2xl font-bold text-gray-900">Sign in</h2>
-          <p className="mt-3 text-sm text-gray-600">
-            Sign in to your account to start using HMSTR.ai Dashboard
-          </p>
         </div>
         {/* Replace your form with Clerk's SignIn component */}
         <SignIn
