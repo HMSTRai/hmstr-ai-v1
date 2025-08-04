@@ -14,7 +14,7 @@ export default function LockScreen() {
         </div>
         {/* Replace your form with Clerk's SignIn component */}
         <SignIn
-          path="/lock-screen" // Matches your route
+          path="/lock-screen"
           routing="path"
           signUpUrl="/sign-up" // Redirect to sign-up if user clicks "Sign up" (add page in Step 7)
           afterSignInUrl="/" // Redirect to dashboard on success
