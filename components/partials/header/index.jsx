@@ -9,10 +9,7 @@ import useMenulayout from "@/hooks/useMenulayout";
 import useSkin from "@/hooks/useSkin";
 import Logo from "./Tools/Logo";
 import SearchModal from "./Tools/SearchModal";
-import Profile from "./Tools/Profile";
-import Notification from "./Tools/Notification";
-import Message from "./Tools/Message";
-import Language from "./Tools/Language";
+import { UserButton } from "@clerk/nextjs"; // Keep for logout
 import useRtl from "@/hooks/useRtl";
 import useMobileMenu from "@/hooks/useMobileMenu";
 
@@ -114,14 +111,10 @@ const Header = ({ className = "custom-class" }) => {
           {menuType === "horizontal" && width >= breakpoints.xl ? (
             <HorizentalMenu />
           ) : null}
-          {/* Nav Tools  */}
+          {/* Nav Tools - Removed Message, Notification, Profile; kept SwitchDark and UserButton  */}
           <div className="nav-tools flex items-center lg:space-x-6 space-x-3 rtl:space-x-reverse">
-            
             <SwitchDark />
-
-            {width >= breakpoints.md && <Message />}
-            {width >= breakpoints.md && <Notification />}
-            {width >= breakpoints.md && <Profile />}
+            {width >= breakpoints.md && <UserButton afterSignOutUrl="/lock-screen" />}
             {width <= breakpoints.md && (
               <div
                 className="cursor-pointer text-slate-900 dark:text-white text-2xl"

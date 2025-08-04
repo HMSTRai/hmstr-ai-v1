@@ -1,7 +1,9 @@
+// app/(dashboard)/layout.js
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { useClerk } from "@clerk/nextjs"; // Add this import for signOut
 import Header from "@/components/partials/header";
 import Sidebar from "@/components/partials/sidebar";
 import Settings from "@/components/partials/settings";
@@ -42,6 +44,8 @@ export default function DashboardLayout({ children }) {
   const [menuHidden] = useMenuHidden();
   const [mobileMenu, setMobileMenu] = useMobileMenu();
 
+  const { signOut } = useClerk(); // Add this for logout
+
   const switchHeaderClass = () => {
     if (menuType === "horizontal" || menuHidden) {
       return "ltr:ml-0 rtl:mr-0";
@@ -53,20 +57,13 @@ export default function DashboardLayout({ children }) {
   };
 
   useEffect(() => {
-    // Auto-logout after SESSION_TIMEOUT by calling the logout API
+    // Auto-logout after SESSION_TIMEOUT using Clerk's signOut
     const logoutTimer = setTimeout(() => {
-      fetch("/api/logout", { method: "POST" })
-        .then(() => {
-          router.push("/lock-screen");
-        })
-        .catch((error) => {
-          console.error("Logout failed:", error);
-          router.push("/lock-screen"); // Redirect anyway on error
-        });
+      signOut({ redirectUrl: "/lock-screen" });
     }, SESSION_TIMEOUT);
 
     return () => clearTimeout(logoutTimer);
-  }, [router]);
+  }, [signOut]);
 
   return (
     <div
