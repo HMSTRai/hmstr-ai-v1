@@ -1,5 +1,7 @@
 // api/top-metrics/route.js
-import { supabaseServer } from '@/lib/supabaseClient'; // Use the server-side client
+import { supabaseServer } from '@/lib/supabaseClient';
+import { createClerkClient } from '@clerk/backend';
+import { getAuth } from '@clerk/nextjs/server';
 
 function getDatesInRange(start, end, groupBy = 'day') {
   const dates = [];
@@ -9,13 +11,12 @@ function getDatesInRange(start, end, groupBy = 'day') {
   while (current <= endDate) {
     let dateStr = current.toISOString().slice(0, 10);
     if (groupBy === 'week') {
-      // Set to the start of the week (Monday to match PostgreSQL date_trunc('week'))
       const day = current.getDay();
       const daysToSubtract = day === 0 ? 6 : day - 1;
       current.setDate(current.getDate() - daysToSubtract);
       dateStr = current.toISOString().slice(0, 10);
     } else if (groupBy === 'month') {
-      current.setDate(1); // Set to the first of the month
+      current.setDate(1);
       dateStr = current.toISOString().slice(0, 10);
     }
     if (!dates.includes(dateStr) && new Date(dateStr) <= endDate) {
@@ -33,19 +34,44 @@ function getDatesInRange(start, end, groupBy = 'day') {
 }
 
 export async function GET(req) {
+  const auth = getAuth(req);
+  if (!auth.userId) {
+    return Response.json({ error: 'Not authenticated' }, { status: 401 });
+  }
+
+  const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+  const user = await clerk.users.getUser(auth.userId);
+  const isAdmin = user.publicMetadata.is_admin ?? false;
+
+  let userClientId = null;
+  if (auth.orgId) {
+    const org = await clerk.organizations.getOrganization({ organizationId: auth.orgId });
+    userClientId = org.publicMetadata.client_id ? Number(org.publicMetadata.client_id) : null;
+  }
+
   const { searchParams } = new URL(req.url);
-  const clientId = searchParams.get('clientId');
+  const clientIdParam = searchParams.get('clientId');
   const startParam = searchParams.get('start');
   const endParam = searchParams.get('end');
   const volumeGroupBy = searchParams.get('volumeGroupBy') || 'day';
   const costPerLeadGroupBy = searchParams.get('costPerLeadGroupBy') || 'day';
 
-  const clientIdNum = Number(clientId);
-  if (isNaN(clientIdNum)) {
-    return Response.json({ error: 'Invalid clientId parameter' }, { status: 400 });
+  let inputClientId;
+  if (clientIdParam === 'all') {
+    if (!isAdmin) {
+      return Response.json({ error: 'Unauthorized access' }, { status: 403 });
+    }
+    inputClientId = null;
+  } else {
+    inputClientId = Number(clientIdParam);
+    if (isNaN(inputClientId)) {
+      return Response.json({ error: 'Invalid clientId parameter' }, { status: 400 });
+    }
+    if (!isAdmin && inputClientId !== userClientId) {
+      return Response.json({ error: 'Unauthorized access' }, { status: 403 });
+    }
   }
 
-  // Parse and format dates to YYYY-MM-DD
   const startDate = new Date(startParam);
   const endDate = new Date(endParam);
   if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
@@ -54,11 +80,11 @@ export async function GET(req) {
   const formattedStart = startDate.toISOString().slice(0, 10);
   const formattedEnd = endDate.toISOString().slice(0, 10);
 
-  console.log('API Request: clientId =', clientIdNum, 'start =', formattedStart, 'end =', formattedEnd, 'volumeGroupBy =', volumeGroupBy, 'costPerLeadGroupBy =', costPerLeadGroupBy);
+  console.log('API Request: clientId =', inputClientId, 'start =', formattedStart, 'end =', formattedEnd, 'volumeGroupBy =', volumeGroupBy, 'costPerLeadGroupBy =', costPerLeadGroupBy);
 
   // Qualified Leads
   const { data: sourceTopData, error: sourceTopError } = await supabaseServer.rpc('get_qlead_data_source', {
-    input_client_id: clientIdNum,
+    input_client_id: inputClientId,
     input_start_date: formattedStart,
     input_end_date: formattedEnd
   });
@@ -68,7 +94,7 @@ export async function GET(req) {
 
   // Call engagement metrics
   const { data: engagementData, error: engagementError } = await supabaseServer.rpc('get_call_engagement_metrics', {
-    input_client_id: clientIdNum,
+    input_client_id: inputClientId,
     input_start_date: formattedStart,
     input_end_date: formattedEnd
   });
@@ -89,7 +115,7 @@ export async function GET(req) {
 
   // Qualified Leads Volume by Period
   const { data: volumeData, error: volumeError } = await supabaseServer.rpc('get_qleadvolume_linechart', {
-    input_client_id: clientIdNum,
+    input_client_id: inputClientId,
     input_start_date: formattedStart,
     input_end_date: formattedEnd,
     input_group_by: volumeGroupBy
@@ -98,7 +124,7 @@ export async function GET(req) {
 
   // Cost Per Lead by Period
   const { data: costData, error: costError } = await supabaseServer.rpc('get_qleadcostper_linechart', {
-    input_client_id: clientIdNum,
+    input_client_id: inputClientId,
     input_start_date: formattedStart,
     input_end_date: formattedEnd,
     input_group_by: costPerLeadGroupBy

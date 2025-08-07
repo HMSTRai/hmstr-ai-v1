@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import useDarkmode from "@/hooks/useDarkMode";
+import { useUser, useOrganization } from '@clerk/nextjs';
 
 function ClientSelector({ clients, selected, onSelect }) {
   return (
@@ -221,6 +222,17 @@ export default function ModernDashboard() {
   const [error, setError] = useState(null)
   const [volumeGroupBy, setVolumeGroupBy] = useState('day')
   const [costPerLeadGroupBy, setCostPerLeadGroupBy] = useState('day')
+  const { user, isLoaded: userLoaded } = useUser();
+  const { organization, isLoaded: orgLoaded } = useOrganization();
+  const [isAdmin, setIsAdmin] = useState(null); // null = loading
+  const [userClientId, setUserClientId] = useState(null);
+
+  useEffect(() => {
+    if (userLoaded && orgLoaded) {
+      setIsAdmin(user?.publicMetadata?.is_admin ?? false);
+      setUserClientId(organization?.publicMetadata?.client_id ? String(organization.publicMetadata.client_id) : null);
+    }
+  }, [userLoaded, orgLoaded, user, organization]);
 
   useEffect(() => {
     fetch('/api/clients')
@@ -231,6 +243,12 @@ export default function ModernDashboard() {
       })
       .catch(err => setError(err.message))
   }, [])
+
+  useEffect(() => {
+    if (isAdmin === false && userClientId && selectedClient !== userClientId) {
+      setSelectedClient(userClientId);
+    }
+  }, [isAdmin, userClientId, selectedClient]);
 
   useEffect(() => {
     if (!selectedClient || !startDate || !endDate || startDate > endDate) {
@@ -305,11 +323,30 @@ export default function ModernDashboard() {
   const tooltipBg = isDark ? '#1f2937' : '#ffffff';
   const tooltipText = isDark ? '#ffffff' : '#374151';
 
+  if (isAdmin === null || !userLoaded || !orgLoaded) {
+    return <div className="min-h-screen flex items-center justify-center text-gray-900 dark:text-gray-100">Loading user permissions...</div>;
+  }
+
+  if (isAdmin === false && !userClientId) {
+    return <div className="min-h-screen flex items-center justify-center text-red-600 dark:text-red-400">Error: No client ID associated with your account. Contact support.</div>;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex flex-col px-2 sm:px-4 md:px-6 lg:px-8">
       {/* Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 py-3 sm:py-4 md:py-6 px-2 sm:px-4 md:px-6">
-        <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 py-3 sm:py-4 md:py-6 px-2 sm:px-4 md:px-6">
+        {isAdmin ? (
+          <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />
+        ) : (
+          <div className="flex flex-col gap-1">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
+              {clients.find(c => (c.client_id ?? c.cr_client_id) == userClientId)?.cr_company_name || organization?.name || 'Client Dashboard'}
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Track, analyze, and optimize with real-time insights.
+            </p>
+          </div>
+        )}
         <DateSelector
           startDate={startDate}
           endDate={endDate}
