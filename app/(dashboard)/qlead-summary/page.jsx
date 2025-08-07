@@ -225,12 +225,14 @@ export default function ModernDashboard() {
   const { user, isLoaded: userLoaded } = useUser();
   const { organization, isLoaded: orgLoaded } = useOrganization();
   const [isAdmin, setIsAdmin] = useState(null); // null = loading
-  const [userClientId, setUserClientId] = useState(null);
+  const [userClientIds, setUserClientIds] = useState([]);
 
   useEffect(() => {
     if (userLoaded && orgLoaded) {
       setIsAdmin(user?.publicMetadata?.is_admin ?? false);
-      setUserClientId(organization?.publicMetadata?.client_id ? String(organization.publicMetadata.client_id) : null);
+      const metadata = organization?.publicMetadata || {};
+      const clientIds = metadata.client_ids || (metadata.client_id ? [metadata.client_id] : []);
+      setUserClientIds(clientIds.map(id => String(id)));
     }
   }, [userLoaded, orgLoaded, user, organization]);
 
@@ -245,10 +247,10 @@ export default function ModernDashboard() {
   }, [])
 
   useEffect(() => {
-    if (isAdmin === false && userClientId && selectedClient !== userClientId) {
-      setSelectedClient(userClientId);
+    if (isAdmin === false && userClientIds.length > 0 && !userClientIds.includes(selectedClient)) {
+      setSelectedClient(userClientIds[0] || '');
     }
-  }, [isAdmin, userClientId, selectedClient]);
+  }, [isAdmin, userClientIds, selectedClient]);
 
   useEffect(() => {
     if (!selectedClient || !startDate || !endDate || startDate > endDate) {
@@ -267,7 +269,7 @@ export default function ModernDashboard() {
     const previousEnd = previousEndDateObj.toISOString().slice(0, 10)
 
     const previousStartDateObj = new Date(previousEndDateObj)
-    previousStartDateObj.setDate(previousStartDateObj.getDate() - length + 1)
+    previousStartDateObj.setDate(previousEndDateObj.getDate() - length + 1)
     const previousStart = previousStartDateObj.toISOString().slice(0, 10)
 
     setLoading(true)
@@ -327,20 +329,22 @@ export default function ModernDashboard() {
     return <div className="min-h-screen flex items-center justify-center text-gray-900 dark:text-gray-100">Loading user permissions...</div>;
   }
 
-  if (isAdmin === false && !userClientId) {
+  if (isAdmin === false && userClientIds.length === 0) {
     return <div className="min-h-screen flex items-center justify-center text-red-600 dark:text-red-400">Error: No client ID associated with your account. Contact support.</div>;
   }
+
+  const showClientSelector = isAdmin || userClientIds.length > 1;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex flex-col px-2 sm:px-4 md:px-6 lg:px-8">
       {/* Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 py-3 sm:py-4 md:py-6 px-2 sm:px-4 md:px-6">
-        {isAdmin ? (
+        {showClientSelector ? (
           <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />
         ) : (
           <div className="flex flex-col gap-1">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {clients.find(c => (c.client_id ?? c.cr_client_id) == userClientId)?.cr_company_name || organization?.name || 'Client Dashboard'}
+              {clients.find(c => (c.client_id ?? c.cr_client_id) == userClientIds[0])?.cr_company_name || organization?.name || 'Client Dashboard'}
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Track, analyze, and optimize with real-time insights.

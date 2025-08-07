@@ -1,3 +1,4 @@
+// api/clients/route.js
 import { supabaseServer } from '@/lib/supabaseClient'
 
 export async function GET() {
