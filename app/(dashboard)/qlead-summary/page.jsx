@@ -225,30 +225,41 @@ export default function ModernDashboard() {
   const { user, isLoaded: userLoaded } = useUser();
   const { organization, isLoaded: orgLoaded } = useOrganization();
   const [isAdmin, setIsAdmin] = useState(null); // null = loading
-  const [userClientId, setUserClientId] = useState(null);
+  const [userClientIds, setUserClientIds] = useState([]);
 
   useEffect(() => {
     if (userLoaded && orgLoaded) {
       setIsAdmin(user?.publicMetadata?.is_admin ?? false);
-      setUserClientId(organization?.publicMetadata?.client_id ? String(organization.publicMetadata.client_id) : null);
+      const clientIds = [];
+      user.organizationMemberships.forEach(membership => {
+        const metadata = membership.organization.publicMetadata || {};
+        if (metadata.client_id) {
+          clientIds.push(metadata.client_id);
+        }
+      });
+      setUserClientIds(clientIds.map(id => String(id)));
     }
-  }, [userLoaded, orgLoaded, user, organization]);
+  }, [userLoaded, orgLoaded, user]);
 
   useEffect(() => {
     fetch('/api/clients')
       .then(res => res.json())
       .then(({ data, error }) => {
         if (error) throw new Error(error)
-        setClients(data || [])
+        let filteredClients = data || [];
+        if (!isAdmin) {
+          filteredClients = filteredClients.filter(c => userClientIds.includes(String(c.client_id || c.cr_client_id)));
+        }
+        setClients(filteredClients);
       })
       .catch(err => setError(err.message))
-  }, [])
+  }, [isAdmin, userClientIds])
 
   useEffect(() => {
-    if (isAdmin === false && userClientId && selectedClient !== userClientId) {
-      setSelectedClient(userClientId);
+    if (isAdmin === false && userClientIds.length > 0 && !userClientIds.includes(selectedClient)) {
+      setSelectedClient(userClientIds[0] || '');
     }
-  }, [isAdmin, userClientId, selectedClient]);
+  }, [isAdmin, userClientIds, selectedClient]);
 
   useEffect(() => {
     if (!selectedClient || !startDate || !endDate || startDate > endDate) {
@@ -327,7 +338,7 @@ export default function ModernDashboard() {
     return <div className="min-h-screen flex items-center justify-center text-gray-900 dark:text-gray-100">Loading user permissions...</div>;
   }
 
-  if (isAdmin === false && !userClientId) {
+  if (isAdmin === false && userClientIds.length === 0) {
     return <div className="min-h-screen flex items-center justify-center text-red-600 dark:text-red-400">Error: No client ID associated with your account. Contact support.</div>;
   }
 
@@ -335,18 +346,7 @@ export default function ModernDashboard() {
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex flex-col px-2 sm:px-4 md:px-6 lg:px-8">
       {/* Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 py-3 sm:py-4 md:py-6 px-2 sm:px-4 md:px-6">
-        {isAdmin ? (
-          <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />
-        ) : (
-          <div className="flex flex-col gap-1">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {clients.find(c => (c.client_id ?? c.cr_client_id) == userClientId)?.cr_company_name || organization?.name || 'Client Dashboard'}
-            </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Track, analyze, and optimize with real-time insights.
-            </p>
-          </div>
-        )}
+        <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />
         <DateSelector
           startDate={startDate}
           endDate={endDate}

@@ -1,4 +1,3 @@
-// api/top-metrics/route.js
 import { supabaseServer } from '@/lib/supabaseClient';
 import { createClerkClient } from '@clerk/backend';
 import { getAuth } from '@clerk/nextjs/server';
@@ -43,10 +42,11 @@ export async function GET(req) {
   const user = await clerk.users.getUser(auth.userId);
   const isAdmin = user.publicMetadata.is_admin ?? false;
 
-  let userClientId = null;
+  let userClientIds = [];
   if (auth.orgId) {
     const org = await clerk.organizations.getOrganization({ organizationId: auth.orgId });
-    userClientId = org.publicMetadata.client_id ? Number(org.publicMetadata.client_id) : null;
+    const metadata = org.publicMetadata || {};
+    userClientIds = metadata.client_ids ? metadata.client_ids.map(Number) : (metadata.client_id ? [Number(metadata.client_id)] : []);
   }
 
   const { searchParams } = new URL(req.url);
@@ -67,7 +67,7 @@ export async function GET(req) {
     if (isNaN(inputClientId)) {
       return Response.json({ error: 'Invalid clientId parameter' }, { status: 400 });
     }
-    if (!isAdmin && inputClientId !== userClientId) {
+    if (!isAdmin && !userClientIds.includes(inputClientId)) {
       return Response.json({ error: 'Unauthorized access' }, { status: 403 });
     }
   }
