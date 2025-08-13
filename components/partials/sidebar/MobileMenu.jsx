@@ -42,9 +42,9 @@ const MobileMenu = ({ className = "custom-class" }) => {
           <div className="flex items-center space-x-4">
             <div className="logo-icon">
               {!isDark && !isSemiDark ? (
-                <img src="/assets/images/logo/logo-c.svg" alt="" />
+                <img src="/HMSTR-official-logo.png" alt="" />
               ) : (
-                <img src="/assets/images/logo/logo-c-white.svg" alt="" />
+                <img src="/HMSTR-official-logo.png" alt="" />
               )}
             </div>
             <div>

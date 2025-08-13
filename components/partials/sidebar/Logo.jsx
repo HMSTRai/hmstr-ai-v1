@@ -29,17 +29,14 @@ const SidebarLogo = ({ menuHover }) => {
         <div className="flex items-center space-x-4">
           <div className="logo-icon">
             {!isDark && !isSemiDark ? (
-              <img src="/assets/images/logo/logo-c.svg" alt="" />
+              <img src="/HMSTR-official-logo.png" alt="" />
             ) : (
-              <img src="/assets/images/logo/logo-c-white.svg" alt="" />
+              <img src="/HMSTR-official-logo.png" alt="" />
             )}
           </div>
 
           {(!collapsed || menuHover) && (
             <div>
-              <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-                HMSTR
-              </h1>
             </div>
           )}
         </div>

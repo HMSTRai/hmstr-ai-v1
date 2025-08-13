@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { ResponsiveContainer, ComposedChart, LineChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 function ClientSelector({ clients, selected, onSelect }) {
   return (
@@ -36,6 +37,20 @@ function DateSelector({ startDate, endDate, onChange }) {
         onChange={(e) => onChange('endDate', e.target.value)}
       />
     </div>
+  );
+}
+
+function PeriodSelector({ period, onChange }) {
+  return (
+    <select
+      className="w-full sm:w-auto border rounded-lg px-3 py-2 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200"
+      value={period}
+      onChange={(e) => onChange(e.target.value)}
+    >
+      <option value="day">Daily</option>
+      <option value="week">Weekly</option>
+      <option value="month">Monthly</option>
+    </select>
   );
 }
 
@@ -134,7 +149,6 @@ function GoogleAdsQLeadTable({ campaigns }) {
       ? `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
       : '--';
 
-  // Function to format numbers to 2 decimal places
   const formatDecimal = (val) => (typeof val === 'number' ? val.toFixed(2) : '--');
 
   return (
@@ -181,14 +195,50 @@ function GoogleAdsQLeadTable({ campaigns }) {
   );
 }
 
+function VolumeCostChart({ data }) {
+  return (
+    <ResponsiveContainer width="100%" height={400}>
+      <ComposedChart data={data}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="period" />
+        <YAxis yAxisId="left" tick={{ fontSize: 13}} label={{ value: 'QLeads Volume', angle: -90, position: 'insideLeft' }} />
+        <YAxis yAxisId="right" tick={{ fontSize: 13}} orientation="right" label={{ value: 'Cost', angle: 90, position: 'insideRight' }} />
+        <Tooltip formatter={(value, name) => name === 'Cost' ? `$${value.toLocaleString()}` : value}  />
+        <Legend />
+        <Line yAxisId="left" type="monotone" dataKey="qleads" stroke="#ec4899" name="QLeads Volume" />
+        <Bar yAxisId="right" dataKey="spend" fill="#04aed8ff" name="Cost" />
+      </ComposedChart>
+    </ResponsiveContainer>
+  );
+}
+
+function CostPerChart({ data }) {
+  return (
+    <ResponsiveContainer width="100%" height={400}>
+      <LineChart data={data}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis tick={{ fontSize: 13}} dataKey="period" />
+        <YAxis tick={{ fontSize: 13}} label={{ angle: -90, position: 'insideLeft' }} />
+        <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+        <Legend />
+        <Line type="monotone" dataKey="cpql" stroke="#ec4899" name="Cost Per QLead" />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+}
+
 export default function GoogleAdsQLead() {
-  const today = new Date().toISOString().slice(0, 10); // July 29, 2025
+  const today = new Date().toISOString().slice(0, 10);
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState('');
-  const [startDate, setStartDate] = useState(today); // Updated to current date
+  const [startDate, setStartDate] = useState(today);
   const [endDate, setEndDate] = useState(today);
+  const [volumePeriod, setVolumePeriod] = useState('month');
+  const [costPeriod, setCostPeriod] = useState('month');
   const [metrics, setMetrics] = useState(null);
   const [campaigns, setCampaigns] = useState([]);
+  const [volumeCostData, setVolumeCostData] = useState([]);
+  const [costPerData, setCostPerData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -207,21 +257,25 @@ export default function GoogleAdsQLead() {
     if (!selectedClient || !startDate || !endDate || startDate > endDate) {
       setMetrics(null);
       setCampaigns([]);
+      setVolumeCostData([]);
+      setCostPerData([]);
       return;
     }
 
     setLoading(true);
-    fetch(`/api/google-ads-qlead-metrics?clientId=${selectedClient}&start=${startDate}&end=${endDate}`)
+    fetch(`/api/google-ads-qlead-metrics?clientId=${selectedClient}&start=${startDate}&end=${endDate}&volumePeriod=${volumePeriod}&costPeriod=${costPeriod}`)
       .then((res) => res.json())
       .then((result) => {
         console.log('Metrics Response:', result);
         if (result.error) throw new Error(result.error);
         setMetrics(result.data.metrics);
         setCampaigns(result.data.campaignData);
+        setVolumeCostData(result.data.chartData?.volumeCost ?? []);
+        setCostPerData(result.data.chartData?.costPer ?? []);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [selectedClient, startDate, endDate]);
+  }, [selectedClient, startDate, endDate, volumePeriod, costPeriod]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex flex-col px-2 sm:px-4 md:px-6 lg:px-8">
@@ -239,6 +293,26 @@ export default function GoogleAdsQLead() {
       <div className="w-full px-2 sm:px-4 md:px-6">
         <GoogleAdsQLeadMetrics metrics={metrics} />
         <GoogleAdsQLeadTable campaigns={campaigns} />
+        <SectionCard title="PPC QLeads Volume & Cost by Period">
+          <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
+            <PeriodSelector period={volumePeriod} onChange={setVolumePeriod} />
+          </div>
+          {volumeCostData.length > 0 ? (
+            <VolumeCostChart data={volumeCostData} />
+          ) : (
+            <p className="text-center text-gray-500 dark:text-gray-400">No data available for the selected period.</p>
+          )}
+        </SectionCard>
+        <SectionCard title="Cost Per QLead by Period">
+          <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
+            <PeriodSelector period={costPeriod} onChange={setCostPeriod} />
+          </div>
+          {costPerData.length > 0 ? (
+            <CostPerChart data={costPerData} />
+          ) : (
+            <p className="text-center text-gray-500 dark:text-gray-400">No data available for the selected period.</p>
+          )}
+        </SectionCard>
       </div>
 
       {loading && (
