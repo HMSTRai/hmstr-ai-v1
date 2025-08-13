@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { ResponsiveContainer, ComposedChart, LineChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import useDarkmode from "@/hooks/useDarkMode";
 
 function ClientSelector({ clients, selected, onSelect }) {
   return (
@@ -196,34 +197,64 @@ function GoogleAdsQLeadTable({ campaigns }) {
 }
 
 function VolumeCostChart({ data }) {
+  const [isDark] = useDarkmode();
+  const textColor = isDark ? '#e5e7eb' : '#374151';
+  const gridColor = isDark ? '#374151' : '#e5e7eb';
+  const tooltipBg = isDark ? '#1f2937' : '#ffffff';
+  const tooltipText = isDark ? '#ffffff' : '#374151';
+
   return (
-    <ResponsiveContainer width="100%" height={400}>
-      <ComposedChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="period" />
-        <YAxis yAxisId="left" tick={{ fontSize: 13}} label={{ value: 'QLeads Volume', angle: -90, position: 'insideLeft' }} />
-        <YAxis yAxisId="right" tick={{ fontSize: 13}} orientation="right" label={{ value: 'Cost', angle: 90, position: 'insideRight' }} />
-        <Tooltip formatter={(value, name) => name === 'Cost' ? `$${value.toLocaleString()}` : value}  />
-        <Legend />
-        <Line yAxisId="left" type="monotone" dataKey="qleads" stroke="#ec4899" name="QLeads Volume" />
-        <Bar yAxisId="right" dataKey="spend" fill="#04aed8ff" name="Cost" />
-      </ComposedChart>
-    </ResponsiveContainer>
+    <div className="h-[200px] sm:h-[250px] md:h-[300px] bg-white dark:bg-slate-800 rounded-lg">
+      <ResponsiveContainer width="100%" height="100%">
+        <ComposedChart
+          data={data}
+          margin={{ top: 5, right: 20, left: 0, bottom: 0 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+          <XAxis dataKey="period" tick={{ fontSize: 13, fill: textColor }} interval="preserveStartEnd" />
+          <YAxis yAxisId="left" label={{ angle: -90, position: 'insideLeft', fill: textColor }} allowDecimals={false} tick={{ fontSize: 13, fill: textColor }} domain={[0, 'auto']} />
+          <YAxis yAxisId="right" orientation="right" label={{ angle: 90, position: 'insideRight', fill: textColor }} tick={{ fontSize: 13, fill: textColor }} />
+          <Tooltip
+            contentStyle={{ borderRadius: 10, fontSize: 15, backgroundColor: tooltipBg, color: tooltipText, border: 'none' }}
+            labelStyle={{ fontWeight: 600, color: tooltipText }}
+            formatter={(value, name) => name === 'Cost' ? `$${value.toLocaleString()}` : value}
+          />
+          <Legend verticalAlign="bottom" height={20} wrapperStyle={{ paddingTop: '10px' }} />
+          <Line yAxisId="left" type="monotone" dataKey="qleads" stroke="#ec4899" name="QLeads Volume" />
+          <Bar yAxisId="right" dataKey="spend" fill="#10b981" name="Cost" />
+        </ComposedChart>
+      </ResponsiveContainer>
+    </div>
   );
 }
 
 function CostPerChart({ data }) {
+  const [isDark] = useDarkmode();
+  const textColor = isDark ? '#e5e7eb' : '#374151';
+  const gridColor = isDark ? '#374151' : '#e5e7eb';
+  const tooltipBg = isDark ? '#1f2937' : '#ffffff';
+  const tooltipText = isDark ? '#ffffff' : '#374151';
+
   return (
-    <ResponsiveContainer width="100%" height={400}>
-      <LineChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis tick={{ fontSize: 13}} dataKey="period" />
-        <YAxis tick={{ fontSize: 13}} label={{ angle: -90, position: 'insideLeft' }} />
-        <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
-        <Legend />
-        <Line type="monotone" dataKey="cpql" stroke="#ec4899" name="Cost Per QLead" />
-      </LineChart>
-    </ResponsiveContainer>
+    <div className="h-[200px] sm:h-[250px] md:h-[300px] bg-white dark:bg-slate-800 rounded-lg">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart
+          data={data}
+          margin={{ top: 5, right: 20, left: 0, bottom: 0 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+          <XAxis dataKey="period" tick={{ fontSize: 13, fill: textColor }} interval="preserveStartEnd" />
+          <YAxis label={{ angle: -90, position: 'insideLeft', fill: textColor }} tick={{ fontSize: 13, fill: textColor }} />
+          <Tooltip
+            contentStyle={{ borderRadius: 10, fontSize: 15, backgroundColor: tooltipBg, color: tooltipText, border: 'none' }}
+            labelStyle={{ fontWeight: 600, color: tooltipText }}
+            formatter={(value) => `$${value.toLocaleString()}`}
+          />
+          <Legend verticalAlign="bottom" height={20} wrapperStyle={{ paddingTop: '10px' }} />
+          <Line type="monotone" dataKey="cpql" stroke="#ec4899" name="Cost Per QLead" />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
   );
 }
 
