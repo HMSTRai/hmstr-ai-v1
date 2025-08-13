@@ -220,7 +220,7 @@ function VolumeCostChart({ data }) {
             formatter={(value, name) => name === 'Cost' ? `$${value.toLocaleString()}` : value}
           />
           <Legend verticalAlign="bottom" height={20} wrapperStyle={{ paddingTop: '10px' }} />
-          <Bar yAxisId="right" dataKey="spend" fill="#86efac" name="Cost" barSize={30}>
+          <Bar yAxisId="right" dataKey="spend" fill="#0499eaff" name="Cost" barSize={30}>
             <LabelList dataKey="spend" position="top" formatter={(value) => value === 0 ? '' : `$${Math.round(value)}`} fill={textColor} fontSize={12} />
           </Bar>
           <Line yAxisId="left" type="monotone" dataKey="qleads" stroke="#f37100" name="QLeads Volume" strokeWidth={3}>
