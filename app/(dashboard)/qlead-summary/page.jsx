@@ -108,22 +108,22 @@ function CallEngagementMetrics({ metrics }) {
     {
       label: 'Human Engagement Rate',
       value: formatPercent(metrics?.human_engagement_rate),
-      color: 'text-blue-700 dark:text-blue-300',
+      color: 'text-orange-600 dark:text-orange-400',
     },
     {
       label: 'AI Forward Rate',
       value: formatPercent(metrics?.ai_forward_rate),
-      color: 'text-green-700 dark:text-green-300',
+      color: 'text-orange-600 dark:text-orange-400',
     },
     {
       label: 'Human Engaged',
       value: formatCount(metrics?.human_engaged_count, metrics?.human_total_count),
-      color: 'text-blue-700 dark:text-blue-300',
+      color: 'text-orange-600 dark:text-orange-400',
     },
     {
       label: 'AI Forwarded',
       value: formatCount(metrics?.ai_forward_count, metrics?.ai_total_count),
-      color: 'text-green-700 dark:text-green-300',
+      color: 'text-orange-600 dark:text-orange-400',
     },
   ]
 
