@@ -246,7 +246,8 @@ export default function ModernDashboard() {
   }, [selectedClient, startDate, endDate])
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex flex-col px-2 sm:px-4 md:px-6 lg:px-8">
+    //background color
+    <div>
       {/* Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 py-3 sm:py-4 md:py-6 px-2 sm:px-4 md:px-6">
        <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />

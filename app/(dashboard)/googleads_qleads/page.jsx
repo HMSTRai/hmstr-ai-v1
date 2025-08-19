@@ -86,7 +86,7 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600', changeText,
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-600 p-4 flex justify-between items-start min-w-[120px] transition hover:shadow-lg hover:bg-orange-50 dark:hover:bg-slate-700">
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-600 p-4 flex justify-between items-start min-w-[120px] transition hover:shadow-lg hover:bg-[#f36622]/5 dark:hover:bg-slate-700">
       <div className="flex flex-col">
         <span className="text-sm text-gray-600 dark:text-gray-300">{label}</span>
         {sublabel && <span className="text-xs text-gray-500 dark:text-gray-400">{sublabel}</span>}
@@ -95,7 +95,7 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600', changeText,
       </div>
       {iconType && (
         <div className="ml-4">
-          <div className="w-10 h-10 rounded-full border border-orange-300 dark:border-orange-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full border border-[#f36622]/30 dark:border-[#f36622]/60 flex items-center justify-center">
             {getIcon(iconType)}
           </div>
         </div>
@@ -135,7 +135,7 @@ function GoogleAdsQLeadMetrics({ metrics }) {
             key={field}
             label={label}
             value={format(metrics?.[field] ?? 0)}
-            color="text-orange-600 dark:text-orange-400"
+            color="text-[#f36622] dark:text-[#f36622]"
             iconType={iconType}
           />
         ))}
@@ -223,7 +223,7 @@ function VolumeCostChart({ data }) {
           <Bar yAxisId="right" dataKey="spend" fill="#0499eaff" name="Cost" barSize={30}>
             <LabelList dataKey="spend" position="top" formatter={(value) => value === 0 ? '' : `$${Math.round(value)}`} fill={textColor} fontSize={12} />
           </Bar>
-          <Line yAxisId="left" type="monotone" dataKey="qleads" stroke="#f37100" name="QLeads Volume" strokeWidth={3}>
+          <Line yAxisId="left" type="monotone" dataKey="qleads" stroke="#f36622" name="QLeads Volume" strokeWidth={3}>
             <LabelList dataKey="qleads" position="top" formatter={(value) => value === 0 ? '' : value} fill={textColor} fontSize={12} />
           </Line>
         </ComposedChart>
@@ -255,7 +255,7 @@ function CostPerChart({ data }) {
             formatter={(value) => `$${Math.round(value).toLocaleString()}`}
           />
           <Legend verticalAlign="bottom" height={20} wrapperStyle={{ paddingTop: '10px' }} />
-          <Line type="monotone" dataKey="cpql" stroke="#f37100" name="Cost Per QLead" strokeWidth={3}>
+          <Line type="monotone" dataKey="cpql" stroke="#f36622" name="Cost Per QLead" strokeWidth={3}>
             <LabelList dataKey="cpql" position="top" formatter={(value) => value === 0 ? '' : `$${Math.round(value)}`} fill={textColor} fontSize={12} />
           </Line>
         </LineChart>
@@ -315,7 +315,8 @@ export default function GoogleAdsQLead() {
   }, [selectedClient, startDate, endDate, volumePeriod, costPeriod]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex flex-col px-2 sm:px-4 md:px-6 lg:px-8">
+    //background color
+    <div>
       {/* Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 py-3 sm:py-4 md:py-6 px-2 sm:px-4 md:px-6">
         <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />

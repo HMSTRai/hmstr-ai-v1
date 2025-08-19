@@ -72,7 +72,7 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600', changeText,
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow p-4 flex justify-between items-start min-w-[120px] transition hover:shadow-lg hover:bg-orange-50 dark:hover:bg-slate-700">
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow p-4 flex justify-between items-start min-w-[120px] transition hover:shadow-lg hover:bg-[#f36622]/5 dark:hover:bg-slate-700">
       <div className="flex flex-col">
         <span className="text-sm text-gray-600 dark:text-gray-300">{label}</span>
         {sublabel && <span className="text-xs text-gray-500 dark:text-gray-400">{sublabel}</span>}
@@ -81,7 +81,7 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600', changeText,
       </div>
       {iconType && (
         <div className="ml-4">
-          <div className="w-10 h-10 rounded-full border border-orange-300 dark:border-orange-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full border border-[#f36622]/30 dark:border-[#f36622] flex items-center justify-center">
             {getIcon(iconType)}
           </div>
         </div>
@@ -108,22 +108,22 @@ function CallEngagementMetrics({ metrics }) {
     {
       label: 'Human Engagement Rate',
       value: formatPercent(metrics?.human_engagement_rate),
-      color: 'text-orange-600 dark:text-orange-400',
+      color: 'text-[#f36622] dark:text-[#f36622]',
     },
     {
       label: 'AI Forward Rate',
       value: formatPercent(metrics?.ai_forward_rate),
-      color: 'text-orange-600 dark:text-orange-400',
+      color: 'text-[#f36622] dark:text-[#f36622]',
     },
     {
       label: 'Human Engaged',
       value: formatCount(metrics?.human_engaged_count, metrics?.human_total_count),
-      color: 'text-orange-600 dark:text-orange-400',
+      color: 'text-[#f36622] dark:text-[#f36622]',
     },
     {
       label: 'AI Forwarded',
       value: formatCount(metrics?.ai_forward_count, metrics?.ai_total_count),
-      color: 'text-orange-600 dark:text-orange-400',
+      color: 'text-[#f36622] dark:text-[#f36622]',
     },
   ]
 
@@ -306,7 +306,8 @@ export default function ModernDashboard() {
   const tooltipText = isDark ? '#ffffff' : '#374151';
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex flex-col px-2 sm:px-4 md:px-6 lg:px-8">
+    //background color 
+    <div>
       {/* Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 py-3 sm:py-4 md:py-6 px-2 sm:px-4 md:px-6">
         <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />
@@ -336,7 +337,7 @@ export default function ModernDashboard() {
                 key={field}
                 label={label}
                 value={formattedValue}
-                color="text-orange-600 dark:text-orange-400"
+                color="text-[#f36622] dark:text-[#f36622]"
                 changeText={changeText}
                 changeColor={changeColor}
                 iconType={iconType}
@@ -348,7 +349,7 @@ export default function ModernDashboard() {
         <CallEngagementMetrics metrics={metrics?.engagementMetrics} />
       </div>
 
-      <div className="flex flex-col gap-4 sm:gap-5 md:gap-6 px-2 sm:px-4 md:px-6 pb-4 sm:pb-6 md:pb-10 mt-4 sm:mt-6 md:mt-10 w-full">
+      <div className="flex flex-col gap-4 sm:gap-5 md:gap-6 px-2 sm:px-4 md:px-6 mt-4 sm:mt-6 md:mt-10 w-full">
         <SectionCard title="Qualified Leads Volume by Period">
           <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
             <select
