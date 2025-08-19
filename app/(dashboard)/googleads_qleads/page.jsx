@@ -279,6 +279,26 @@ export default function GoogleAdsQLead() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const getDummyPeriod = (periodType) => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    switch (periodType) {
+      case 'day':
+        return `${year}-${month}-${day}`;
+      case 'week':
+        const jan1 = new Date(year, 0, 1);
+        const days = Math.floor((d - jan1) / (24 * 60 * 60 * 1000));
+        const week = Math.ceil((d.getDay() + 1 + days) / 7);
+        return `${year}-W${String(week).padStart(2, '0')}`;
+      case 'month':
+        return `${year}-${month}`;
+      default:
+        return `${year}-${month}-${day}`;
+    }
+  };
+
   useEffect(() => {
     fetch('/api/clients')
       .then((res) => res.json())
@@ -335,20 +355,20 @@ export default function GoogleAdsQLead() {
           <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
             <PeriodSelector period={volumePeriod} onChange={setVolumePeriod} />
           </div>
-          {volumeCostData.length > 0 ? (
-            <VolumeCostChart data={volumeCostData} />
-          ) : (
+          {selectedClient && volumeCostData.length === 0 ? (
             <p className="text-center text-gray-500 dark:text-gray-400">No data available for the selected period.</p>
+          ) : (
+            <VolumeCostChart data={volumeCostData.length > 0 ? volumeCostData : [{ period: getDummyPeriod(volumePeriod), spend: 0, qleads: 0 }]} />
           )}
         </SectionCard>
         <SectionCard title="Cost Per QLead by Period">
           <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
             <PeriodSelector period={costPeriod} onChange={setCostPeriod} />
           </div>
-          {costPerData.length > 0 ? (
-            <CostPerChart data={costPerData} />
-          ) : (
+          {selectedClient && costPerData.length === 0 ? (
             <p className="text-center text-gray-500 dark:text-gray-400">No data available for the selected period.</p>
+          ) : (
+            <CostPerChart data={costPerData.length > 0 ? costPerData : [{ period: getDummyPeriod(costPeriod), cpql: 0 }]} />
           )}
         </SectionCard>
       </div>
