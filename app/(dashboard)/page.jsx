@@ -8,7 +8,7 @@ export default function HeroSection() {
   };
 
   return (
-    <div className="relative bg-white dark:bg-slate-900 py-20 px-4 md:px-10 lg:px-16 overflow-hidden">
+    <div className="relative  py-20 px-4 md:px-10 lg:px-16 overflow-hidden">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between space-y-8 md:space-y-0 md:space-x-12">
         {/* Text Section */}
         <div className="flex-1 text-center md:text-left">
@@ -23,7 +23,7 @@ export default function HeroSection() {
           </p>
           <button
             onClick={handleGetStarted}
-            className="bg-orange-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-orange-800 transition duration-300"
+            className="bg-[#F36622] text-white px-6 py-3 rounded-md font-semibold hover:bg-[#aa4717] transition duration-300"
           >
             Get Started
           </button>
@@ -40,7 +40,7 @@ export default function HeroSection() {
       </div>
 
       {/* Decorative Elements */}
-      <div className="absolute top-0 left-0 w-64 h-64 bg-orange-200 dark:bg-orange-800 rounded-full filter blur-2xl opacity-30 -z-10 animate-pulse"></div>
+      <div className="absolute top-0 left-0 w-64 h-64 bg-[#fce0d2] dark:bg-[#aa4717] rounded-full filter blur-2xl opacity-30 -z-10 animate-pulse"></div>
       <div className="absolute bottom-0 right-0 w-80 h-80 bg-indigo-200 dark:bg-indigo-800 rounded-full filter blur-2xl opacity-30 -z-10 animate-pulse delay-200"></div>
     </div>
   );
