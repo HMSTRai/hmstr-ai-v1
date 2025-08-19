@@ -7,7 +7,7 @@ import useDarkmode from "@/hooks/useDarkMode";
 function ClientSelector({ clients, selected, onSelect }) {
   return (
     <select
-      className="w-full sm:w-auto border rounded-lg px-3 sm:px-4 py-2 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200"
+      className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-2 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
       value={selected}
       onChange={(e) => onSelect(e.target.value)}
     >
@@ -26,25 +26,25 @@ function DateSelector({ startDate, endDate, onChange }) {
     <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
       <input
         type="date"
-        className="w-full sm:w-auto border rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200"
+        className="w-full sm:w-auto border border-[#f36622] rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200 dark:[&::-webkit-calendar-picker-indicator]:brightness-0 dark:[&::-webkit-calendar-picker-indicator]:saturate-100 dark:[&::-webkit-calendar-picker-indicator]:invert-[100%] dark:[&::-webkit-calendar-picker-indicator]:sepia-[93%] dark:[&::-webkit-calendar-picker-indicator]:saturate-[1773%] dark:[&::-webkit-calendar-picker-indicator]:hue-rotate-[345deg] dark:[&::-webkit-calendar-picker-indicator]:brightness-[92%] dark:[&::-webkit-calendar-picker-indicator]:contrast-[91%]"
         value={startDate}
-        onChange={(e) => onChange('startDate', e.target.value)}
+        onChange={e => onChange('startDate', e.target.value)}
       />
       <span className="mx-2 text-gray-400 dark:text-gray-500">to</span>
       <input
         type="date"
-        className="w-full sm:w-auto border rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200"
+        className="w-full sm:w-auto border border-[#f36622] rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200 dark:[&::-webkit-calendar-picker-indicator]:brightness-0 dark:[&::-webkit-calendar-picker-indicator]:saturate-100 dark:[&::-webkit-calendar-picker-indicator]:invert-[100%] dark:[&::-webkit-calendar-picker-indicator]:sepia-[93%] dark:[&::-webkit-calendar-picker-indicator]:saturate-[1773%] dark:[&::-webkit-calendar-picker-indicator]:hue-rotate-[345deg] dark:[&::-webkit-calendar-picker-indicator]:brightness-[92%] dark:[&::-webkit-calendar-picker-indicator]:contrast-[91%]"
         value={endDate}
-        onChange={(e) => onChange('endDate', e.target.value)}
+        onChange={e => onChange('endDate', e.target.value)}
       />
     </div>
-  );
+  )
 }
 
 function PeriodSelector({ period, onChange }) {
   return (
     <select
-      className="w-full sm:w-auto border rounded-lg px-3 py-2 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200"
+      className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 py-2 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
       value={period}
       onChange={(e) => onChange(e.target.value)}
     >
@@ -86,7 +86,7 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600', changeText,
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-600 p-4 flex justify-between items-start min-w-[120px] transition hover:shadow-lg hover:bg-[#f36622]/5 dark:hover:bg-slate-700">
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-[#f36622] p-4 flex justify-between items-start min-w-[120px] transition hover:shadow-lg hover:bg-[#f36622]/5 dark:hover:bg-slate-700">
       <div className="flex flex-col">
         <span className="text-sm text-gray-600 dark:text-gray-300">{label}</span>
         {sublabel && <span className="text-xs text-gray-500 dark:text-gray-400">{sublabel}</span>}
@@ -95,7 +95,7 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600', changeText,
       </div>
       {iconType && (
         <div className="ml-4">
-          <div className="w-10 h-10 rounded-full border border-[#f36622]/30 dark:border-[#f36622]/60 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full border border-[#f36622]/30 dark:border-[#f36622] flex items-center justify-center">
             {getIcon(iconType)}
           </div>
         </div>
@@ -106,7 +106,7 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600', changeText,
 
 function SectionCard({ children, title }) {
   return (
-    <section className="bg-white dark:bg-slate-800 rounded-2xl shadow p-3 sm:p-4 md:p-6 mb-3 sm:mb-4 md:mb-8">
+    <section className="bg-white dark:bg-slate-800 rounded-2xl shadow p-3 sm:p-4 md:p-6 mb-3 sm:mb-4 md:mb-8 border border-[#f36622]">
       {title && <h3 className="text-base sm:text-lg md:text-xl font-bold mb-2 sm:mb-3 md:mb-4 text-gray-800 dark:text-gray-200">{title}</h3>}
       {children}
     </section>

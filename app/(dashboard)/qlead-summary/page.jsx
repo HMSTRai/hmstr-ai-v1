@@ -7,7 +7,7 @@ import useDarkmode from "@/hooks/useDarkMode";
 function ClientSelector({ clients, selected, onSelect }) {
   return (
     <select
-      className="w-full sm:w-auto border rounded-lg px-3 sm:px-4 py-2 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200"
+      className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-2 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
       value={selected}
       onChange={e => onSelect(e.target.value)}
     >
@@ -26,14 +26,14 @@ function DateSelector({ startDate, endDate, onChange }) {
     <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
       <input
         type="date"
-        className="w-full sm:w-auto border rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200"
+        className="w-full sm:w-auto border border-[#f36622] rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200 dark:[&::-webkit-calendar-picker-indicator]:brightness-0 dark:[&::-webkit-calendar-picker-indicator]:saturate-100 dark:[&::-webkit-calendar-picker-indicator]:invert-[100%] dark:[&::-webkit-calendar-picker-indicator]:sepia-[93%] dark:[&::-webkit-calendar-picker-indicator]:saturate-[1773%] dark:[&::-webkit-calendar-picker-indicator]:hue-rotate-[345deg] dark:[&::-webkit-calendar-picker-indicator]:brightness-[92%] dark:[&::-webkit-calendar-picker-indicator]:contrast-[91%]"
         value={startDate}
         onChange={e => onChange('startDate', e.target.value)}
       />
       <span className="mx-2 text-gray-400 dark:text-gray-500">to</span>
       <input
         type="date"
-        className="w-full sm:w-auto border rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200"
+        className="w-full sm:w-auto border border-[#f36622] rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200 dark:[&::-webkit-calendar-picker-indicator]:brightness-0 dark:[&::-webkit-calendar-picker-indicator]:saturate-100 dark:[&::-webkit-calendar-picker-indicator]:invert-[100%] dark:[&::-webkit-calendar-picker-indicator]:sepia-[93%] dark:[&::-webkit-calendar-picker-indicator]:saturate-[1773%] dark:[&::-webkit-calendar-picker-indicator]:hue-rotate-[345deg] dark:[&::-webkit-calendar-picker-indicator]:brightness-[92%] dark:[&::-webkit-calendar-picker-indicator]:contrast-[91%]"
         value={endDate}
         onChange={e => onChange('endDate', e.target.value)}
       />
@@ -353,7 +353,7 @@ export default function ModernDashboard() {
         <SectionCard title="Qualified Leads Volume by Period">
           <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
             <select
-              className="w-full sm:w-auto border rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200"
+              className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
               value={volumeGroupBy}
               onChange={e => setVolumeGroupBy(e.target.value)}
             >
@@ -402,7 +402,7 @@ export default function ModernDashboard() {
         <SectionCard title="Cost Per Lead by Period">
           <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
             <select
-              className="w-full sm:w-auto border rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-slate-800 dark:border-slate-600 dark:text-gray-200"
+              className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
               value={costPerLeadGroupBy}
               onChange={e => setCostPerLeadGroupBy(e.target.value)}
             >
