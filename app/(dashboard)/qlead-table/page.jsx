@@ -119,8 +119,8 @@ function LeadsTable({ leads }) {
           </select>
         </div>
       </div>
-      <div className="overflow-x-auto w-full">
-        <table className="min-w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg">
+      <div className="overflow-x-auto w-full min-h-[400px]">
+        <table className="min-w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg h-full">
           <thead className="bg-gray-100 dark:bg-slate-700">
             <tr>
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">First Contact Date</th>
@@ -135,7 +135,7 @@ function LeadsTable({ leads }) {
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">First Source</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="h-full">
             {currentLeads.length > 0 ? (
               currentLeads.map((lead, index) => (
                 <tr key={index} className={index % 2 === 0 ? 'bg-gray-50 dark:bg-slate-700' : 'bg-white dark:bg-slate-800'}>
@@ -152,8 +152,8 @@ function LeadsTable({ leads }) {
                 </tr>
               ))
             ) : (
-              <tr>
-                <td colSpan="10" className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+              <tr className="h-full">
+                <td colSpan="10" className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400 h-full">
                   No qualified leads found for the selected period.
                 </td>
               </tr>

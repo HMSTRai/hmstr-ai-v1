@@ -43,11 +43,11 @@ const Header = ({ className = "custom-class" }) => {
 
   const borderSwicthClass = () => {
     if (skin === "bordered" && navbarType !== "floating") {
-      return "border-b border-slate-200 dark:border-slate-700";
+      return "border-b border-[#f36622]";
     } else if (skin === "bordered" && navbarType === "floating") {
-      return "border border-slate-200 dark:border-slate-700";
+      return "border border-[#f36622]";
     } else {
-      return "dark:border-b dark:border-slate-700 dark:border-opacity-60";
+      return "border-b border-[#f36622]";
     }
   };
   return (

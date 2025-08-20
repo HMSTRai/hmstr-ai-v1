@@ -26,14 +26,14 @@ const Submenu = ({ activeSubmenu, item, i, locationName }) => {
                     onClick={() => toggleMultiMenu(j)}
                     className={`${
                       activeMultiMenu
-                        ? "text-orange-500 font-medium"
+                        ? "text-[#f36622] font-medium"
                         : "text-slate-600 dark:text-slate-300"
                     } text-sm flex space-x-3 items-center transition-all duration-150 cursor-pointer`}
                   >
                     <span
                       className={`${
                         activeMultiMenu
-                          ? "bg-orange-500 ring-4 ring-orange-300"
+                          ? "bg-[#f36622] ring-4 ring-[#f36622]/30"
                           : "border-slate-600 dark:border-white"
                       } h-2 w-2 rounded-full border inline-block flex-none`}
                     ></span>
@@ -60,14 +60,14 @@ const Submenu = ({ activeSubmenu, item, i, locationName }) => {
                   <span
                     className={`${
                       isActive
-                        ? "text-orange-500 font-medium"
+                        ? "text-[#f36622] font-medium"
                         : "text-slate-600 dark:text-slate-300"
                     } text-sm flex space-x-3 items-center transition-all duration-150`}
                   >
                     <span
                       className={`${
                         isActive
-                          ? "bg-orange-500 ring-2 ring-orange-200"
+                          ? "bg-[#f36622] ring-3 ring-[#f36622]/20"
                           : "border-slate-600 dark:border-white"
                       } h-2 w-2 rounded-full border inline-block flex-none`}
                     ></span>
