@@ -19,7 +19,7 @@ export const menuItems = [
         childtitle: "Google Ads QLead Metrics",
         childlink: "/googleads_qleads",
         childicon: "heroicons:chart-bar",
-      }
+      },
     ],
   },
   {
@@ -171,6 +171,10 @@ export const topMenu = [
       {
         childtitle: "Google Ads QLead Metrics",
         childlink: "/googleads_qleads",
+      },
+      {
+        childtitle: "QLead Bed Bug Composit",
+        childlink: "/qlead_bedbug_composit",
       },
     ],
   },

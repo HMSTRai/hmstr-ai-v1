@@ -1,25 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { ComposedChart, Area, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LabelList, ResponsiveContainer } from 'recharts'
 import useDarkmode from "@/hooks/useDarkMode";
-
-function ClientSelector({ clients, selected, onSelect }) {
-  return (
-    <select
-      className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-2 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
-      value={selected}
-      onChange={e => onSelect(e.target.value)}
-    >
-      <option value="">Select Client</option>
-      {clients.map(c => (
-        <option key={c.client_id ?? c.cr_client_id} value={c.client_id ?? c.cr_client_id}>
-          {c.cr_company_name}
-        </option>
-      ))}
-    </select>
-  )
-}
 
 function DateSelector({ startDate, endDate, onChange }) {
   return (
@@ -99,144 +82,81 @@ function SectionCard({ children, title }) {
   )
 }
 
-function CallEngagementMetrics({ metrics }) {
-  const formatPercent = (val) => (typeof val === 'number' ? `${val.toFixed(2)}%` : '--%')
-  const formatCount = (num, total) =>
-    typeof num === 'number' && typeof total === 'number' ? `${num} of ${total}` : '0 of 0'
+function getDatesInRange(start, end, groupBy = 'day') {
+  const dates = [];
+  let current = new Date(start);
+  const endDate = new Date(end);
 
-  const data = [
-    {
-      label: 'Human Engagement Rate',
-      value: formatPercent(metrics?.human_engagement_rate),
-      color: 'text-[#f36622] dark:text-[#f36622]',
-    },
-    {
-      label: 'AI Forward Rate',
-      value: formatPercent(metrics?.ai_forward_rate),
-      color: 'text-[#f36622] dark:text-[#f36622]',
-    },
-    {
-      label: 'Human Engaged',
-      value: formatCount(metrics?.human_engaged_count, metrics?.human_total_count),
-      color: 'text-[#f36622] dark:text-[#f36622]',
-    },
-    {
-      label: 'AI Forwarded',
-      value: formatCount(metrics?.ai_forward_count, metrics?.ai_total_count),
-      color: 'text-[#f36622] dark:text-[#f36622]',
-    },
-  ]
-
-  return (
-    <div className="mt-4 sm:mt-6 md:mt-12">
-      <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 md:mb-6 text-gray-900 dark:text-gray-100">Call Engagement Metrics</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 md:gap-6">
-        {data.map(({ label, value, sublabel, color }, i) => (
-          <StatCard key={i} label={label} value={value} sublabel={sublabel} color={color} />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function LeadsTable({ leads }) {
-  return (
-    <SectionCard title="Qualified Leads Table">
-      <div className="overflow-x-auto w-full">
-        <table className="min-w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg">
-          <thead className="bg-gray-100 dark:bg-slate-700">
-            <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">First Contact Date</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Customer Phone</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Customer Name</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Customer City</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Customer State</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Service Inquired</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Lead Score</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Close Score</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Human Engaged</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">First Source</th>
-            </tr>
-          </thead>
-          <tbody>
-            {leads.length > 0 ? (
-              leads.map((lead, index) => (
-                <tr key={index} className={index % 2 === 0 ? 'bg-gray-50 dark:bg-slate-700' : 'bg-white dark:bg-slate-800'}>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.first_contact_date || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_phone_number || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_name || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_city || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_state || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.service_inquired || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.lead_score_max || 0}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.close_score_max || 0}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.human_engaged ? 'Yes' : 'No'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.first_source || '--'}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="10" className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                  No qualified leads found for the selected period.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </SectionCard>
-  )
-}
-
-function createEmptyChartData(start, end) {
-  if (!start || !end || start > end) return []
-  const result = []
-  let current = new Date(start)
-  const endDateObj = new Date(end)
-  while (current <= endDateObj) {
-    const dateStr = current.toISOString().slice(0, 10)
-    result.push({
-      date: dateStr,
-      total: 0,
-      ppc: 0,
-      lsa: 0,
-      seo: 0,
-    })
-    current.setDate(current.getDate() + 1)
+  while (current <= endDate) {
+    let dateStr = current.toISOString().slice(0, 10);
+    if (groupBy === 'week') {
+      // Set to the start of the week (Monday)
+      const day = current.getDay();
+      const daysToSubtract = day === 0 ? 6 : day - 1;
+      current.setDate(current.getDate() - daysToSubtract);
+      dateStr = current.toISOString().slice(0, 10);
+    } else if (groupBy === 'month') {
+      current.setDate(1);
+      dateStr = current.toISOString().slice(0, 10);
+    }
+    if (!dates.includes(dateStr) && new Date(dateStr) <= endDate) {
+      dates.push(dateStr);
+    }
+    if (groupBy === 'week') {
+      current.setDate(current.getDate() + 7);
+    } else if (groupBy === 'month') {
+      current.setMonth(current.getMonth() + 1);
+    } else {
+      current.setDate(current.getDate() + 1);
+    }
   }
-  return result
+  return dates;
 }
 
-export default function ModernDashboard() {
+function createEmptyChartData(start, end, groupBy) {
+  const dates = getDatesInRange(start, end, groupBy);
+  return dates.map(date => ({
+    date,
+    total: 0,
+    ppc: 0,
+    lsa: 0,
+    seo: 0,
+  }));
+}
+
+function createEmptyVolumeCostData(start, end, groupBy) {
+  const dates = getDatesInRange(start, end, groupBy);
+  return dates.map(date => ({
+    date,
+    volume: 0,
+    cost: 0,
+  }));
+}
+
+function createEmptyCostPerData(start, end, groupBy) {
+  const dates = getDatesInRange(start, end, groupBy);
+  return dates.map(date => ({
+    date,
+    costper: 0,
+  }));
+}
+
+export default function BedBugCompositeDashboard() {
   const [isDark] = useDarkmode();
   const today = new Date().toISOString().slice(0, 10)
-  const [clients, setClients] = useState([])
-  const [selectedClient, setSelectedClient] = useState('')
-  const [startDate, setStartDate] = useState(today)
+  const [startDate, setStartDate] = useState('2025-01-01')
   const [endDate, setEndDate] = useState(today)
   const [metrics, setMetrics] = useState(null)
   const [previousMetrics, setPreviousMetrics] = useState(null)
-  const [leads, setLeads] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [volumeGroupBy, setVolumeGroupBy] = useState('month')
   const [costPerLeadGroupBy, setCostPerLeadGroupBy] = useState('month')
 
   useEffect(() => {
-    fetch('/api/clients')
-      .then(res => res.json())
-      .then(({ data, error }) => {
-        if (error) throw new Error(error)
-        setClients(data || [])
-      })
-      .catch(err => setError(err.message))
-  }, [])
-
-  useEffect(() => {
-    if (!selectedClient || !startDate || !endDate || startDate > endDate) {
+    if (!startDate || !endDate || startDate > endDate) {
       setMetrics(null)
       setPreviousMetrics(null)
-      setLeads([])
       return
     }
 
@@ -254,27 +174,25 @@ export default function ModernDashboard() {
 
     setLoading(true)
     Promise.all([
-      fetch(`/api/top-metrics?clientId=${selectedClient}&start=${startDate}&end=${endDate}&volumeGroupBy=${volumeGroupBy}&costPerLeadGroupBy=${costPerLeadGroupBy}`)
+      fetch(`/api/bedbug_composit?start=${startDate}&end=${endDate}&volumeGroupBy=${volumeGroupBy}&costPerLeadGroupBy=${costPerLeadGroupBy}`)
         .then(res => res.json()),
-      fetch(`/api/qualified-leads?clientId=${selectedClient}&start=${startDate}&end=${endDate}`)
-        .then(res => res.json()),
-      fetch(`/api/top-metrics?clientId=${selectedClient}&start=${previousStart}&end=${previousEnd}&volumeGroupBy=${volumeGroupBy}&costPerLeadGroupBy=${costPerLeadGroupBy}`)
+      fetch(`/api/bedbug_composit?start=${previousStart}&end=${previousEnd}&volumeGroupBy=${volumeGroupBy}&costPerLeadGroupBy=${costPerLeadGroupBy}`)
         .then(res => res.json())
     ])
-      .then(([currentRes, leadsRes, previousRes]) => {
+      .then(([currentRes, previousRes]) => {
         if (currentRes.error) throw new Error(currentRes.error)
-        if (leadsRes.error) throw new Error(leadsRes.error)
         if (previousRes.error) throw new Error(previousRes.error)
         setMetrics(currentRes.data || null)
-        setLeads(leadsRes.data || [])
         setPreviousMetrics(previousRes.data || null)
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
-  }, [selectedClient, startDate, endDate, volumeGroupBy, costPerLeadGroupBy])
+  }, [startDate, endDate, volumeGroupBy, costPerLeadGroupBy])
 
-  const volumeChartData = metrics?.volume_chart?.length > 0 ? metrics.volume_chart : createEmptyChartData(startDate, endDate)
-  const costPerLeadChartData = metrics?.cost_per_lead_chart?.length > 0 ? metrics.cost_per_lead_chart : createEmptyChartData(startDate, endDate)
+  const volumeChartData = metrics?.volume_chart?.length > 0 ? metrics.volume_chart : createEmptyChartData(startDate, endDate, volumeGroupBy)
+  const costPerLeadChartData = metrics?.cost_per_lead_chart?.length > 0 ? metrics.cost_per_lead_chart : createEmptyChartData(startDate, endDate, costPerLeadGroupBy)
+  const ppcVolumeCostData = metrics?.ppc_volume_cost_chart?.length > 0 ? metrics.ppc_volume_cost_chart : createEmptyVolumeCostData(startDate, endDate, volumeGroupBy)
+  const ppcCostPerData = metrics?.ppc_cost_per_chart?.length > 0 ? metrics.ppc_cost_per_chart : createEmptyCostPerData(startDate, endDate, costPerLeadGroupBy)
 
   const formatCurrency = val =>
     typeof val === 'number'
@@ -282,8 +200,6 @@ export default function ModernDashboard() {
       : '--'
 
   const formatNumber = val => (typeof val === 'number' ? val.toLocaleString() : '--')
-
-  const formatPercent = val => (typeof val === 'number' ? `${val.toFixed(2)}%` : '--%')
 
   const stats = [
     { label: 'Qualified Leads', field: 'qualified_leads', iconType: 'bar' },
@@ -306,11 +222,9 @@ export default function ModernDashboard() {
   const tooltipText = isDark ? '#ffffff' : '#374151';
 
   return (
-    //background color 
     <div>
       {/* Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 py-3 sm:py-4 md:py-6 px-2 sm:px-4 md:px-6">
-        <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />
         <DateSelector
           startDate={startDate}
           endDate={endDate}
@@ -318,9 +232,9 @@ export default function ModernDashboard() {
         />
       </div>
 
-      {/* Qualified Leads */}
+      {/* QLead Data by Source */}
       <div className="w-full px-2 sm:px-4 md:px-6">
-        <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 md:mb-6 mt-2 sm:mt-4 text-gray-900 dark:text-gray-100">Qualified Leads</h2>
+        <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 md:mb-6 mt-2 sm:mt-4 text-gray-900 dark:text-gray-100">QLead Data by Source</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 md:gap-6 mb-3 sm:mb-4 md:mb-6">
           {stats.map(({ label, field, iconType }) => {
             const currentValue = metrics?.sourceMetrics?.[field] ?? 0
@@ -345,12 +259,10 @@ export default function ModernDashboard() {
             )
           })}
         </div>
-
-        <CallEngagementMetrics metrics={metrics?.engagementMetrics} />
       </div>
 
       <div className="flex flex-col gap-4 sm:gap-5 md:gap-6 px-2 sm:px-4 md:px-6 mt-4 sm:mt-6 md:mt-10 w-full">
-        <SectionCard title="Qualified Leads Volume by Period">
+        <SectionCard title="QLeads Volume by Period">
           <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
             <select
               className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
@@ -444,6 +356,80 @@ export default function ModernDashboard() {
                 <Area type="monotone" dataKey="lsa" stroke="#f59e0b" strokeWidth={2} fill="url(#colorLsa)" name="LSA" />
                 <Area type="monotone" dataKey="seo" stroke="#ec4899" strokeWidth={2} fill="url(#colorSeo)" name="SEO" />
                 <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" strokeWidth={2} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        </SectionCard>
+
+        <SectionCard title="PPC QLeads Volume & Cost by Period">
+          <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
+            <select
+              className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
+              value={volumeGroupBy}
+              onChange={e => setVolumeGroupBy(e.target.value)}
+            >
+              <option value="day">Daily</option>
+              <option value="week">Weekly</option>
+              <option value="month">Monthly</option>
+            </select>
+          </div>
+          <div className="h-[200px] sm:h-[250px] md:h-[300px] bg-white dark:bg-slate-800 rounded-lg">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart
+                data={ppcVolumeCostData}
+                margin={{ top: 5, right: 20, left: 0, bottom: 0 }}
+              >
+                <XAxis dataKey="date" tick={{ fontSize: 13, fill: textColor }} interval="preserveStartEnd" />
+                <YAxis yAxisId="left" label={{ value: 'Cost', angle: -90, position: 'insideLeft', fill: textColor }} tick={{ fontSize: 13, fill: textColor }} domain={[0, 'auto']} />
+                <YAxis yAxisId="right" orientation="right" label={{ value: 'QLeads Volume', angle: 90, position: 'insideRight', fill: textColor }} allowDecimals={false} tick={{ fontSize: 13, fill: textColor }} domain={[0, 'auto']} />
+                <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                <Tooltip
+                  contentStyle={{ borderRadius: 10, fontSize: 15, backgroundColor: tooltipBg, color: tooltipText, border: 'none' }}
+                  labelStyle={{ fontWeight: 600, color: tooltipText }}
+                  formatter={(value, name) => name === 'Cost' ? `$${value.toFixed(2)}` : value}
+                />
+                <Legend verticalAlign="bottom" height={20} wrapperStyle={{ paddingTop: '10px' }} />
+                <Bar yAxisId="left" dataKey="cost" fill="#0ea5e9" name="Cost" barSize={30}>
+                  <LabelList dataKey="cost" position="top" formatter={(value) => `$${Math.round(value)}`} fill={textColor} fontSize={12} />
+                </Bar>
+                <Line yAxisId="right" type="monotone" dataKey="volume" stroke="#f97316" name="QLeads Volume" strokeWidth={3}>
+                  <LabelList dataKey="volume" position="top" formatter={(value) => value > 0 ? Math.round(value) : ''} fill={textColor} fontSize={12} />
+                </Line>
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Cost Per QLead by Period">
+          <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
+            <select
+              className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
+              value={costPerLeadGroupBy}
+              onChange={e => setCostPerLeadGroupBy(e.target.value)}
+            >
+              <option value="day">Daily</option>
+              <option value="week">Weekly</option>
+              <option value="month">Monthly</option>
+            </select>
+          </div>
+          <div className="h-[200px] sm:h-[250px] md:h-[300px] bg-white dark:bg-slate-800 rounded-lg">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart
+                data={ppcCostPerData}
+                margin={{ top: 5, right: 20, left: 0, bottom: 0 }}
+              >
+                <XAxis dataKey="date" tick={{ fontSize: 13, fill: textColor }} interval="preserveStartEnd" />
+                <YAxis label={{ value: 'Cost Per QLead', angle: -90, position: 'insideLeft', fill: textColor }} tick={{ fontSize: 13, fill: textColor }} domain={[0, 'auto']} />
+                <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                <Tooltip
+                  contentStyle={{ borderRadius: 10, fontSize: 15, backgroundColor: tooltipBg, color: tooltipText, border: 'none' }}
+                  labelStyle={{ fontWeight: 600, color: tooltipText }}
+                  formatter={(value) => `$${value.toFixed(2)}`}
+                />
+                <Legend verticalAlign="bottom" height={20} wrapperStyle={{ paddingTop: '10px' }} />
+                <Line type="monotone" dataKey="costper" stroke="#f97316" name="Cost Per QLead" strokeWidth={3} >
+                  <LabelList dataKey="costper" position="top" formatter={(value) => `$${Math.round(value)}`} fill={textColor} fontSize={12} />
+                </Line>
               </ComposedChart>
             </ResponsiveContainer>
           </div>
