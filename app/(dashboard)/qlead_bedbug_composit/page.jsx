@@ -150,8 +150,10 @@ export default function BedBugCompositeDashboard() {
   const [previousMetrics, setPreviousMetrics] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [volumeGroupBy, setVolumeGroupBy] = useState('month')
-  const [costPerLeadGroupBy, setCostPerLeadGroupBy] = useState('month')
+  const [generalVolumeGroupBy, setGeneralVolumeGroupBy] = useState('month')
+  const [generalCostGroupBy, setGeneralCostGroupBy] = useState('month')
+  const [ppcVolumeGroupBy, setPpcVolumeGroupBy] = useState('month')
+  const [ppcCostGroupBy, setPpcCostGroupBy] = useState('month')
 
   useEffect(() => {
     if (!startDate || !endDate || startDate > endDate) {
@@ -174,25 +176,34 @@ export default function BedBugCompositeDashboard() {
 
     setLoading(true)
     Promise.all([
-      fetch(`/api/bedbug_composit?start=${startDate}&end=${endDate}&volumeGroupBy=${volumeGroupBy}&costPerLeadGroupBy=${costPerLeadGroupBy}`)
+      fetch(`/api/bedbug_composit?start=${startDate}&end=${endDate}&volumeGroupBy=${generalVolumeGroupBy}&costPerLeadGroupBy=${generalCostGroupBy}`)
         .then(res => res.json()),
-      fetch(`/api/bedbug_composit?start=${previousStart}&end=${previousEnd}&volumeGroupBy=${volumeGroupBy}&costPerLeadGroupBy=${costPerLeadGroupBy}`)
+      fetch(`/api/bedbug_composit?start=${startDate}&end=${endDate}&volumeGroupBy=${ppcVolumeGroupBy}&costPerLeadGroupBy=${ppcCostGroupBy}`)
+        .then(res => res.json()),
+      fetch(`/api/bedbug_composit?start=${previousStart}&end=${previousEnd}&volumeGroupBy=${generalVolumeGroupBy}&costPerLeadGroupBy=${generalCostGroupBy}`)
         .then(res => res.json())
     ])
-      .then(([currentRes, previousRes]) => {
-        if (currentRes.error) throw new Error(currentRes.error)
-        if (previousRes.error) throw new Error(previousRes.error)
-        setMetrics(currentRes.data || null)
-        setPreviousMetrics(previousRes.data || null)
+      .then(([generalCur, ppcCur, previous]) => {
+        if (generalCur.error) throw new Error(generalCur.error)
+        if (ppcCur.error) throw new Error(ppcCur.error)
+        if (previous.error) throw new Error(previous.error)
+        setMetrics({
+          sourceMetrics: generalCur.data.sourceMetrics,
+          volume_chart: generalCur.data.volume_chart,
+          cost_per_lead_chart: generalCur.data.cost_per_lead_chart,
+          ppc_volume_cost_chart: ppcCur.data.ppc_volume_cost_chart,
+          ppc_cost_per_chart: ppcCur.data.ppc_cost_per_chart
+        })
+        setPreviousMetrics({sourceMetrics: previous.data.sourceMetrics})
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false))
-  }, [startDate, endDate, volumeGroupBy, costPerLeadGroupBy])
+  }, [startDate, endDate, generalVolumeGroupBy, generalCostGroupBy, ppcVolumeGroupBy, ppcCostGroupBy])
 
-  const volumeChartData = metrics?.volume_chart?.length > 0 ? metrics.volume_chart : createEmptyChartData(startDate, endDate, volumeGroupBy)
-  const costPerLeadChartData = metrics?.cost_per_lead_chart?.length > 0 ? metrics.cost_per_lead_chart : createEmptyChartData(startDate, endDate, costPerLeadGroupBy)
-  const ppcVolumeCostData = metrics?.ppc_volume_cost_chart?.length > 0 ? metrics.ppc_volume_cost_chart : createEmptyVolumeCostData(startDate, endDate, volumeGroupBy)
-  const ppcCostPerData = metrics?.ppc_cost_per_chart?.length > 0 ? metrics.ppc_cost_per_chart : createEmptyCostPerData(startDate, endDate, costPerLeadGroupBy)
+  const volumeChartData = metrics?.volume_chart?.length > 0 ? metrics.volume_chart : createEmptyChartData(startDate, endDate, generalVolumeGroupBy)
+  const costPerLeadChartData = metrics?.cost_per_lead_chart?.length > 0 ? metrics.cost_per_lead_chart : createEmptyChartData(startDate, endDate, generalCostGroupBy)
+  const ppcVolumeCostData = metrics?.ppc_volume_cost_chart?.length > 0 ? metrics.ppc_volume_cost_chart : createEmptyVolumeCostData(startDate, endDate, ppcVolumeGroupBy)
+  const ppcCostPerData = metrics?.ppc_cost_per_chart?.length > 0 ? metrics.ppc_cost_per_chart : createEmptyCostPerData(startDate, endDate, ppcCostGroupBy)
 
   const formatCurrency = val =>
     typeof val === 'number'
@@ -266,8 +277,8 @@ export default function BedBugCompositeDashboard() {
           <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
             <select
               className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
-              value={volumeGroupBy}
-              onChange={e => setVolumeGroupBy(e.target.value)}
+              value={generalVolumeGroupBy}
+              onChange={e => setGeneralVolumeGroupBy(e.target.value)}
             >
               <option value="day">Daily</option>
               <option value="week">Weekly</option>
@@ -315,8 +326,8 @@ export default function BedBugCompositeDashboard() {
           <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
             <select
               className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
-              value={costPerLeadGroupBy}
-              onChange={e => setCostPerLeadGroupBy(e.target.value)}
+              value={generalCostGroupBy}
+              onChange={e => setGeneralCostGroupBy(e.target.value)}
             >
               <option value="day">Daily</option>
               <option value="week">Weekly</option>
@@ -365,8 +376,8 @@ export default function BedBugCompositeDashboard() {
           <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
             <select
               className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
-              value={volumeGroupBy}
-              onChange={e => setVolumeGroupBy(e.target.value)}
+              value={ppcVolumeGroupBy}
+              onChange={e => setPpcVolumeGroupBy(e.target.value)}
             >
               <option value="day">Daily</option>
               <option value="week">Weekly</option>
@@ -404,8 +415,8 @@ export default function BedBugCompositeDashboard() {
           <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
             <select
               className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
-              value={costPerLeadGroupBy}
-              onChange={e => setCostPerLeadGroupBy(e.target.value)}
+              value={ppcCostGroupBy}
+              onChange={e => setPpcCostGroupBy(e.target.value)}
             >
               <option value="day">Daily</option>
               <option value="week">Weekly</option>
