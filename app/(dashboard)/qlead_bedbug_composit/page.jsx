@@ -273,7 +273,7 @@ export default function BedBugCompositeDashboard() {
       </div>
 
       <div className="flex flex-col gap-4 sm:gap-5 md:gap-6 px-2 sm:px-4 md:px-6 mt-4 sm:mt-6 md:mt-10 w-full">
-        <SectionCard title="QLeads Volume by Period">
+        <SectionCard title="Qualified Leads by Period per Lead Source">
           <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
             <select
               className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
@@ -322,7 +322,7 @@ export default function BedBugCompositeDashboard() {
           </div>
         </SectionCard>
 
-        <SectionCard title="Cost Per Lead by Period">
+        <SectionCard title="Cost Per Qualified Lead by Period per Lead Source">
           <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
             <select
               className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
@@ -372,7 +372,8 @@ export default function BedBugCompositeDashboard() {
           </div>
         </SectionCard>
 
-        <SectionCard title="PPC QLeads Volume & Cost by Period">
+        <SectionCard title="PPC Qualified Lead Volume & All PPC Engine Spend by Period
+">
           <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
             <select
               className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
@@ -411,7 +412,7 @@ export default function BedBugCompositeDashboard() {
           </div>
         </SectionCard>
 
-        <SectionCard title="Cost Per QLead by Period">
+        <SectionCard title="PPC Cost Per Qualified Lead by Period">
           <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
             <select
               className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
