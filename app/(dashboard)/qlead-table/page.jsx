@@ -119,7 +119,7 @@ function LeadsTable({ leads }) {
           </select>
         </div>
       </div>
-      <div className="overflow-x-auto w-full min-h-[400px]">
+      <div className="overflow-x-auto w-full min-h-[550px]">
         <table className="min-w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg h-full">
           <thead className="bg-gray-100 dark:bg-slate-700">
             <tr>
