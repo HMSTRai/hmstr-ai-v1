@@ -297,8 +297,8 @@ export default function BedBugCompositeDashboard() {
                     <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="colorLsa" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="colorSeo" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#ec4899" stopOpacity={0.2} />
@@ -314,9 +314,9 @@ export default function BedBugCompositeDashboard() {
                 />
                 <Legend verticalAlign="bottom" height={20} wrapperStyle={{ paddingTop: '10px' }} />
                 <Area type="monotone" dataKey="ppc" stroke="#10b981" strokeWidth={2} fill="url(#colorPpc)" name="PPC" />
-                <Area type="monotone" dataKey="lsa" stroke="#f59e0b" strokeWidth={2} fill="url(#colorLsa)" name="LSA" />
+                <Area type="monotone" dataKey="lsa" stroke="#0ea5e9" strokeWidth={2} fill="url(#colorLsa)" name="LSA" />
                 <Area type="monotone" dataKey="seo" stroke="#ec4899" strokeWidth={2} fill="url(#colorSeo)" name="SEO" />
-                <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" strokeWidth={2} />
+                <Line type="monotone" dataKey="total" stroke="#f36622" name="Total" strokeWidth={2} />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
@@ -346,8 +346,8 @@ export default function BedBugCompositeDashboard() {
                     <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="colorLsa" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="colorSeo" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#ec4899" stopOpacity={0.2} />
@@ -364,9 +364,9 @@ export default function BedBugCompositeDashboard() {
                 />
                 <Legend verticalAlign="bottom" height={20} wrapperStyle={{ paddingTop: '10px' }} />
                 <Area type="monotone" dataKey="ppc" stroke="#10b981" strokeWidth={2} fill="url(#colorPpc)" name="PPC" />
-                <Area type="monotone" dataKey="lsa" stroke="#f59e0b" strokeWidth={2} fill="url(#colorLsa)" name="LSA" />
+                <Area type="monotone" dataKey="lsa" stroke="#0ea5e9" strokeWidth={2} fill="url(#colorLsa)" name="LSA" />
                 <Area type="monotone" dataKey="seo" stroke="#ec4899" strokeWidth={2} fill="url(#colorSeo)" name="SEO" />
-                <Line type="monotone" dataKey="total" stroke="#6366f1" name="Total" strokeWidth={2} />
+                <Line type="monotone" dataKey="total" stroke="#f36622" name="Total" strokeWidth={2} />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
