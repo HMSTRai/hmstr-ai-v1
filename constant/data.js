@@ -57,17 +57,7 @@ export const menuItems = [
         childicon: "heroicons-outline:user",
         multi_menu: [
           { multi_title: "Signin One", multi_link: "/" },
-          { multi_title: "Signin Two", multi_link: "/login2" },
-          { multi_title: "Signin Three", multi_link: "/login3" },
-          { multi_title: "Signup One", multi_link: "/register" },
-          { multi_title: "Signup Two", multi_link: "/register/register2" },
-          { multi_title: "Signup Three", multi_link: "/register/register3" },
-          { multi_title: "Forget Password One", multi_link: "/forgot-password" },
-          { multi_title: "Forget Password Two", multi_link: "/forgot-password2" },
-          { multi_title: "Forget Password Three", multi_link: "/forgot-password3" },
-          { multi_title: "Lock Screen One", multi_link: "/lock-screen" },
-          { multi_title: "Lock Screen Two", multi_link: "/lock-screen2" },
-          { multi_title: "Lock Screen Three", multi_link: "/lock-screen3" },
+          { multi_title: "Signin Two", multi_link: "/login" },
         ],
       },
       {

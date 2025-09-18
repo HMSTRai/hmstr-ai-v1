@@ -73,7 +73,7 @@ const Profile = () => {
             "authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
           // Redirect to login
-          router.push("/lock-screen");
+          router.push("/login");
         } catch (error) {
           console.error("Logout failed:", error);
         }

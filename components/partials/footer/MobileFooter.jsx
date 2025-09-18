@@ -14,7 +14,7 @@ const MobileFooter = () => {
       >
         <div className="h-[50px] w-[50px] rounded-full relative left-[0px] top-[0px] custom-dropshadow">
           <UserButton 
-            afterSignOutUrl="/lock-screen" 
+            afterSignOutUrl="/login" 
             appearance={{
               elements: {
                 userButtonAvatarBox: "w-full h-full", // Make avatar fill the container

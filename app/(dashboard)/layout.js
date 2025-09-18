@@ -59,7 +59,7 @@ export default function DashboardLayout({ children }) {
   useEffect(() => {
     // Auto-logout after SESSION_TIMEOUT using Clerk's signOut
     const logoutTimer = setTimeout(() => {
-      signOut({ redirectUrl: "/lock-screen" });
+      signOut({ redirectUrl: "/login" });
     }, SESSION_TIMEOUT);
 
     return () => clearTimeout(logoutTimer);

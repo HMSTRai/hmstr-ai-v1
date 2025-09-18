@@ -1,7 +1,7 @@
 // middleware.ts
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-const isPublicRoute = createRouteMatcher(['/lock-screen']); // Add '/sign-up' if you create it later
+const isPublicRoute = createRouteMatcher(['/login']); // Add '/sign-up' if you create it later
 
 export default clerkMiddleware(
   async (auth, req) => {
@@ -14,7 +14,7 @@ export default clerkMiddleware(
     }
   },
   {
-    signInUrl: '/lock-screen', // Your custom sign-in path
+    signInUrl: '/login', // Your custom sign-in path
     // signUpUrl: '/sign-up', // Uncomment and set if you add sign-up
   }
 );

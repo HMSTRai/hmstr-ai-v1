@@ -1,4 +1,4 @@
-// app/(auth)/lock-screen/page.jsx
+// app/(auth)/login/page.jsx
 "use client";
 
 import { SignIn } from "@clerk/nextjs"; // Add this import
@@ -14,7 +14,7 @@ export default function LockScreen() {
         </div>
         {/* Replace your form with Clerk's SignIn component */}
         <SignIn
-          path="/lock-screen"
+          path="/login"
           routing="path"
           signUpUrl="/sign-up" // Redirect to sign-up if user clicks "Sign up" (add page in Step 7)
           afterSignInUrl="/" // Redirect to dashboard on success
