@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import useDarkmode from "@/hooks/useDarkMode"
+import { ComposedChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import useDarkmode from '@/hooks/useDarkMode'
 
 function ClientSelector({ clients, selected, onSelect }) {
   return (
@@ -26,14 +26,14 @@ function DateSelector({ startDate, endDate, onChange }) {
     <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
       <input
         type="date"
-        className="w-full sm:w-auto border border-[#f36622] rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200 dark:[&::-webkit-calendar-picker-indicator]:brightness-0 dark:[&::-webkit-calendar-picker-indicator]:saturate-100 dark:[&::-webkit-calendar-picker-indicator]:invert-[100%] dark:[&::-webkit-calendar-picker-indicator]:sepia-[93%] dark:[&::-webkit-calendar-picker-indicator]:saturate-[1773%] dark:[&::-webkit-calendar-picker-indicator]:hue-rotate-[345deg] dark:[&::-webkit-calendar-picker-indicator]:brightness-[92%] dark:[&::-webkit-calendar-picker-indicator]:contrast-[91%]"
+        className="w-full sm:w-auto border border-[#f36622] rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
         value={startDate}
         onChange={e => onChange('startDate', e.target.value)}
       />
       <span className="mx-2 text-gray-400 dark:text-gray-500">to</span>
       <input
         type="date"
-        className="w-full sm:w-auto border border-[#f36622] rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200 dark:[&::-webkit-calendar-picker-indicator]:brightness-0 dark:[&::-webkit-calendar-picker-indicator]:saturate-100 dark:[&::-webkit-calendar-picker-indicator]:invert-[100%] dark:[&::-webkit-calendar-picker-indicator]:sepia-[93%] dark:[&::-webkit-calendar-picker-indicator]:saturate-[1773%] dark:[&::-webkit-calendar-picker-indicator]:hue-rotate-[345deg] dark:[&::-webkit-calendar-picker-indicator]:brightness-[92%] dark:[&::-webkit-calendar-picker-indicator]:contrast-[91%]"
+        className="w-full sm:w-auto border border-[#f36622] rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
         value={endDate}
         onChange={e => onChange('endDate', e.target.value)}
       />
@@ -41,41 +41,27 @@ function DateSelector({ startDate, endDate, onChange }) {
   )
 }
 
-function StatCard({ label, value, sublabel, color = 'text-[#f36622]', iconType }) {
-  const getIcon = (type) => {
-    if (type === 'bar') return (
-      <svg className={`w-5 h-5 ${color}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+function StatCard({ label, value, iconType }) {
+  const icons = {
+    bar: (
+      <svg className="w-5 h-5 text-[#f36622]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
         <rect x="4" y="10" width="4" height="10" />
         <rect x="10" y="4" width="4" height="16" />
         <rect x="16" y="8" width="4" height="12" />
       </svg>
-    )
-    if (type === 'wallet') return (
-      <svg className={`w-5 h-5 ${color}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-        <path d="M20 7V17C20 18.1046 19.1046 19 18 19H6C4.89543 19 4 18.1046 4 17V7C4 5.89543 4.89543 5 6 5H18C19.1046 5 20 5.89543 20 7ZM4 10H20" />
-        <circle cx="18" cy="12" r="1" />
-      </svg>
-    )
-    if (type === 'dollar') return (
-      <svg className={`w-5 h-5 ${color}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="12" y1="1" x2="12" y2="23" />
-        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-      </svg>
-    )
-    return null
+    ),
   }
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl shadow p-4 flex justify-between items-start min-w-[120px] transition hover:shadow-lg hover:bg-[#f36622]/5 dark:hover:bg-slate-700 border border-[#f36622]">
       <div className="flex flex-col">
         <span className="text-sm text-gray-600 dark:text-gray-300">{label}</span>
-        {sublabel && <span className="text-xs text-gray-500 dark:text-gray-400">{sublabel}</span>}
-        <span className={`text-2xl sm:text-3xl font-bold ${color}`}>{value}</span>
+        <span className="text-2xl sm:text-3xl font-bold text-[#f36622]">{value}</span>
       </div>
       {iconType && (
         <div className="ml-4">
           <div className="w-10 h-10 rounded-full border border-[#f36622]/30 dark:border-[#f36622] flex items-center justify-center">
-            {getIcon(iconType)}
+            {icons[iconType]}
           </div>
         </div>
       )}
@@ -94,42 +80,38 @@ function SectionCard({ children, title }) {
 
 function LeadsTable({ leads }) {
   return (
-    <SectionCard title="Pay Per Lead">
+    <SectionCard title="Pay Per Lead - Table of Qualified Leads">
       <div className="overflow-x-auto w-full">
         <table className="min-w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg">
           <thead className="bg-gray-100 dark:bg-slate-700">
             <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">First Contact Date</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Customer Phone</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Customer Name</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Customer City</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Customer State</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Service Inquired</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Lead Score</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Close Score</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Human Engaged</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">First Source</th>
+              {[
+                'First Contact Date','Customer Phone','Customer Name','Customer City','Customer State',
+                'Service Inquired','Lead Score','Close Score','Human Engaged','First Source',
+              ].map(h => (
+                <th key={h} className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">
+                  {h}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {leads.length > 0 ? (
-              leads.map((lead, index) => (
-                <tr key={index} className={index % 2 === 0 ? 'bg-gray-50 dark:bg-slate-700' : 'bg-white dark:bg-slate-800'}>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.first_contact_date || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_phone_number || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_name || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_city || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_state || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.service_inquired || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.lead_score_max || 0}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.close_score_max || 0}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.human_engaged ? 'Yes' : 'No'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.first_source || '--'}</td>
-                </tr>
-              ))
-            ) : (
+            {leads.length ? leads.map((lead, i) => (
+              <tr key={i} className={i % 2 === 0 ? 'bg-gray-50 dark:bg-slate-700' : 'bg-white dark:bg-slate-800'}>
+                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.first_contact_date || '--'}</td>
+                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_phone_number || '--'}</td>
+                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_name || '--'}</td>
+                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_city || '--'}</td>
+                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_state || '--'}</td>
+                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.service_inquired || '--'}</td>
+                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.lead_score_max ?? 0}</td>
+                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.close_score_max ?? 0}</td>
+                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.human_engaged ? 'Yes' : 'No'}</td>
+                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.first_source || '--'}</td>
+              </tr>
+            )) : (
               <tr>
-                <td colSpan="10" className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                <td colSpan={10} className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                   No qualified leads found for the selected period.
                 </td>
               </tr>
@@ -141,85 +123,59 @@ function LeadsTable({ leads }) {
   )
 }
 
-function createEmptyChartData(start, end) {
-  if (!start || !end || start > end) return []
-  const result = []
-  let current = new Date(start)
-  const endDateObj = new Date(end)
-  while (current <= endDateObj) {
-    const dateStr = current.toISOString().slice(0, 10)
-    result.push({ date: dateStr, total: 0, ppc: 0, lsa: 0, seo: 0 })
-    current.setDate(current.getDate() + 1)
-  }
-  return result
-}
-
-export default function ModernDashboard() {
+export default function CostPerLeadDashboard() {
   const [isDark] = useDarkmode()
   const today = new Date().toISOString().slice(0, 10)
+
   const [clients, setClients] = useState([])
   const [selectedClient, setSelectedClient] = useState('')
   const [startDate, setStartDate] = useState(today)
   const [endDate, setEndDate] = useState(today)
-  const [pplMetrics, setPplMetrics] = useState(null)
-  const [pplLeads, setPplLeads] = useState([])
-  const [pplChartData, setPplChartData] = useState([])
+
+  const [metrics, setMetrics] = useState({})
+  const [leads, setLeads] = useState([])
+  const [chartData, setChartData] = useState([])
+
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [pplGroupBy, setPplGroupBy] = useState('month')
 
   useEffect(() => {
     fetch('/api/clients')
-      .then(res => res.json())
-      .then(({ data, error }) => {
-        if (error) throw new Error(error)
-        setClients(data || [])
+      .then(r => r.json())
+      .then(({ data, error: err }) => {
+        if (err) throw new Error(err)
+        setClients(data ?? [])
       })
-      .catch(err => setError(err.message))
+      .catch(e => setError(e.message))
   }, [])
 
   useEffect(() => {
     if (!selectedClient || !startDate || !endDate || startDate > endDate) {
-      setPplMetrics(null)
-      setPplLeads([])
-      setPplChartData([])
+      setMetrics({}); setLeads([]); setChartData([])
       return
     }
 
     setLoading(true)
-    fetch(`/api/ppl-data?clientId=${selectedClient}&start=${startDate}&end=${endDate}&groupBy=${pplGroupBy}`)
-      .then(res => res.json())
-      .then(({ data, error }) => {
-        if (error) throw new Error(error)
-        setPplMetrics(data.metrics || null)
-        setPplLeads(data.leads || [])
-        setPplChartData(data.chart || createEmptyChartData(startDate, endDate))
+    setError(null)
+
+    fetch(`/api/ppl-data?clientId=${selectedClient}&start=${startDate}&end=${endDate}`)
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`)
+        return r.json()
       })
-      .catch(err => setError(err.message))
+      .then(({ data, error: err }) => {
+        if (err) throw new Error(err)
+        console.log('Received →', data)
+        setMetrics(data.metrics || {})
+        setLeads(data.leads || [])
+        setChartData(data.chart || [])
+      })
+      .catch(e => {
+        console.error('Fetch error →', e)
+        setError(e.message)
+      })
       .finally(() => setLoading(false))
-  }, [selectedClient, startDate, endDate, pplGroupBy])
-
-  const formatCurrency = val =>
-    typeof val === 'number'
-      ? `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-      : '--'
-
-  const formatNumber = val => (typeof val === 'number' ? val.toLocaleString() : '--')
-
-  const stats = [
-    { label: 'Qualified Leads', field: 'qualified_leads', iconType: 'bar' },
-    { label: 'PPC Leads', field: 'qualified_leads_ppc', iconType: 'bar' },
-    { label: 'LSA Leads', field: 'qualified_leads_lsa', iconType: 'bar' },
-    { label: 'SEO Leads', field: 'qualified_leads_seo', iconType: 'bar' },
-    { label: 'Total Spend', field: 'spend_total', iconType: 'wallet' },
-    { label: 'Total PPC Spend', field: 'spend_ppc', iconType: 'wallet' },
-    { label: 'LSA Spend', field: 'spend_lsa', iconType: 'wallet' },
-    { label: 'SEO Spend', field: 'spend_seo', iconType: 'wallet' },
-    { label: 'CPQL Total', field: 'cpql_total', iconType: 'dollar' },
-    { label: 'CPQL PPC', field: 'cpql_ppc', iconType: 'dollar' },
-    { label: 'CPQL LSA', field: 'cpql_lsa', iconType: 'dollar' },
-    { label: 'CPQL SEO', field: 'cpql_seo', iconType: 'dollar' },
-  ]
+  }, [selectedClient, startDate, endDate])
 
   const textColor = isDark ? '#e5e7eb' : '#374151'
   const gridColor = isDark ? '#374151' : '#e5e7eb'
@@ -228,7 +184,6 @@ export default function ModernDashboard() {
 
   return (
     <div>
-      {/* Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 py-3 sm:py-4 md:py-6 px-2 sm:px-4 md:px-6">
         <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />
         <DateSelector
@@ -238,95 +193,58 @@ export default function ModernDashboard() {
         />
       </div>
 
-      {/* Main Title */}
       <div className="w-full px-2 sm:px-4 md:px-6">
         <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 md:mb-6 mt-2 sm:mt-4 text-gray-900 dark:text-gray-100">
-          Cost Per Lead Data
+          Cost Per Lead Data [cost_per_lead_data]
         </h2>
 
-        {/* Stat Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 md:gap-6 mb-3 sm:mb-4 md:mb-6">
-          {stats.map(({ label, field, iconType }) => {
-            const value = pplMetrics?.[field] ?? 0
-            const formattedValue = field.includes('spend') || field.includes('cpql') ? formatCurrency(value) : formatNumber(value)
-            return (
-              <StatCard
-                key={field}
-                label={label}
-                value={formattedValue}
-                color="text-[#f36622] dark:text-[#f36622]"
-                iconType={iconType}
-              />
-            )
-          })}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 md:gap-6 mb-3 sm:mb-4 md:mb-6">
+          <StatCard label="Qualified Leads" value={metrics.qualified_leads ?? 0} iconType="bar" />
+          <StatCard label="Unique Callers" value={metrics.unique_callers ?? 0} iconType="bar" />
+          <StatCard label="Pct Leads Qualified" value={`${metrics.pct_leads_qualified ?? 0}%`} iconType="bar" />
         </div>
-
-        {/* REMOVED: Call Engagement Metrics */}
       </div>
 
-      {/* Charts & Table */}
       <div className="flex flex-col gap-4 sm:gap-5 md:gap-6 px-2 sm:px-4 md:px-6 mt-4 sm:mt-6 md:mt-10 w-full">
-        {/* Line Chart */}
-        <SectionCard title="Pay Per Lead">
-          <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
-            <select
-              className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
-              value={pplGroupBy}
-              onChange={e => setPplGroupBy(e.target.value)}
-            >
-              <option value="day">Daily</option>
-              <option value="week">Weekly</option>
-              <option value="month">Monthly</option>
-            </select>
-          </div>
+        <SectionCard title="Pay Per Lead - Line Chart">
           <div className="h-[200px] sm:h-[250px] md:h-[300px] bg-white dark:bg-slate-800 rounded-lg">
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={pplChartData} margin={{ top: 5, right: 20, left: 0, bottom: 0 }}>
+              <ComposedChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="colorPpc" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="colorLsa" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="colorSeo" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ec4899" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#ec4899" stopOpacity={0} />
+                  <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#f36622" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#f36622" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="date" tick={{ fontSize: 13, fill: textColor }} interval="preserveStartEnd" />
-                <YAxis label={{ angle: -90, position: 'insideLeft', fill: textColor }} tick={{ fontSize: 13, fill: textColor }} domain={[0, 'auto']} />
+
+                <XAxis dataKey="date" tick={{ fontSize: 13, fill: textColor }} />
+                <YAxis tick={{ fontSize: 13, fill: textColor }} domain={[0, 'auto']} />
                 <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
                 <Tooltip
                   contentStyle={{ borderRadius: 10, fontSize: 15, backgroundColor: tooltipBg, color: tooltipText, border: 'none' }}
                   labelStyle={{ fontWeight: 600, color: tooltipText }}
-                  formatter={(value) => `$${value.toFixed(2)}`}
                 />
                 <Legend verticalAlign="bottom" height={20} wrapperStyle={{ paddingTop: '10px' }} />
-                <Area type="monotone" dataKey="ppc" stroke="#10b981" strokeWidth={2} fill="url(#colorPpc)" name="PPC" />
-                <Area type="monotone" dataKey="lsa" stroke="#0ea5e9" strokeWidth={2} fill="url(#colorLsa)" name="LSA" />
-                <Area type="monotone" dataKey="seo" stroke="#ec4899" strokeWidth={2} fill="url(#colorSeo)" name="SEO" />
-                <Line type="monotone" dataKey="total" stroke="#f36622" name="Total" strokeWidth={2} />
+
+                <Line type="monotone" dataKey="total" stroke="#f36622" strokeWidth={2} fill="url(#colorTotal)" name="Qualified Leads" />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
         </SectionCard>
 
-        {/* Table */}
-        <LeadsTable leads={pplLeads} />
+        <LeadsTable leads={leads} />
       </div>
 
-      {/* Loading & Error */}
       {loading && (
-        <div className="fixed top-0 left-0 w-full h-full bg-white dark:bg-slate-900 bg-opacity-60 flex items-center justify-center z-50 text-gray-900 dark:text-gray-100">
-          Loading...
+        <div className="fixed inset-0 bg-white dark:bg-slate-900 bg-opacity-60 flex items-center justify-center z-50 text-gray-900 dark:text-gray-100">
+          Loading…
         </div>
       )}
       {error && (
-        <div className="fixed top-0 left-0 w-full flex justify-center p-2 sm:p-3 md:p-4">
-          <div className="bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 px-2 sm:px-3 md:px-4 py-1 sm:py-2 md:py-2 rounded">{error}</div>
+        <div className="fixed inset-x-0 top-4 flex justify-center">
+          <div className="bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 px-4 py-2 rounded max-w-lg break-words">
+            {error}
+          </div>
         </div>
       )}
     </div>
