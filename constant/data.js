@@ -166,6 +166,10 @@ export const topMenu = [
         childtitle: "QLead Bed Bug Composit",
         childlink: "/qlead_bedbug_composit",
       },
+      {
+        childtitle: "Cost Per Lead Data",
+        childlink: "/cost_per_lead_data",
+      },
     ],
   },
 ];

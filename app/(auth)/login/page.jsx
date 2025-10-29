@@ -16,11 +16,11 @@ export default function LockScreen() {
         <SignIn
           path="/login"
           routing="path"
-          signUpUrl="/sign-up" // Redirect to sign-up if user clicks "Sign up" (add page in Step 7)
+          signUpUrl="/sign-up" // Redirect to sign-up if user clicks "Sign up"
           afterSignInUrl="/" // Redirect to dashboard on success
           appearance={{
             elements: {
-              formButtonPrimary: "bg-orange-600 hover:bg-orange-800 text-white", // Match your button style
+              formButtonPrimary: "bg-orange-600 hover:bg-orange-800 text-white",
             },
           }}
         />
