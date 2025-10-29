@@ -1,24 +1,24 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import { ResponsiveContainer, ComposedChart, LineChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LabelList } from 'recharts';
-import useDarkmode from "@/hooks/useDarkMode";
+import { useEffect, useState } from 'react'
+import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import useDarkmode from "@/hooks/useDarkMode"
 
 function ClientSelector({ clients, selected, onSelect }) {
   return (
     <select
       className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-2 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
       value={selected}
-      onChange={(e) => onSelect(e.target.value)}
+      onChange={e => onSelect(e.target.value)}
     >
       <option value="">Select Client</option>
-      {clients.map((c) => (
+      {clients.map(c => (
         <option key={c.client_id ?? c.cr_client_id} value={c.client_id ?? c.cr_client_id}>
           {c.cr_company_name}
         </option>
       ))}
     </select>
-  );
+  )
 }
 
 function DateSelector({ startDate, endDate, onChange }) {
@@ -41,57 +41,36 @@ function DateSelector({ startDate, endDate, onChange }) {
   )
 }
 
-function PeriodSelector({ period, onChange }) {
-  return (
-    <select
-      className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 py-2 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
-      value={period}
-      onChange={(e) => onChange(e.target.value)}
-    >
-      <option value="day">Daily</option>
-      <option value="week">Weekly</option>
-      <option value="month">Monthly</option>
-    </select>
-  );
-}
-
-function StatCard({ label, value, sublabel, color = 'text-blue-600', changeText, changeColor, iconType }) {
+function StatCard({ label, value, sublabel, color = 'text-[#f36622]', iconType }) {
   const getIcon = (type) => {
-    if (type === 'bar') {
-      return (
-        <svg className={`w-5 h-5 ${color}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-          <rect x="4" y="10" width="4" height="10" />
-          <rect x="10" y="4" width="4" height="16" />
-          <rect x="16" y="8" width="4" height="12" />
-        </svg>
-      );
-    }
-    if (type === 'wallet') {
-      return (
-        <svg className={`w-5 h-5 ${color}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-          <path d="M20 7V17C20 18.1046 19.1046 19 18 19H6C4.89543 19 4 18.1046 4 17V7C4 5.89543 4.89543 5 6 5H18C19.1046 5 20 5.89543 20 7ZM4 10H20" />
-          <circle cx="18" cy="12" r="1" />
-        </svg>
-      );
-    }
-    if (type === 'dollar') {
-      return (
-        <svg className={`w-5 h-5 ${color}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="12" y1="1" x2="12" y2="23" />
-          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-        </svg>
-      );
-    }
-    return null;
-  };
+    if (type === 'bar') return (
+      <svg className={`w-5 h-5 ${color}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+        <rect x="4" y="10" width="4" height="10" />
+        <rect x="10" y="4" width="4" height="16" />
+        <rect x="16" y="8" width="4" height="12" />
+      </svg>
+    )
+    if (type === 'wallet') return (
+      <svg className={`w-5 h-5 ${color}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+        <path d="M20 7V17C20 18.1046 19.1046 19 18 19H6C4.89543 19 4 18.1046 4 17V7C4 5.89543 4.89543 5 6 5H18C19.1046 5 20 5.89543 20 7ZM4 10H20" />
+        <circle cx="18" cy="12" r="1" />
+      </svg>
+    )
+    if (type === 'dollar') return (
+      <svg className={`w-5 h-5 ${color}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="12" y1="1" x2="12" y2="23" />
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+      </svg>
+    )
+    return null
+  }
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-[#f36622] p-4 flex justify-between items-start min-w-[120px] transition hover:shadow-lg hover:bg-[#f36622]/5 dark:hover:bg-slate-700">
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow p-4 flex justify-between items-start min-w-[120px] transition hover:shadow-lg hover:bg-[#f36622]/5 dark:hover:bg-slate-700 border border-[#f36622]">
       <div className="flex flex-col">
         <span className="text-sm text-gray-600 dark:text-gray-300">{label}</span>
         {sublabel && <span className="text-xs text-gray-500 dark:text-gray-400">{sublabel}</span>}
         <span className={`text-2xl sm:text-3xl font-bold ${color}`}>{value}</span>
-        {changeText && <span className={`text-sm font-medium ${changeColor}`}>{changeText}</span>}
       </div>
       {iconType && (
         <div className="ml-4">
@@ -101,7 +80,7 @@ function StatCard({ label, value, sublabel, color = 'text-blue-600', changeText,
         </div>
       )}
     </div>
-  );
+  )
 }
 
 function SectionCard({ children, title }) {
@@ -110,82 +89,48 @@ function SectionCard({ children, title }) {
       {title && <h3 className="text-base sm:text-lg md:text-xl font-bold mb-2 sm:mb-3 md:mb-4 text-gray-800 dark:text-gray-200">{title}</h3>}
       {children}
     </section>
-  );
+  )
 }
 
-function GoogleAdsQLeadMetrics({ metrics }) {
-  const formatCurrency = (val) =>
-    typeof val === 'number'
-      ? `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-      : '--';
-
-  const formatNumber = (val) => (typeof val === 'number' ? val.toLocaleString() : '--');
-
-  const stats = [
-    { label: 'PPC QLeads', field: 'ppcQLeads', iconType: 'bar', format: formatNumber },
-    { label: 'Total Spend', field: 'totalSpend', iconType: 'wallet', format: formatCurrency },
-    { label: 'CPQL', field: 'cpql', iconType: 'dollar', format: formatCurrency },
-  ];
-
+function LeadsTable({ leads }) {
   return (
-    <SectionCard title="Google Ads QLead Metrics">
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-2 sm:gap-3 md:gap-6">
-        {stats.map(({ label, field, iconType, format }) => (
-          <StatCard
-            key={field}
-            label={label}
-            value={format(metrics?.[field] ?? 0)}
-            color="text-[#f36622] dark:text-[#f36622]"
-            iconType={iconType}
-          />
-        ))}
-      </div>
-    </SectionCard>
-  );
-}
-
-function GoogleAdsQLeadTable({ campaigns }) {
-  const formatCurrency = (val) =>
-    typeof val === 'number'
-      ? `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-      : '--';
-
-  const formatDecimal = (val) => (typeof val === 'number' ? val.toFixed(2) : '--');
-
-  return (
-    <SectionCard title="Google Ads QLead Metrics by Campaign">
+    <SectionCard title="Pay Per Lead">
       <div className="overflow-x-auto w-full">
         <table className="min-w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg">
           <thead className="bg-gray-100 dark:bg-slate-700">
             <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Campaign</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Spend</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">QLeads</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">CPQL</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Avg Leads Score</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Avg Close Score</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">First Contact Date</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Customer Phone</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Customer Name</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Customer City</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Customer State</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Service Inquired</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Lead Score</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Close Score</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">Human Engaged</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">First Source</th>
             </tr>
           </thead>
           <tbody>
-            {campaigns.length > 0 ? (
-              campaigns.map((campaign, index) => (
+            {leads.length > 0 ? (
+              leads.map((lead, index) => (
                 <tr key={index} className={index % 2 === 0 ? 'bg-gray-50 dark:bg-slate-700' : 'bg-white dark:bg-slate-800'}>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{campaign.campaign || '--'}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">
-                    {formatCurrency(campaign.spend)}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{campaign.qleads || 0}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">
-                    {formatCurrency(campaign.cpql)}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{formatDecimal(campaign.avg_lead_score)}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{formatDecimal(campaign.avg_close_score)}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.first_contact_date || '--'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_phone_number || '--'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_name || '--'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_city || '--'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_state || '--'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.service_inquired || '--'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.lead_score_max || 0}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.close_score_max || 0}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.human_engaged ? 'Yes' : 'No'}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.first_source || '--'}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                  No campaign data found for the selected period.
+                <td colSpan="10" className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                  No qualified leads found for the selected period.
                 </td>
               </tr>
             )}
@@ -193,149 +138,95 @@ function GoogleAdsQLeadTable({ campaigns }) {
         </table>
       </div>
     </SectionCard>
-  );
+  )
 }
 
-function VolumeCostChart({ data }) {
-  const [isDark] = useDarkmode();
-  const textColor = isDark ? '#e5e7eb' : '#374151';
-  const gridColor = isDark ? '#374151' : '#e5e7eb';
-  const tooltipBg = isDark ? '#1f2937' : '#ffffff';
-  const tooltipText = isDark ? '#ffffff' : '#374151';
-
-  return (
-    <div className="h-[200px] sm:h-[250px] md:h-[300px] bg-white dark:bg-slate-800 rounded-lg">
-      <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart
-          data={data}
-          margin={{ top: 5, right: 20, left: 0, bottom: 0 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-          <XAxis dataKey="period" tick={{ fontSize: 13, fill: textColor }} interval="preserveStartEnd" />
-          <YAxis yAxisId="left" label={{ value: 'QLeads Volume', angle: -90, position: 'insideLeft', fill: textColor }} allowDecimals={false} tick={{ fontSize: 13, fill: textColor }} domain={[0, 'auto']} />
-          <YAxis yAxisId="right" orientation="right" label={{ value: 'Cost', angle: 90, position: 'insideRight', fill: textColor }} tick={{ fontSize: 13, fill: textColor }} />
-          <Tooltip
-            contentStyle={{ borderRadius: 10, fontSize: 15, backgroundColor: tooltipBg, color: tooltipText, border: 'none' }}
-            labelStyle={{ fontWeight: 600, color: tooltipText }}
-            formatter={(value, name) => name === 'Cost' ? `$${value.toLocaleString()}` : value}
-          />
-          <Legend verticalAlign="bottom" height={20} wrapperStyle={{ paddingTop: '10px' }} />
-          <Bar yAxisId="right" dataKey="spend" fill="#0499eaff" name="Cost" barSize={30}>
-            <LabelList dataKey="spend" position="top" formatter={(value) => value === 0 ? '' : `$${Math.round(value)}`} fill={textColor} fontSize={12} />
-          </Bar>
-          <Line yAxisId="left" type="monotone" dataKey="qleads" stroke="#f36622" name="QLeads Volume" strokeWidth={3}>
-            <LabelList dataKey="qleads" position="top" formatter={(value) => value === 0 ? '' : value} fill={textColor} fontSize={12} />
-          </Line>
-        </ComposedChart>
-      </ResponsiveContainer>
-    </div>
-  );
+function createEmptyChartData(start, end) {
+  if (!start || !end || start > end) return []
+  const result = []
+  let current = new Date(start)
+  const endDateObj = new Date(end)
+  while (current <= endDateObj) {
+    const dateStr = current.toISOString().slice(0, 10)
+    result.push({ date: dateStr, total: 0, ppc: 0, lsa: 0, seo: 0 })
+    current.setDate(current.getDate() + 1)
+  }
+  return result
 }
 
-function CostPerChart({ data }) {
-  const [isDark] = useDarkmode();
-  const textColor = isDark ? '#e5e7eb' : '#374151';
-  const gridColor = isDark ? '#374151' : '#e5e7eb';
-  const tooltipBg = isDark ? '#1f2937' : '#ffffff';
-  const tooltipText = isDark ? '#ffffff' : '#374151';
-
-  return (
-    <div className="h-[200px] sm:h-[250px] md:h-[300px] bg-white dark:bg-slate-800 rounded-lg">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          data={data}
-          margin={{ top: 5, right: 20, left: 0, bottom: 0 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-          <XAxis dataKey="period" tick={{ fontSize: 13, fill: textColor }} interval="preserveStartEnd" />
-          <YAxis label={{ value: 'Cost Per QLead', angle: -90, position: 'insideLeft', fill: textColor }} tick={{ fontSize: 13, fill: textColor }} />
-          <Tooltip
-            contentStyle={{ borderRadius: 10, fontSize: 15, backgroundColor: tooltipBg, color: tooltipText, border: 'none' }}
-            labelStyle={{ fontWeight: 600, color: tooltipText }}
-            formatter={(value) => `$${Math.round(value).toLocaleString()}`}
-          />
-          <Legend verticalAlign="bottom" height={20} wrapperStyle={{ paddingTop: '10px' }} />
-          <Line type="monotone" dataKey="cpql" stroke="#f36622" name="Cost Per QLead" strokeWidth={3}>
-            <LabelList dataKey="cpql" position="top" formatter={(value) => value === 0 ? '' : `$${Math.round(value)}`} fill={textColor} fontSize={12} />
-          </Line>
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
-  );
-}
-
-export default function GoogleAdsQLead() {
-  const today = new Date().toISOString().slice(0, 10);
-  const [clients, setClients] = useState([]);
-  const [selectedClient, setSelectedClient] = useState('');
-  const [startDate, setStartDate] = useState(today);
-  const [endDate, setEndDate] = useState(today);
-  const [volumePeriod, setVolumePeriod] = useState('month');
-  const [costPeriod, setCostPeriod] = useState('month');
-  const [metrics, setMetrics] = useState(null);
-  const [campaigns, setCampaigns] = useState([]);
-  const [volumeCostData, setVolumeCostData] = useState([]);
-  const [costPerData, setCostPerData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const getDummyPeriod = (periodType) => {
-    const d = new Date();
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    switch (periodType) {
-      case 'day':
-        return `${year}-${month}-${day}`;
-      case 'week':
-        const jan1 = new Date(year, 0, 1);
-        const days = Math.floor((d - jan1) / (24 * 60 * 60 * 1000));
-        const week = Math.ceil((d.getDay() + 1 + days) / 7);
-        return `${year}-W${String(week).padStart(2, '0')}`;
-      case 'month':
-        return `${year}-${month}`;
-      default:
-        return `${year}-${month}-${day}`;
-    }
-  };
+export default function ModernDashboard() {
+  const [isDark] = useDarkmode()
+  const today = new Date().toISOString().slice(0, 10)
+  const [clients, setClients] = useState([])
+  const [selectedClient, setSelectedClient] = useState('')
+  const [startDate, setStartDate] = useState(today)
+  const [endDate, setEndDate] = useState(today)
+  const [pplMetrics, setPplMetrics] = useState(null)
+  const [pplLeads, setPplLeads] = useState([])
+  const [pplChartData, setPplChartData] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [pplGroupBy, setPplGroupBy] = useState('month')
 
   useEffect(() => {
     fetch('/api/clients')
-      .then((res) => res.json())
+      .then(res => res.json())
       .then(({ data, error }) => {
-        console.log('Clients Data:', data, 'Error:', error);
-        if (error) throw new Error(error);
-        setClients(data || []);
+        if (error) throw new Error(error)
+        setClients(data || [])
       })
-      .catch((err) => setError(err.message));
-  }, []);
+      .catch(err => setError(err.message))
+  }, [])
 
   useEffect(() => {
     if (!selectedClient || !startDate || !endDate || startDate > endDate) {
-      setMetrics(null);
-      setCampaigns([]);
-      setVolumeCostData([]);
-      setCostPerData([]);
-      return;
+      setPplMetrics(null)
+      setPplLeads([])
+      setPplChartData([])
+      return
     }
 
-    setLoading(true);
-    fetch(`/api/google-ads-qlead-metrics?clientId=${selectedClient}&start=${startDate}&end=${endDate}&volumePeriod=${volumePeriod}&costPeriod=${costPeriod}`)
-      .then((res) => res.json())
-      .then((result) => {
-        console.log('Metrics Response:', result);
-        if (result.error) throw new Error(result.error);
-        setMetrics(result.data.metrics);
-        setCampaigns(result.data.campaignData);
-        setVolumeCostData(result.data.chartData?.volumeCost ?? []);
-        setCostPerData(result.data.chartData?.costPer ?? []);
+    setLoading(true)
+    fetch(`/api/ppl-data?clientId=${selectedClient}&start=${startDate}&end=${endDate}&groupBy=${pplGroupBy}`)
+      .then(res => res.json())
+      .then(({ data, error }) => {
+        if (error) throw new Error(error)
+        setPplMetrics(data.metrics || null)
+        setPplLeads(data.leads || [])
+        setPplChartData(data.chart || createEmptyChartData(startDate, endDate))
       })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [selectedClient, startDate, endDate, volumePeriod, costPeriod]);
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false))
+  }, [selectedClient, startDate, endDate, pplGroupBy])
+
+  const formatCurrency = val =>
+    typeof val === 'number'
+      ? `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      : '--'
+
+  const formatNumber = val => (typeof val === 'number' ? val.toLocaleString() : '--')
+
+  const stats = [
+    { label: 'Qualified Leads', field: 'qualified_leads', iconType: 'bar' },
+    { label: 'PPC Leads', field: 'qualified_leads_ppc', iconType: 'bar' },
+    { label: 'LSA Leads', field: 'qualified_leads_lsa', iconType: 'bar' },
+    { label: 'SEO Leads', field: 'qualified_leads_seo', iconType: 'bar' },
+    { label: 'Total Spend', field: 'spend_total', iconType: 'wallet' },
+    { label: 'Total PPC Spend', field: 'spend_ppc', iconType: 'wallet' },
+    { label: 'LSA Spend', field: 'spend_lsa', iconType: 'wallet' },
+    { label: 'SEO Spend', field: 'spend_seo', iconType: 'wallet' },
+    { label: 'CPQL Total', field: 'cpql_total', iconType: 'dollar' },
+    { label: 'CPQL PPC', field: 'cpql_ppc', iconType: 'dollar' },
+    { label: 'CPQL LSA', field: 'cpql_lsa', iconType: 'dollar' },
+    { label: 'CPQL SEO', field: 'cpql_seo', iconType: 'dollar' },
+  ]
+
+  const textColor = isDark ? '#e5e7eb' : '#374151'
+  const gridColor = isDark ? '#374151' : '#e5e7eb'
+  const tooltipBg = isDark ? '#1f2937' : '#ffffff'
+  const tooltipText = isDark ? '#ffffff' : '#374151'
 
   return (
-    //background color
     <div>
       {/* Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 py-3 sm:py-4 md:py-6 px-2 sm:px-4 md:px-6">
@@ -347,43 +238,97 @@ export default function GoogleAdsQLead() {
         />
       </div>
 
-      {/* Content */}
+      {/* Main Title */}
       <div className="w-full px-2 sm:px-4 md:px-6">
-        <GoogleAdsQLeadMetrics metrics={metrics} />
-        <GoogleAdsQLeadTable campaigns={campaigns} />
-        <SectionCard title="PPC QLeads Volume & Cost by Period">
-          <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
-            <PeriodSelector period={volumePeriod} onChange={setVolumePeriod} />
-          </div>
-          {selectedClient && volumeCostData.length === 0 ? (
-            <p className="text-center text-gray-500 dark:text-gray-400">No data available for the selected period.</p>
-          ) : (
-            <VolumeCostChart data={volumeCostData.length > 0 ? volumeCostData : [{ period: getDummyPeriod(volumePeriod), spend: 0, qleads: 0 }]} />
-          )}
-        </SectionCard>
-        <SectionCard title="Cost Per QLead by Period">
-          <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
-            <PeriodSelector period={costPeriod} onChange={setCostPeriod} />
-          </div>
-          {selectedClient && costPerData.length === 0 ? (
-            <p className="text-center text-gray-500 dark:text-gray-400">No data available for the selected period.</p>
-          ) : (
-            <CostPerChart data={costPerData.length > 0 ? costPerData : [{ period: getDummyPeriod(costPeriod), cpql: 0 }]} />
-          )}
-        </SectionCard>
+        <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 md:mb-6 mt-2 sm:mt-4 text-gray-900 dark:text-gray-100">
+          Cost Per Lead Data
+        </h2>
+
+        {/* Stat Cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 md:gap-6 mb-3 sm:mb-4 md:mb-6">
+          {stats.map(({ label, field, iconType }) => {
+            const value = pplMetrics?.[field] ?? 0
+            const formattedValue = field.includes('spend') || field.includes('cpql') ? formatCurrency(value) : formatNumber(value)
+            return (
+              <StatCard
+                key={field}
+                label={label}
+                value={formattedValue}
+                color="text-[#f36622] dark:text-[#f36622]"
+                iconType={iconType}
+              />
+            )
+          })}
+        </div>
+
+        {/* REMOVED: Call Engagement Metrics */}
       </div>
 
+      {/* Charts & Table */}
+      <div className="flex flex-col gap-4 sm:gap-5 md:gap-6 px-2 sm:px-4 md:px-6 mt-4 sm:mt-6 md:mt-10 w-full">
+        {/* Line Chart */}
+        <SectionCard title="Pay Per Lead">
+          <div className="flex justify-end mb-2 sm:mb-3 md:mb-4">
+            <select
+              className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-1 sm:py-2 text-sm sm:text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
+              value={pplGroupBy}
+              onChange={e => setPplGroupBy(e.target.value)}
+            >
+              <option value="day">Daily</option>
+              <option value="week">Weekly</option>
+              <option value="month">Monthly</option>
+            </select>
+          </div>
+          <div className="h-[200px] sm:h-[250px] md:h-[300px] bg-white dark:bg-slate-800 rounded-lg">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={pplChartData} margin={{ top: 5, right: 20, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorPpc" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorLsa" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorSeo" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ec4899" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#ec4899" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="date" tick={{ fontSize: 13, fill: textColor }} interval="preserveStartEnd" />
+                <YAxis label={{ angle: -90, position: 'insideLeft', fill: textColor }} tick={{ fontSize: 13, fill: textColor }} domain={[0, 'auto']} />
+                <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                <Tooltip
+                  contentStyle={{ borderRadius: 10, fontSize: 15, backgroundColor: tooltipBg, color: tooltipText, border: 'none' }}
+                  labelStyle={{ fontWeight: 600, color: tooltipText }}
+                  formatter={(value) => `$${value.toFixed(2)}`}
+                />
+                <Legend verticalAlign="bottom" height={20} wrapperStyle={{ paddingTop: '10px' }} />
+                <Area type="monotone" dataKey="ppc" stroke="#10b981" strokeWidth={2} fill="url(#colorPpc)" name="PPC" />
+                <Area type="monotone" dataKey="lsa" stroke="#0ea5e9" strokeWidth={2} fill="url(#colorLsa)" name="LSA" />
+                <Area type="monotone" dataKey="seo" stroke="#ec4899" strokeWidth={2} fill="url(#colorSeo)" name="SEO" />
+                <Line type="monotone" dataKey="total" stroke="#f36622" name="Total" strokeWidth={2} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        </SectionCard>
+
+        {/* Table */}
+        <LeadsTable leads={pplLeads} />
+      </div>
+
+      {/* Loading & Error */}
       {loading && (
         <div className="fixed top-0 left-0 w-full h-full bg-white dark:bg-slate-900 bg-opacity-60 flex items-center justify-center z-50 text-gray-900 dark:text-gray-100">
           Loading...
         </div>
       )}
-
       {error && (
         <div className="fixed top-0 left-0 w-full flex justify-center p-2 sm:p-3 md:p-4">
           <div className="bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 px-2 sm:px-3 md:px-4 py-1 sm:py-2 md:py-2 rounded">{error}</div>
         </div>
       )}
     </div>
-  );
+  )
 }
