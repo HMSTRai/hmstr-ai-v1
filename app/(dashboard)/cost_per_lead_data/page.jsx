@@ -80,7 +80,7 @@ function SectionCard({ children, title }) {
 
 function LeadsTable({ leads }) {
   return (
-    <SectionCard title="Pay Per Lead - Table of Qualified Leads">
+    <SectionCard title="Pay Per Lead">
       <div className="overflow-x-auto w-full">
         <table className="min-w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg">
           <thead className="bg-gray-100 dark:bg-slate-700">
@@ -195,7 +195,7 @@ export default function CostPerLeadDashboard() {
 
       <div className="w-full px-2 sm:px-4 md:px-6">
         <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 md:mb-6 mt-2 sm:mt-4 text-gray-900 dark:text-gray-100">
-          Cost Per Lead Data [cost_per_lead_data]
+          Cost Per Lead Data
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 md:gap-6 mb-3 sm:mb-4 md:mb-6">
@@ -206,7 +206,7 @@ export default function CostPerLeadDashboard() {
       </div>
 
       <div className="flex flex-col gap-4 sm:gap-5 md:gap-6 px-2 sm:px-4 md:px-6 mt-4 sm:mt-6 md:mt-10 w-full">
-        <SectionCard title="Pay Per Lead - Line Chart">
+        <SectionCard title="Pay Per Lead">
           <div className="h-[200px] sm:h-[250px] md:h-[300px] bg-white dark:bg-slate-800 rounded-lg">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 0 }}>

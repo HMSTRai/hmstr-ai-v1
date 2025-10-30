@@ -6,7 +6,6 @@ export async function GET(req) {
   const clientId = searchParams.get('clientId')
   const start = searchParams.get('start')
   const end = searchParams.get('end')
-  const groupBy = searchParams.get('groupBy') || 'month'
 
   const clientIdNum = Number(clientId)
   if (isNaN(clientIdNum))
@@ -23,21 +22,21 @@ export async function GET(req) {
   console.log('Calling RPCs →', { clientId: clientIdNum, fStart, fEnd })
 
   try {
-    // 1. Metrics
+    // 1. Metrics – uses input_* (your get_pplmetrics_v3)
     const { data: mData, error: mErr } = await supabaseServer.rpc('get_pplmetrics_v3', {
       input_client_id: clientIdNum,
       input_start_date: fStart,
       input_end_date: fEnd,
     })
 
-    // 2. Leads (uses p_client_id, p_start_date, p_end_date)
+    // 2. Leads – **MUST** use p_* (your PL/pgSQL function)
     const { data: lData, error: lErr } = await supabaseServer.rpc('get_pplmetrics_leads_v3', {
       p_client_id: clientIdNum,
       p_start_date: fStart,
       p_end_date: fEnd,
     })
 
-    // 3. Line Chart (uses first_source_name)
+    // 3. Line chart – uses input_* (your get_pplmetrics_linechartv3)
     const { data: cData, error: cErr } = await supabaseServer.rpc('get_pplmetrics_linechartv3', {
       input_client_id: clientIdNum,
       input_start_date: fStart,
@@ -50,7 +49,7 @@ export async function GET(req) {
       return Response.json({ error: msg }, { status: 500 })
     }
 
-    // Normalize chart to use `qualified_leads`
+    // Chart: use qualified_leads from your line chart RPC
     const chart = (cData ?? []).map(row => ({
       date: row.date_key,
       total: row.qualified_leads ?? 0,
