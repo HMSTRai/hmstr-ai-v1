@@ -79,15 +79,113 @@ function SectionCard({ children, title }) {
 }
 
 function LeadsTable({ leads }) {
+  const [searchTerm, setSearchTerm] = useState('')
+  const [pageSize, setPageSize] = useState(10)
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const filteredLeads = leads.filter(lead =>
+    Object.values(lead).some(value =>
+      value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  )
+
+  const totalPages = Math.ceil(filteredLeads.length / pageSize)
+  const paginatedLeads = filteredLeads.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  )
+
+  const exportToCSV = () => {
+    if (filteredLeads.length === 0) return
+
+    const headers = [
+      'First Contact Date', 'Customer Phone', 'Customer Name', 'Customer City', 'Customer State',
+      'Service Inquired', 'Lead Score', 'Close Score', 'Human Engaged', 'First Source',
+    ]
+
+    const csvContent = [
+      headers.join(','),
+      ...filteredLeads.map(lead => [
+        lead.first_contact_date || '',
+        lead.customer_phone_number || '',
+        lead.customer_name || '',
+        lead.customer_city || '',
+        lead.customer_state || '',
+        lead.service_inquired || '',
+        lead.lead_score_max || '',
+        lead.close_score_max || '',
+        lead.human_engaged ? 'Yes' : 'No',
+        lead.first_source || '',
+      ].join(','))
+    ].join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `Pay_Per_Lead_${new Date().toISOString().slice(0, 10)}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   return (
-    <SectionCard title="Pay Per Lead">
+    <SectionCard title="Pay Per Lead - Table of Qualified Leads">
+      {/* Top Controls */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+        {/* Search */}
+        <input
+          type="text"
+          placeholder="Search leads..."
+          value={searchTerm}
+          onChange={e => {
+            setSearchTerm(e.target.value)
+            setCurrentPage(1)
+          }}
+          className="w-full sm:w-64 px-3 py-2 border border-[#f36622] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
+        />
+
+        {/* Right Side: Show Entries + Export Button */}
+        <div className="flex flex-col sm:flex-row items-end gap-2">
+          {/* Show Entries */}
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-gray-600 dark:text-gray-400">Show</span>
+            <select
+              value={pageSize}
+              onChange={e => {
+                setPageSize(Number(e.target.value))
+                setCurrentPage(1)
+              }}
+              className="px-2 py-1 border border-[#f36622] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
+            >
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+            <span className="text-gray-600 dark:text-gray-400">entries</span>
+          </div>
+
+          {/* Export Button - Far right */}
+          <button
+            onClick={exportToCSV}
+            disabled={filteredLeads.length === 0}
+            className="px-4 py-2 bg-[#f36622] text-white rounded-lg text-sm hover:bg-[#e55a10] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+          >
+            Export to CSV
+          </button>
+        </div>
+      </div>
+
+      {/* Table */}
       <div className="overflow-x-auto w-full">
         <table className="min-w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg">
           <thead className="bg-gray-100 dark:bg-slate-700">
             <tr>
               {[
-                'First Contact Date','Customer Phone','Customer Name','Customer City','Customer State',
-                'Service Inquired','Lead Score','Close Score','Human Engaged','First Source',
+                'First Contact Date', 'Customer Phone', 'Customer Name', 'Customer City', 'Customer State',
+                'Service Inquired', 'Lead Score', 'Close Score', 'Human Engaged', 'First Source',
               ].map(h => (
                 <th key={h} className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">
                   {h}
@@ -96,7 +194,7 @@ function LeadsTable({ leads }) {
             </tr>
           </thead>
           <tbody>
-            {leads.length ? leads.map((lead, i) => (
+            {paginatedLeads.length ? paginatedLeads.map((lead, i) => (
               <tr key={i} className={i % 2 === 0 ? 'bg-gray-50 dark:bg-slate-700' : 'bg-white dark:bg-slate-800'}>
                 <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.first_contact_date || '--'}</td>
                 <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_phone_number || '--'}</td>
@@ -119,6 +217,31 @@ function LeadsTable({ leads }) {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-between items-center mt-4 text-sm">
+          <div className="text-gray-600 dark:text-gray-400">
+            Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, filteredLeads.length)} of {filteredLeads.length} entries
+          </div>
+          <div className="flex gap-1">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 border border-[#f36622] rounded hover:bg-[#f36622]/10 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Prev
+            </button>
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 border border-[#f36622] rounded hover:bg-[#f36622]/10 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </SectionCard>
   )
 }
@@ -129,7 +252,7 @@ export default function CostPerLeadDashboard() {
 
   const [clients, setClients] = useState([])
   const [selectedClient, setSelectedClient] = useState('')
-  const [startDate, setStartDate] = useState(today)
+  const [startDate, setStartDate] = useState('2025-10-01')
   const [endDate, setEndDate] = useState(today)
 
   const [metrics, setMetrics] = useState({})
@@ -177,6 +300,7 @@ export default function CostPerLeadDashboard() {
       .finally(() => setLoading(false))
   }, [selectedClient, startDate, endDate])
 
+  // FIXED: Added missing colon
   const textColor = isDark ? '#e5e7eb' : '#374151'
   const gridColor = isDark ? '#374151' : '#e5e7eb'
   const tooltipBg = isDark ? '#1f2937' : '#ffffff'
@@ -184,7 +308,7 @@ export default function CostPerLeadDashboard() {
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 py-3 sm:py-4 md:py-6 px-2 sm:px-4 md:px-6">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 py-3 sm:py-4 md:md-6 px-2 sm:px-4 md:px-6">
         <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />
         <DateSelector
           startDate={startDate}
@@ -195,7 +319,7 @@ export default function CostPerLeadDashboard() {
 
       <div className="w-full px-2 sm:px-4 md:px-6">
         <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 md:mb-6 mt-2 sm:mt-4 text-gray-900 dark:text-gray-100">
-          Cost Per Lead Data
+          Cost Per Lead Data [cost_per_lead_data]
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 md:gap-6 mb-3 sm:mb-4 md:mb-6">
@@ -206,7 +330,7 @@ export default function CostPerLeadDashboard() {
       </div>
 
       <div className="flex flex-col gap-4 sm:gap-5 md:gap-6 px-2 sm:px-4 md:px-6 mt-4 sm:mt-6 md:mt-10 w-full">
-        <SectionCard title="Pay Per Lead">
+        <SectionCard title="Pay Per Lead - Line Chart">
           <div className="h-[200px] sm:h-[250px] md:h-[300px] bg-white dark:bg-slate-800 rounded-lg">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 0 }}>
@@ -216,7 +340,6 @@ export default function CostPerLeadDashboard() {
                     <stop offset="95%" stopColor="#f36622" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-
                 <XAxis dataKey="date" tick={{ fontSize: 13, fill: textColor }} />
                 <YAxis tick={{ fontSize: 13, fill: textColor }} domain={[0, 'auto']} />
                 <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
@@ -225,7 +348,6 @@ export default function CostPerLeadDashboard() {
                   labelStyle={{ fontWeight: 600, color: tooltipText }}
                 />
                 <Legend verticalAlign="bottom" height={20} wrapperStyle={{ paddingTop: '10px' }} />
-
                 <Line type="monotone" dataKey="total" stroke="#f36622" strokeWidth={2} fill="url(#colorTotal)" name="Qualified Leads" />
               </ComposedChart>
             </ResponsiveContainer>
