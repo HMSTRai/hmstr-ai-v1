@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { ComposedChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import useDarkmode from '@/hooks/useDarkMode'
+import generatePDF, { Margin } from 'react-to-pdf'  // PDF export
 
 function ClientSelector({ clients, selected, onSelect }) {
   return (
@@ -132,9 +133,7 @@ function LeadsTable({ leads }) {
 
   return (
     <SectionCard title="Pay Per Lead">
-      {/* Top Controls */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-        {/* Search */}
         <input
           type="text"
           placeholder="Search leads..."
@@ -145,10 +144,7 @@ function LeadsTable({ leads }) {
           }}
           className="w-full sm:w-64 px-3 py-2 border border-[#f36622] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
         />
-
-        {/* Right Side: Show Entries + Export Button */}
         <div className="flex flex-col sm:flex-row items-end gap-2">
-          {/* Show Entries */}
           <div className="flex items-center gap-2 text-sm">
             <span className="text-gray-600 dark:text-gray-400">Show</span>
             <select
@@ -166,19 +162,16 @@ function LeadsTable({ leads }) {
             </select>
             <span className="text-gray-600 dark:text-gray-400">entries</span>
           </div>
-
-          {/* Export Button - Far right */}
           <button
             onClick={exportToCSV}
             disabled={filteredLeads.length === 0}
-            className="ml-2 px-4 py-2 bg-[#f36622] text-white rounded-lg text-sm hover:bg-[#e55a10] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-2 bg-[#f36622] text-white rounded-lg text-sm hover:bg-[#e55a10] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
           >
             Export to CSV
           </button>
         </div>
       </div>
 
-      {/* Table */}
       <div className="overflow-x-auto w-full">
         <table className="min-w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg">
           <thead className="bg-gray-100 dark:bg-slate-700">
@@ -218,7 +211,6 @@ function LeadsTable({ leads }) {
         </table>
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-between items-center mt-4 text-sm">
           <div className="text-gray-600 dark:text-gray-400">
@@ -262,6 +254,25 @@ export default function CostPerLeadDashboard() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
+  // Ref to capture the entire page
+  const pageRef = useRef(null)
+
+  // PDF Export Function
+  const exportToPDF = () => {
+    generatePDF(pageRef, {
+      filename: `Cost_Per_Lead_Report_${today}.pdf`,
+      page: { margin: Margin.MEDIUM },
+      overrides: {
+        pdf: {
+          compress: true,
+        },
+        canvas: {
+          useCORS: true,
+        },
+      },
+    })
+  }
+
   useEffect(() => {
     fetch('/api/clients')
       .then(r => r.json())
@@ -300,21 +311,34 @@ export default function CostPerLeadDashboard() {
       .finally(() => setLoading(false))
   }, [selectedClient, startDate, endDate])
 
-  // FIXED: Added missing colon
   const textColor = isDark ? '#e5e7eb' : '#374151'
   const gridColor = isDark ? '#374151' : '#e5e7eb'
   const tooltipBg = isDark ? '#1f2937' : '#ffffff'
   const tooltipText = isDark ? '#ffffff' : '#374151'
 
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 py-3 sm:py-4 md:md-6 px-2 sm:px-4 md:px-6">
-        <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />
-        <DateSelector
-          startDate={startDate}
-          endDate={endDate}
-          onChange={(type, val) => (type === 'startDate' ? setStartDate(val) : setEndDate(val))}
-        />
+    <div ref={pageRef} className="pb-16">
+      {/* Header with Client, Date, and Export Button */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 py-3 sm:py-4 md:py-6 px-2 sm:px-4 md:px-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
+          <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />
+          <DateSelector
+            startDate={startDate}
+            endDate={endDate}
+            onChange={(type, val) => (type === 'startDate' ? setStartDate(val) : setEndDate(val))}
+          />
+        </div>
+
+        {/* Export to PDF Button - Right next to Date */}
+        <button
+          onClick={exportToPDF}
+          className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 shadow transition-colors flex items-center gap-2 whitespace-nowrap"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Export to PDF
+        </button>
       </div>
 
       <div className="w-full px-2 sm:px-4 md:px-6">
