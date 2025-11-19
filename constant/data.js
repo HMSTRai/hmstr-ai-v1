@@ -154,8 +154,8 @@ export const topMenu = [
         childicon: "heroicons:presentation-chart-line",
       },
       {
-        childtitle: "Lead Quality Page",
-        childlink: "/lead_quality_page",
+        childtitle: "Lead Quality",
+        childlink: "/lead_quality_by_source",
         childicon: "heroicons:presentation-chart-line",
       },
       {
