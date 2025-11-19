@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
-import { ComposedChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import useDarkmode from '@/hooks/useDarkMode'
-import generatePDF, { Margin } from 'react-to-pdf'  // PDF export
+import generatePDF, { Margin } from 'react-to-pdf'
 
 function ClientSelector({ clients, selected, onSelect }) {
   return (
@@ -42,7 +42,7 @@ function DateSelector({ startDate, endDate, onChange }) {
   )
 }
 
-function StatCard({ label, value, iconType }) {
+function StatCard({ label, value, iconType = 'bar' }) {
   const icons = {
     bar: (
       <svg className="w-5 h-5 text-[#f36622]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
@@ -59,186 +59,27 @@ function StatCard({ label, value, iconType }) {
         <span className="text-sm text-gray-600 dark:text-gray-300">{label}</span>
         <span className="text-2xl sm:text-3xl font-bold text-[#f36622]">{value}</span>
       </div>
-      {iconType && (
-        <div className="ml-4">
-          <div className="w-10 h-10 rounded-full border border-[#f36622]/30 dark:border-[#f36622] flex items-center justify-center">
-            {icons[iconType]}
-          </div>
+      <div className="ml-4">
+        <div className="w-10 h-10 rounded-full border border-[#f36622]/30 dark:border-[#f36622] flex items-center justify-center">
+          {icons[iconType]}
         </div>
-      )}
+      </div>
     </div>
   )
 }
 
-function SectionCard({ children, title }) {
+function ChartSection({ title, children }) {
   return (
-    <section className="bg-white dark:bg-slate-800 rounded-2xl shadow p-3 sm:p-4 md:p-6 mb-3 sm:mb-4 md:mb-8 border border-[#f36622]">
-      {title && <h3 className="text-base sm:text-lg md:text-xl font-bold mb-2 sm:mb-3 md:mb-4 text-gray-800 dark:text-gray-200">{title}</h3>}
-      {children}
+    <section className="bg-white dark:bg-slate-800 rounded-2xl shadow p-4 md:p-6 mb-6 border border-[#f36622]">
+      <h3 className="text-lg md:text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">{title}</h3>
+      <div className="h-80 bg-gray-50 dark:bg-slate-900 rounded-lg p-4">
+        {children}
+      </div>
     </section>
   )
 }
 
-function LeadsTable({ leads }) {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [pageSize, setPageSize] = useState(10)
-  const [currentPage, setCurrentPage] = useState(1)
-
-  const filteredLeads = leads.filter(lead =>
-    Object.values(lead).some(value =>
-      value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  )
-
-  const totalPages = Math.ceil(filteredLeads.length / pageSize)
-  const paginatedLeads = filteredLeads.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  )
-
-  const exportToCSV = () => {
-    if (filteredLeads.length === 0) return
-
-    const headers = [
-      'First Contact Date', 'Customer Phone', 'Customer Name', 'Customer City', 'Customer State',
-      'Service Inquired', 'Lead Score', 'Close Score', 'Human Engaged', 'First Source',
-    ]
-
-    const csvContent = [
-      headers.join(','),
-      ...filteredLeads.map(lead => [
-        lead.first_contact_date || '',
-        lead.customer_phone_number || '',
-        lead.customer_name || '',
-        lead.customer_city || '',
-        lead.customer_state || '',
-        lead.service_inquired || '',
-        lead.lead_score_max || '',
-        lead.close_score_max || '',
-        lead.human_engaged ? 'Yes' : 'No',
-        lead.first_source || '',
-      ].join(','))
-    ].join('\n')
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const link = document.createElement('a')
-    const url = URL.createObjectURL(blob)
-    link.setAttribute('href', url)
-    link.setAttribute('download', `Pay_Per_Lead_${new Date().toISOString().slice(0, 10)}.csv`)
-    link.style.visibility = 'hidden'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
-
-  return (
-    <SectionCard title="Pay Per Lead">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-        <input
-          type="text"
-          placeholder="Search leads..."
-          value={searchTerm}
-          onChange={e => {
-            setSearchTerm(e.target.value)
-            setCurrentPage(1)
-          }}
-          className="w-full sm:w-64 px-3 py-2 border border-[#f36622] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
-        />
-        <div className="flex flex-col sm:flex-row items-end gap-2">
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-gray-600 dark:text-gray-400">Show</span>
-            <select
-              value={pageSize}
-              onChange={e => {
-                setPageSize(Number(e.target.value))
-                setCurrentPage(1)
-              }}
-              className="px-2 py-1 border border-[#f36622] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-            </select>
-            <span className="text-gray-600 dark:text-gray-400">entries</span>
-          </div>
-          <button
-            onClick={exportToCSV}
-            disabled={filteredLeads.length === 0}
-            className="px-4 py-2 bg-[#f36622] text-white rounded-lg text-sm hover:bg-[#e55a10] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-          >
-            Export to CSV
-          </button>
-        </div>
-      </div>
-
-      <div className="overflow-x-auto w-full">
-        <table className="min-w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg">
-          <thead className="bg-gray-100 dark:bg-slate-700">
-            <tr>
-              {[
-                'First Contact Date', 'Customer Phone', 'Customer Name', 'Customer City', 'Customer State',
-                'Service Inquired', 'Lead Score', 'Close Score', 'Human Engaged', 'First Source',
-              ].map(h => (
-                <th key={h} className="px-6 py-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedLeads.length ? paginatedLeads.map((lead, i) => (
-              <tr key={i} className={i % 2 === 0 ? 'bg-gray-50 dark:bg-slate-700' : 'bg-white dark:bg-slate-800'}>
-                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.first_contact_date || '--'}</td>
-                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_phone_number || '--'}</td>
-                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_name || '--'}</td>
-                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_city || '--'}</td>
-                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.customer_state || '--'}</td>
-                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.service_inquired || '--'}</td>
-                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.lead_score_max ?? 0}</td>
-                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.close_score_max ?? 0}</td>
-                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.human_engaged ? 'Yes' : 'No'}</td>
-                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-200 border-b dark:border-slate-600">{lead.first_source || '--'}</td>
-              </tr>
-            )) : (
-              <tr>
-                <td colSpan={10} className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                  No qualified leads found for the selected period.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {totalPages > 1 && (
-        <div className="flex justify-between items-center mt-4 text-sm">
-          <div className="text-gray-600 dark:text-gray-400">
-            Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, filteredLeads.length)} of {filteredLeads.length} entries
-          </div>
-          <div className="flex gap-1">
-            <button
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-              className="px-3 py-1 border border-[#f36622] rounded hover:bg-[#f36622]/10 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Prev
-            </button>
-            <button
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1 border border-[#f36622] rounded hover:bg-[#f36622]/10 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      )}
-    </SectionCard>
-  )
-}
-
-export default function CostPerLeadDashboard() {
+export default function LeadQualityBySourceDashboard() {
   const [isDark] = useDarkmode()
   const today = new Date().toISOString().slice(0, 10)
 
@@ -247,150 +88,140 @@ export default function CostPerLeadDashboard() {
   const [startDate, setStartDate] = useState('2025-10-01')
   const [endDate, setEndDate] = useState(today)
 
-  const [metrics, setMetrics] = useState({})
-  const [leads, setLeads] = useState([])
-  const [chartData, setChartData] = useState([])
+  const [sourceCards, setSourceCards] = useState({})
+  const [intakeScoreData, setIntakeScoreData] = useState([])
+  const [percentQualifiedData, setPercentQualifiedData] = useState([])
+  const [leadScoreData, setLeadScoreData] = useState([])
+  const [closeScoreData, setCloseScoreData] = useState([])
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  // Ref to capture the entire page
   const pageRef = useRef(null)
 
-  // PDF Export Function
   const exportToPDF = () => {
     generatePDF(pageRef, {
-      filename: `Cost_Per_Lead_Report_${today}.pdf`,
+      filename: `Lead_Quality_By_Source_${today}.pdf`,
       page: { margin: Margin.MEDIUM },
-      overrides: {
-        pdf: {
-          compress: true,
-        },
-        canvas: {
-          useCORS: true,
-        },
-      },
+      overrides: { pdf: { compress: true }, canvas: { useCORS: true } },
     })
   }
 
   useEffect(() => {
     fetch('/api/clients')
       .then(r => r.json())
-      .then(({ data, error: err }) => {
-        if (err) throw new Error(err)
-        setClients(data ?? [])
-      })
-      .catch(e => setError(e.message))
+      .then(({ data }) => setClients(data ?? []))
+      .catch(() => setError('Failed to load clients'))
   }, [])
 
   useEffect(() => {
     if (!selectedClient || !startDate || !endDate || startDate > endDate) {
-      setMetrics({}); setLeads([]); setChartData([])
+      setSourceCards({})
+      setIntakeScoreData([]); setPercentQualifiedData([]); setLeadScoreData([]); setCloseScoreData([])
       return
     }
 
     setLoading(true)
     setError(null)
 
-    fetch(`/api/ppl-data?clientId=${selectedClient}&start=${startDate}&end=${endDate}`)
-      .then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`)
-        return r.json()
+    fetch(`/api/lead_quality_by_source?clientId=${selectedClient}&start=${startDate}&end=${endDate}`)
+      .then(r => r.ok ? r.json() : Promise.reject(`HTTP ${r.status}`))
+      .then(({ data }) => {
+        setSourceCards(data.sourceCards?.[0] ?? {})
+        setIntakeScoreData(data.intakeScore ?? [])
+        setPercentQualifiedData(data.percentQualified ?? [])
+        setLeadScoreData(data.leadScore ?? [])
+        setCloseScoreData(data.closeScore ?? [])
       })
-      .then(({ data, error: err }) => {
-        if (err) throw new Error(err)
-        console.log('Received →', data)
-        setMetrics(data.metrics || {})
-        setLeads(data.leads || [])
-        setChartData(data.chart || [])
-      })
-      .catch(e => {
-        console.error('Fetch error →', e)
-        setError(e.message)
-      })
+      .catch(e => setError(e.message || e))
       .finally(() => setLoading(false))
   }, [selectedClient, startDate, endDate])
 
-  const textColor = isDark ? '#e5e7eb' : '#374151'
-  const gridColor = isDark ? '#374151' : '#e5e7eb'
-  const tooltipBg = isDark ? '#1f2937' : '#ffffff'
-  const tooltipText = isDark ? '#ffffff' : '#374151'
+  const chartConfig = {
+    textColor: isDark ? '#e5e7eb' : '#374151',
+    gridColor: isDark ? '#374151' : '#e5e7eb',
+    tooltipBg: isDark ? '#1f2937' : '#ffffff',
+    tooltipText: isDark ? '#ffffff' : '#374151',
+  }
+
+  const renderLineChart = (data, dataKey, title) => (
+    <ResponsiveContainer width="100%" height="100%">
+      <LineChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.gridColor} />
+        <XAxis dataKey="date" tick={{ fill: chartConfig.textColor }} />
+        <YAxis tick={{ fill: chartConfig.textColor }} />
+        <Tooltip
+          contentStyle={{ backgroundColor: chartConfig.tooltipBg, color: chartConfig.tooltipText, border: 'none', borderRadius: 8 }}
+        />
+        <Legend />
+        <Line type="monotone" dataKey={dataKey} stroke="#f36622" strokeWidth={3} dot={{ fill: '#f36622' }} name={title} />
+      </LineChart>
+    </ResponsiveContainer>
+  )
 
   return (
-    <div ref={pageRef} className="pb-16">
-      {/* Header with Client, Date, and Export Button */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 py-3 sm:py-4 md:py-6 px-2 sm:px-4 md:px-6">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
+    <div ref={pageRef} className="pb-16 min-h-screen bg-gray-50 dark:bg-slate-900">
+
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-6 px-4 md:px-6 bg-white dark:bg-slate-800 shadow">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />
           <DateSelector
             startDate={startDate}
             endDate={endDate}
-            onChange={(type, val) => (type === 'startDate' ? setStartDate(val) : setEndDate(val))}
+            onChange={(type, val) => type === 'startDate' ? setStartDate(val) : setEndDate(val)}
           />
         </div>
-
-        {/* Export to PDF Button - Right next to Date */}
         <button
           onClick={exportToPDF}
-          className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 shadow transition-colors flex items-center gap-2 whitespace-nowrap"
+          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 transition"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
           Export to PDF
         </button>
       </div>
 
-      <div className="w-full px-2 sm:px-4 md:px-6">
-        <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 md:mb-6 mt-2 sm:mt-4 text-gray-900 dark:text-gray-100">
-          Cost Per Lead Data
-        </h2>
+      <div className="px-4 md:px-6 py-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">Lead Quality By Source</h1>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 md:gap-6 mb-3 sm:mb-4 md:mb-6">
-          <StatCard label="Qualified Leads" value={metrics.qualified_leads ?? 0} iconType="bar" />
-          <StatCard label="Unique Callers" value={metrics.unique_callers ?? 0} iconType="bar" />
-          <StatCard label="Pct Leads Qualified" value={`${metrics.pct_leads_qualified ?? 0}%`} iconType="bar" />
+        {/* 5 Cards Row */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+          <StatCard label="Qualified Leads" value={sourceCards.qualified_leads ?? 0} />
+          <StatCard label="PPC Leads" value={sourceCards.ppc_leads ?? 0} />
+          <StatCard label="LSA Leads" value={sourceCards.lsa_leads ?? 0} />
+          <StatCard label="SEO Leads" value={sourceCards.seo_leads ?? 0} />
+          <StatCard label="SFO Leads" value={sourceCards.sfo_leads ?? 0} />
         </div>
+
+        {/* Charts */}
+        <ChartSection title="QLead Intake Score by Source Line Chart">
+          {intakeScoreData.length ? renderLineChart(intakeScoreData, 'intake_score', 'Intake Score') : <div className="flex items-center justify-center h-full text-gray-500">No data available</div>}
+        </ChartSection>
+
+        <ChartSection title="% Leads Qualified by Source Line Chart">
+          {percentQualifiedData.length ? renderLineChart(percentQualifiedData, 'percent_qualified', '% Qualified') : <div className="flex items-center justify-center h-full text-gray-500">No data available</div>}
+        </ChartSection>
+
+        <ChartSection title="QLead Lead Score by Source Line Chart">
+          {leadScoreData.length ? renderLineChart(leadScoreData, 'lead_score', 'Lead Score') : <div className="flex items-center justify-center h-full text-gray-500">No data available</div>}
+        </ChartSection>
+
+        <ChartSection title="QLead Close Score by Source Line Chart">
+          {closeScoreData.length ? renderLineChart(closeScoreData, 'close_score', 'Close Score') : <div className="flex items-center justify-center h-full text-gray-500">No data available</div>}
+        </ChartSection>
       </div>
 
-      <div className="flex flex-col gap-4 sm:gap-5 md:gap-6 px-2 sm:px-4 md:px-6 mt-4 sm:mt-6 md:mt-10 w-full">
-        <SectionCard title="Pay Per Lead">
-          <div className="h-[200px] sm:h-[250px] md:h-[300px] bg-white dark:bg-slate-800 rounded-lg">
-            <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#f36622" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#f36622" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="date" tick={{ fontSize: 13, fill: textColor }} />
-                <YAxis tick={{ fontSize: 13, fill: textColor }} domain={[0, 'auto']} />
-                <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-                <Tooltip
-                  contentStyle={{ borderRadius: 10, fontSize: 15, backgroundColor: tooltipBg, color: tooltipText, border: 'none' }}
-                  labelStyle={{ fontWeight: 600, color: tooltipText }}
-                />
-                <Legend verticalAlign="bottom" height={20} wrapperStyle={{ paddingTop: '10px' }} />
-                <Line type="monotone" dataKey="total" stroke="#f36622" strokeWidth={2} fill="url(#colorTotal)" name="Qualified Leads" />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </div>
-        </SectionCard>
-
-        <LeadsTable leads={leads} />
-      </div>
-
+      {/* Loading / Error */}
       {loading && (
-        <div className="fixed inset-0 bg-white dark:bg-slate-900 bg-opacity-60 flex items-center justify-center z-50 text-gray-900 dark:text-gray-100">
-          Loading…
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="text-white text-xl">Loading...</div>
         </div>
       )}
       {error && (
-        <div className="fixed inset-x-0 top-4 flex justify-center">
-          <div className="bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 px-4 py-2 rounded max-w-lg break-words">
-            {error}
-          </div>
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-lg z-50">
+          {error}
         </div>
       )}
     </div>
