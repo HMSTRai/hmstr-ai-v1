@@ -154,6 +154,11 @@ export const topMenu = [
         childicon: "heroicons:presentation-chart-line",
       },
       {
+        childtitle: "Lead Quality Page",
+        childlink: "/lead_quality_page",
+        childicon: "heroicons:presentation-chart-line",
+      },
+      {
         childtitle: "QLead Table",
         childlink: "/qlead-table",
         childicon: "heroicons:briefcase",
