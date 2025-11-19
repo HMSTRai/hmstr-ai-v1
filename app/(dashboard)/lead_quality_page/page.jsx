@@ -8,7 +8,7 @@ import generatePDF, { Margin } from 'react-to-pdf'
 function ClientSelector({ clients, selected, onSelect }) {
   return (
     <select
-      className="w-full sm:w-auto border border-[#f36622] rounded-lg px-3 sm:px-4 py-2 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
+      className="bg-slate-800 border border-[#f36622] rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#f36622]"
       value={selected}
       onChange={e => onSelect(e.target.value)}
     >
@@ -24,204 +24,171 @@ function ClientSelector({ clients, selected, onSelect }) {
 
 function DateSelector({ startDate, endDate, onChange }) {
   return (
-    <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
-      <input
-        type="date"
-        className="w-full sm:w-auto border border-[#f36622] rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
-        value={startDate}
-        onChange={e => onChange('startDate', e.target.value)}
-      />
-      <span className="mx-2 text-gray-400 dark:text-gray-500">to</span>
-      <input
-        type="date"
-        className="w-full sm:w-auto border border-[#f36622] rounded-lg px-2 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:border-[#f36622] dark:text-gray-200"
-        value={endDate}
-        onChange={e => onChange('endDate', e.target.value)}
-      />
+    <div className="flex items-center gap-3 text-white">
+      <input type="date" value={startDate} onChange={e => onChange('startDate', e.target.value)}
+        className="bg-slate-800 border border-[#f36622] rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#f36622]" />
+      <span>to</span>
+      <input type="date" value={endDate} onChange={e => onChange('endDate', e.target.value)}
+        className="bg-slate-800 border border-[#f36622] rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#f36622]" />
     </div>
   )
 }
 
-function StatCard({ label, value, iconType = 'bar' }) {
-  const icons = {
-    bar: (
-      <svg className="w-5 h-5 text-[#f36622]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-        <rect x="4" y="10" width="4" height="10" />
-        <rect x="10" y="4" width="4" height="16" />
-        <rect x="16" y="8" width="4" height="12" />
-      </svg>
-    ),
-  }
-
+function SourceCard({ label, value }) {
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow p-4 flex justify-between items-start min-w-[120px] transition hover:shadow-lg hover:bg-[#f36622]/5 dark:hover:bg-slate-700 border border-[#f36622]">
-      <div className="flex flex-col">
-        <span className="text-sm text-gray-600 dark:text-gray-300">{label}</span>
-        <span className="text-2xl sm:text-3xl font-bold text-[#f36622]">{value}</span>
+    <div className="bg-slate-800 border border-[#f36622] rounded-2xl p-5 flex items-center justify-between shadow-lg hover:shadow-xl transition-shadow">
+      <div>
+        <p className="text-gray-400 text-sm">{label}</p>
+        <p className="text-3xl font-bold text-white mt-1">{value ?? 0}</p>
       </div>
-      <div className="ml-4">
-        <div className="w-10 h-10 rounded-full border border-[#f36622]/30 dark:border-[#f36622] flex items-center justify-center">
-          {icons[iconType]}
-        </div>
+      <div className="w-12 h-12 rounded-full border-2 border-[#f36622] flex items-center justify-center">
+        <svg className="w-6 h-6 text-[#f36622]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
       </div>
     </div>
   )
 }
 
-function ChartSection({ title, children }) {
+function ChartContainer({ title, children, showMonthly = true }) {
   return (
-    <section className="bg-white dark:bg-slate-800 rounded-2xl shadow p-4 md:p-6 mb-6 border border-[#f36622]">
-      <h3 className="text-lg md:text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">{title}</h3>
-      <div className="h-80 bg-gray-50 dark:bg-slate-900 rounded-lg p-4">
+    <div className="bg-slate-900 border border-[#f36622] rounded-2xl p-6 shadow-2xl">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-bold text-white">{title}</h3>
+        {showMonthly && (
+          <select className="bg-slate-800 border border-[#f36622] text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#f36622]">
+            <option>Monthly</option>
+          </select>
+        )}
+      </div>
+      <div className="h-96 bg-slate-800/50 rounded-xl flex items-center justify-center border border-dashed border-gray-600">
         {children}
       </div>
-    </section>
+    </div>
   )
 }
 
-export default function LeadQualityBySourceDashboard() {
+export default function LeadQualityBySource() {
   const [isDark] = useDarkmode()
   const today = new Date().toISOString().slice(0, 10)
 
   const [clients, setClients] = useState([])
   const [selectedClient, setSelectedClient] = useState('')
-  const [startDate, setStartDate] = useState('2025-10-01')
+  const [startDate, setStartDate] = useState('2025-11-01')
   const [endDate, setEndDate] = useState(today)
 
-  const [sourceCards, setSourceCards] = useState({})
-  const [intakeScoreData, setIntakeScoreData] = useState([])
-  const [percentQualifiedData, setPercentQualifiedData] = useState([])
-  const [leadScoreData, setLeadScoreData] = useState([])
-  const [closeScoreData, setCloseScoreData] = useState([])
+  const [sourceData, setSourceData] = useState({})
+  const [intakeChart, setIntakeChart] = useState([])
+  const [qualifiedChart, setQualifiedChart] = useState([])
+  const [leadScoreChart, setLeadScoreChart] = useState([])
+  const [closeScoreChart, setCloseScoreChart] = useState([])
 
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-
   const pageRef = useRef(null)
 
   const exportToPDF = () => {
     generatePDF(pageRef, {
       filename: `Lead_Quality_By_Source_${today}.pdf`,
       page: { margin: Margin.MEDIUM },
-      overrides: { pdf: { compress: true }, canvas: { useCORS: true } },
     })
   }
 
   useEffect(() => {
-    fetch('/api/clients')
-      .then(r => r.json())
-      .then(({ data }) => setClients(data ?? []))
-      .catch(() => setError('Failed to load clients'))
+    fetch('/api/clients').then(r => r.json()).then(d => setClients(d.data ?? []))
   }, [])
 
   useEffect(() => {
-    if (!selectedClient || !startDate || !endDate || startDate > endDate) {
-      setSourceCards({})
-      setIntakeScoreData([]); setPercentQualifiedData([]); setLeadScoreData([]); setCloseScoreData([])
-      return
-    }
+    if (!selectedClient || !startDate || !endDate) return
 
     setLoading(true)
-    setError(null)
-
     fetch(`/api/lead_quality_by_source?clientId=${selectedClient}&start=${startDate}&end=${endDate}`)
-      .then(r => r.ok ? r.json() : Promise.reject(`HTTP ${r.status}`))
+      .then(r => r.json())
       .then(({ data }) => {
-        setSourceCards(data.sourceCards?.[0] ?? {})
-        setIntakeScoreData(data.intakeScore ?? [])
-        setPercentQualifiedData(data.percentQualified ?? [])
-        setLeadScoreData(data.leadScore ?? [])
-        setCloseScoreData(data.closeScore ?? [])
+        setSourceData(data.sourceCards?.[0] ?? {})
+        setIntakeChart(data.intakeScore ?? [])
+        setQualifiedChart(data.percentQualified ?? [])
+        setLeadScoreChart(data.leadScore ?? [])
+        setCloseScoreChart(data.closeScore ?? [])
       })
-      .catch(e => setError(e.message || e))
       .finally(() => setLoading(false))
   }, [selectedClient, startDate, endDate])
 
-  const chartConfig = {
-    textColor: isDark ? '#e5e7eb' : '#374151',
-    gridColor: isDark ? '#374151' : '#e5e7eb',
-    tooltipBg: isDark ? '#1f2937' : '#ffffff',
-    tooltipText: isDark ? '#ffffff' : '#374151',
+  const renderChart = (data, key) => {
+    if (!data || data.length === 0) {
+      return <p className="text-gray-500 text-lg">No data available</p>
+    }
+
+    return (
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+          <CartesianGrid strokeDasharray="4 4" stroke="#334155" />
+          <XAxis dataKey="date" stroke="#94a3b8" />
+          <YAxis stroke="#94a3b8" />
+          <Tooltip
+            contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #f36622', borderRadius: 8 }}
+            labelStyle={{ color: '#fff' }}
+          />
+          <Line type="monotone" dataKey={key} stroke="#f36622" strokeWidth={3} dot={{ fill: '#f36622', r: 6 }} />
+        </LineChart>
+      </ResponsiveContainer>
+    )
   }
 
-  const renderLineChart = (data, dataKey, title) => (
-    <ResponsiveContainer width="100%" height="100%">
-      <LineChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.gridColor} />
-        <XAxis dataKey="date" tick={{ fill: chartConfig.textColor }} />
-        <YAxis tick={{ fill: chartConfig.textColor }} />
-        <Tooltip
-          contentStyle={{ backgroundColor: chartConfig.tooltipBg, color: chartConfig.tooltipText, border: 'none', borderRadius: 8 }}
-        />
-        <Legend />
-        <Line type="monotone" dataKey={dataKey} stroke="#f36622" strokeWidth={3} dot={{ fill: '#f36622' }} name={title} />
-      </LineChart>
-    </ResponsiveContainer>
-  )
-
   return (
-    <div ref={pageRef} className="pb-16 min-h-screen bg-gray-50 dark:bg-slate-900">
-
+    <div ref={pageRef} className="min-h-screen bg-black text-white">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-6 px-4 md:px-6 bg-white dark:bg-slate-800 shadow">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />
-          <DateSelector
-            startDate={startDate}
-            endDate={endDate}
-            onChange={(type, val) => type === 'startDate' ? setStartDate(val) : setEndDate(val)}
-          />
+      <div className="bg-gradient-to-b from-slate-900 to-black border-b border-[#f36622]/30 px-6 py-4">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />
+            <DateSelector startDate={startDate} endDate={endDate}
+              onChange={(type, val) => type === 'startDate' ? setStartDate(val) : setEndDate(val)} />
+          </div>
+          <button onClick={exportToPDF}
+            className="bg-green-600 hover:bg-green-700 px-5 py-2 rounded-lg flex items-center gap-2 transition">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Export to PDF
+          </button>
         </div>
-        <button
-          onClick={exportToPDF}
-          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 transition"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          Export to PDF
-        </button>
       </div>
 
-      <div className="px-4 md:px-6 py-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">Lead Quality By Source</h1>
+      <div className="px-6 py-8">
+        <h1 className="text-3xl font-bold mb-8 text-white">Lead Quality By Source</h1>
 
-        {/* 5 Cards Row */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-          <StatCard label="Qualified Leads" value={sourceCards.qualified_leads ?? 0} />
-          <StatCard label="PPC Leads" value={sourceCards.ppc_leads ?? 0} />
-          <StatCard label="LSA Leads" value={sourceCards.lsa_leads ?? 0} />
-          <StatCard label="SEO Leads" value={sourceCards.seo_leads ?? 0} />
-          <StatCard label="SFO Leads" value={sourceCards.sfo_leads ?? 0} />
+        {/* 5 Source Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mb-10">
+          <SourceCard label="Qualified Leads" value={sourceData.qualified_leads} />
+          <SourceCard label="PPC Leads" value={sourceData.ppc_leads} />
+          <SourceCard label="LSA Leads" value={sourceData.lsa_leads} />
+          <SourceCard label="SEO Leads" value={sourceData.seo_leads} />
+          <SourceCard label="SFO Leads" value={sourceData.sfo_leads} />
         </div>
 
         {/* Charts */}
-        <ChartSection title="QLead Intake Score by Source Line Chart">
-          {intakeScoreData.length ? renderLineChart(intakeScoreData, 'intake_score', 'Intake Score') : <div className="flex items-center justify-center h-full text-gray-500">No data available</div>}
-        </ChartSection>
+        <div className="space-y-8">
+          <ChartContainer title="QLead Intake Score by Source Line Chart">
+            {renderChart(intakeChart, 'intake_score')}
+          </ChartContainer>
 
-        <ChartSection title="% Leads Qualified by Source Line Chart">
-          {percentQualifiedData.length ? renderLineChart(percentQualifiedData, 'percent_qualified', '% Qualified') : <div className="flex items-center justify-center h-full text-gray-500">No data available</div>}
-        </ChartSection>
+          <ChartContainer title="% Leads Qualified by Source Line Chart">
+            {renderChart(qualifiedChart, 'percent_qualified')}
+          </ChartContainer>
 
-        <ChartSection title="QLead Lead Score by Source Line Chart">
-          {leadScoreData.length ? renderLineChart(leadScoreData, 'lead_score', 'Lead Score') : <div className="flex items-center justify-center h-full text-gray-500">No data available</div>}
-        </ChartSection>
+          <ChartContainer title="QLead Lead Score by Source Line Chart">
+            {renderChart(leadScoreChart, 'lead_score')}
+          </ChartContainer>
 
-        <ChartSection title="QLead Close Score by Source Line Chart">
-          {closeScoreData.length ? renderLineChart(closeScoreData, 'close_score', 'Close Score') : <div className="flex items-center justify-center h-full text-gray-500">No data available</div>}
-        </ChartSection>
+          <ChartContainer title="QLead Close Score by Source Line Chart">
+            {renderChart(closeScoreChart, 'close_score')}
+          </ChartContainer>
+        </div>
       </div>
 
-      {/* Loading / Error */}
       {loading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="text-white text-xl">Loading...</div>
-        </div>
-      )}
-      {error && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-lg z-50">
-          {error}
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="text-white text-2xl">Loading...</div>
         </div>
       )}
     </div>
