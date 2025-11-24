@@ -1,7 +1,7 @@
 import DashboardSectionLayout from '@/components/ui/DashboardSectionLayout';
 
 export const metadata = {
-  title: 'Qualified Leads | HMSTR Dashboard',
+  title: 'Qualified Leads Summary',
   description: 'Explore analytical insights and trends.',
 };
 

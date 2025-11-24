@@ -1,7 +1,7 @@
 import DashboardSectionLayout from '@/components/ui/DashboardSectionLayout';
 
 export const metadata = {
-  title: 'Cost Per Lead Data',
+  title: 'Lead Quality By Source',
   description: '',
 };
 
