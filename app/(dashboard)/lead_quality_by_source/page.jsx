@@ -51,7 +51,7 @@ function SourceMetricCard({ label, value }) {
 
 function ChartSection({ title, children, grouping, onGroupingChange }) {
   return (
-    <div className="bg-slate-900 border border-[#f36622] rounded-2xl p-6 shadow-2xl">
+    <div className="bg-slate-800 border border-[#f36622] rounded-2xl p-6 shadow-2xl">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-bold text-white">{title}</h3>
         <select value={grouping} onChange={e => onGroupingChange(e.target.value)}
@@ -121,7 +121,7 @@ export default function LeadQualityBySource() {
             tickFormatter={d => new Date(d).toLocaleDateString('en-US', { month: 'short', year: '2-digit' })}
           />
           <YAxis stroke="#94a3b8" />
-          <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #f36622', borderRadius: 8 }} />
+          <Tooltip contentStyle={{ backgroundColor: '#182335', border: '1px solid #f36622', borderRadius: 8 }} />
           <Legend />
           {keys.map((key, i) => (
             <Line
@@ -130,7 +130,8 @@ export default function LeadQualityBySource() {
               dataKey={key}
               stroke={colors[i]}
               name={names[i]}
-              strokeWidth={3}
+              strokeWidth={2}
+              connectNulls={true}
               dot={{ r: 4 }}
             />
           ))}
@@ -141,7 +142,7 @@ export default function LeadQualityBySource() {
 
   return (
     <div ref={pageRef} className="min-h-screen bg-black text-white">
-      <div className="bg-gradient-to-b from-slate-900 to-black border-b border-[#f36622]/30 px-6 py-4">
+      <div className=" from-slate-900  px-6 py-4">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />
@@ -158,11 +159,11 @@ export default function LeadQualityBySource() {
         <h1 className="text-3xl font-bold mb-8">Lead Quality By Source</h1>
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mb-12">
-          <SourceMetricCard label="Qualified Leads" value={sourceCards.lead_qualified_total} />
-          <SourceMetricCard label="PPC Leads" value={sourceCards.ppc_leads} />
-          <SourceMetricCard label="LSA Leads" value={sourceCards.lsa_leads} />
-          <SourceMetricCard label="SEO Leads" value={sourceCards.seo_leads} />
-          <SourceMetricCard label="SFO Leads" value={sourceCards.sfo_leads} />
+          <SourceMetricCard label="Qualified Leads" value={sourceCards.lead_qualified_rate_all ? Math.round(parseFloat(sourceCards.lead_qualified_rate_all)) + '%' : '0%'} />
+          <SourceMetricCard label="PPC Leads" value={sourceCards.lead_qualified_rate_google_ppc ? Math.round(parseFloat(sourceCards.lead_qualified_rate_google_ppc)) + '%' : '0%'} />
+          <SourceMetricCard label="LSA Leads" value={sourceCards.lead_qualified_rate_lsa ? Math.round(parseFloat(sourceCards.lead_qualified_rate_lsa)) + '%' : '0%'} />
+          <SourceMetricCard label="SEO Leads" value={sourceCards.lead_qualified_rate_seo ? Math.round(parseFloat(sourceCards.lead_qualified_rate_seo)) + '%' : '0%'} />
+          <SourceMetricCard label="SFO Leads" value="N/A" />
         </div>
 
         <div className="space-y-8">
@@ -178,7 +179,7 @@ export default function LeadQualityBySource() {
           <ChartSection title="% Leads Qualified by Source Line Chart" grouping={grouping} onGroupingChange={setGrouping}>
             <MultiLineChart
               data={percentQualifiedData}
-              keys={['qlead_qualified_rate_google_ppc', 'qlead_qualified_rate_bing_ppc', 'qlead_qualified_rate_lsa', 'qlead_qualified_rate_seo']}
+              keys={['lead_qualified_rate_google_ppc', 'lead_qualified_rate_bing_ppc', 'lead_qualified_rate_lsa', 'lead_qualified_rate_seo']}
               colors={['#f97316', '#3b82f6', '#8b5cf6', '#10b981']}
               names={['Google PPC', 'Bing PPC', 'LSA', 'SEO']}
             />
