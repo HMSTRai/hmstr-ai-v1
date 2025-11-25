@@ -1,3 +1,4 @@
+// app/lead_quality_by_source/page.jsx
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
@@ -7,7 +8,7 @@ import generatePDF, { Margin } from 'react-to-pdf'
 function ClientSelector({ clients, selected, onSelect }) {
   return (
     <select
-      className="bg-slate-800 border border-[#f36622] rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#f36622]"
+      className="border border-[#f36622] rounded-lg px-4 py-2 text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:text-gray-200"
       value={selected}
       onChange={e => onSelect(e.target.value)}
     >
@@ -23,22 +24,30 @@ function ClientSelector({ clients, selected, onSelect }) {
 
 function DateSelector({ startDate, endDate, onChange }) {
   return (
-    <div className="flex items-center gap-3 text-white">
-      <input type="date" value={startDate} onChange={e => onChange('startDate', e.target.value)}
-        className="bg-slate-800 border border-[#f36622] rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#f36622]" />
-      <span>to</span>
-      <input type="date" value={endDate} onChange={e => onChange('endDate', e.target.value)}
-        className="bg-slate-800 border border-[#f36622] rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#f36622]" />
+    <div className="flex items-center gap-3 flex-wrap">
+      <input
+        type="date"
+        value={startDate}
+        onChange={e => onChange('startDate', e.target.value)}
+        className="border border-[#f36622] rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:text-gray-200 dark:[&::-webkit-calendar-picker-indicator]:invert"
+      />
+      <span className="text-gray-600 dark:text-gray-400">to</span>
+      <input
+        type="date"
+        value={endDate}
+        onChange={e => onChange('endDate', e.target.value)}
+        className="border border-[#f36622] rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:text-gray-200 dark:[&::-webkit-calendar-picker-indicator]:invert"
+      />
     </div>
   )
 }
 
 function SourceMetricCard({ label, value }) {
   return (
-    <div className="bg-slate-800 border border-[#f36622] rounded-2xl px-6 py-5 flex items-center justify-between shadow-lg hover:shadow-xl transition-shadow">
+    <div className="bg-white dark:bg-slate-800 border border-[#f36622] rounded-2xl px-6 py-5 flex items-center justify-between shadow-lg hover:shadow-xl transition-shadow">
       <div>
-        <p className="text-gray-400 text-sm">{label}</p>
-        <p className="text-3xl font-bold text-white mt-1">{value ?? 0}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400 whitespace-normal">{label}</p>
+        <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{value ?? 'N/A'}</p>
       </div>
       <div className="w-12 h-12 rounded-full border-2 border-[#f36622] flex items-center justify-center">
         <svg className="w-6 h-6 text-[#f36622]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,17 +60,20 @@ function SourceMetricCard({ label, value }) {
 
 function ChartSection({ title, children, grouping, onGroupingChange }) {
   return (
-    <div className="bg-slate-800 border border-[#f36622] rounded-2xl p-6 shadow-2xl">
+    <div className="bg-white dark:bg-slate-800 border border-[#f36622] rounded-2xl p-6 shadow-2xl">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold text-white">{title}</h3>
-        <select value={grouping} onChange={e => onGroupingChange(e.target.value)}
-          className="bg-slate-800 border border-[#f36622] text-white rounded-lg px-4 py-2 text-sm">
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h3>
+        <select
+          value={grouping}
+          onChange={e => onGroupingChange(e.target.value)}
+          className="border border-[#f36622] rounded-lg px-4 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[#f36622] focus:border-[#f36622] dark:bg-slate-800 dark:text-gray-200"
+        >
           <option value="monthly">Monthly</option>
           <option value="weekly">Weekly</option>
           <option value="daily">Daily</option>
         </select>
       </div>
-      <div className="h-96 bg-slate-800/60 rounded-xl border border-dashed border-slate-600">
+      <div className="h-96 bg-gray-50 dark:bg-slate-900/60 rounded-xl border border-dashed border-gray-300 dark:border-slate-700">
         {children}
       </div>
     </div>
@@ -108,21 +120,36 @@ export default function LeadQualityBySource() {
       .finally(() => setLoading(false))
   }, [selectedClient, startDate, endDate, grouping])
 
-  const MultiLineChart = ({ data, keys, colors, names }) => {
-    if (!data || data.length === 0) return <p className="text-gray-500 text-center">No data available</p>
+  const MultiLineChart = ({ data, keys, colors, names, yDomain }) => {
+    if (!data || data.length === 0)
+      return <p className="text-center text-gray-500 dark:text-gray-400 py-10">No data available</p>
 
     return (
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 20, right: 40, left: 20, bottom: 20 }}>
-          <CartesianGrid strokeDasharray="4 4" stroke="#334155" />
+          <CartesianGrid strokeDasharray="4 4" stroke="#e2e8f0" className="dark:stroke-[#334155]" />
           <XAxis
             dataKey="period_start"
-            stroke="#94a3b8"
+            stroke="#64748b"
             tickFormatter={d => new Date(d).toLocaleDateString('en-US', { month: 'short', year: '2-digit' })}
+            tick={{ fill: '#64748b', className: 'dark:fill-[#94a3b8]' }}
           />
-          <YAxis stroke="#94a3b8" />
-          <Tooltip contentStyle={{ backgroundColor: '#182335', border: '1px solid #f36622', borderRadius: 8 }} />
-          <Legend />
+          <YAxis
+            stroke="#64748b"
+            className="dark:stroke-[#94a3b8]"
+            tick={{ fill: '#64748b', className: 'dark:fill-[#94a3b8]' }}
+            domain={yDomain || 'auto'}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: 'rgb(255 255 255)',
+              border: '1px solid #f36622',
+              borderRadius: 8,
+              color: '#1e293b',
+            }}
+            labelStyle={{ color: '#f36622', fontWeight: 'bold' }}
+          />
+          <Legend wrapperStyle={{ paddingTop: '20px' }} />
           {keys.map((key, i) => (
             <Line
               key={key}
@@ -132,7 +159,7 @@ export default function LeadQualityBySource() {
               name={names[i]}
               strokeWidth={2}
               connectNulls={true}
-              dot={{ r: 4 }}
+              dot={{ r: 4, fill: colors[i] }}
             />
           ))}
         </LineChart>
@@ -141,31 +168,82 @@ export default function LeadQualityBySource() {
   }
 
   return (
-    <div ref={pageRef} className="min-h-screen bg-black text-white">
-      <div className=" from-slate-900  px-6 py-4">
+    <div ref={pageRef} className="min-h-screentext-gray-900 dark:text-white">
+      <div className="px-6 py-4">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <ClientSelector clients={clients} selected={selectedClient} onSelect={setSelectedClient} />
-            <DateSelector startDate={startDate} endDate={endDate}
-              onChange={(t, v) => t === 'startDate' ? setStartDate(v) : setEndDate(v)} />
+            <DateSelector
+              startDate={startDate}
+              endDate={endDate}
+              onChange={(t, v) => t === 'startDate' ? setStartDate(v) : setEndDate(v)}
+            />
           </div>
-          <button onClick={exportToPDF} className="bg-green-600 hover:bg-green-700 px-5 py-2 rounded-lg">
+          <button
+            onClick={exportToPDF}
+            className="bg-green-600 hover:bg-green-700 px-5 py-2 rounded-lg text-white font-medium shadow-md transition"
+          >
             Export to PDF
           </button>
         </div>
       </div>
 
       <div className="px-6 py-8">
-        <h1 className="text-3xl font-bold mb-8">Lead Quality By Source</h1>
+        <h1 className="text-2xl font-bold mb-8 text-gray-900 dark:text-white">Lead Quality By Source</h1>
 
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mb-12">
-          <SourceMetricCard label="Qualified Leads" value={sourceCards.lead_qualified_rate_all ? Math.round(parseFloat(sourceCards.lead_qualified_rate_all)) + '%' : '0%'} />
-          <SourceMetricCard label="PPC Leads" value={sourceCards.lead_qualified_rate_google_ppc ? Math.round(parseFloat(sourceCards.lead_qualified_rate_google_ppc)) + '%' : '0%'} />
-          <SourceMetricCard label="LSA Leads" value={sourceCards.lead_qualified_rate_lsa ? Math.round(parseFloat(sourceCards.lead_qualified_rate_lsa)) + '%' : '0%'} />
-          <SourceMetricCard label="SEO Leads" value={sourceCards.lead_qualified_rate_seo ? Math.round(parseFloat(sourceCards.lead_qualified_rate_seo)) + '%' : '0%'} />
-          <SourceMetricCard label="SFO Leads" value="N/A" />
+        {/* === ALL 4 ROWS OF CARDS EXACTLY AS BOSS REQUESTED === */}
+        <div className="space-y-6 mb-12">
+
+          {/* Row 1: Lead Qualification Rate */}
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+            <SourceMetricCard
+              label="Top Line - Lead Qualification Rate: All - Google PPC - Bing PPC - Google LSA - SEO"
+              value={sourceCards.lead_qualified_rate_all ? `${Math.round(sourceCards.lead_qualified_rate_all)}%` : 'N/A'}
+            />
+            <SourceMetricCard label="Google PPC" value={sourceCards.lead_qualified_rate_google_ppc ? `${Math.round(sourceCards.lead_qualified_rate_google_ppc)}%` : 'N/A'} />
+            <SourceMetricCard label="Bing PPC" value={sourceCards.lead_qualified_rate_bing_ppc ? `${Math.round(sourceCards.lead_qualified_rate_bing_ppc)}%` : 'N/A'} />
+            <SourceMetricCard label="Google LSA" value={sourceCards.lead_qualified_rate_lsa ? `${Math.round(sourceCards.lead_qualified_rate_lsa)}%` : 'N/A'} />
+            <SourceMetricCard label="SEO" value={sourceCards.lead_qualified_rate_seo ? `${Math.round(sourceCards.lead_qualified_rate_seo)}%` : 'N/A'} />
+          </div>
+
+          {/* Row 2: Qualified Lead Score */}
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+            <SourceMetricCard
+              label="Line 2 - Qualified Lead Score: All - Google PPC - Bing PPC - Google LSA - SEO"
+              value={sourceCards.qualified_leads_score_all ? Number(sourceCards.qualified_leads_score_all).toFixed(1) : 'N/A'}
+            />
+            <SourceMetricCard value={sourceCards.qualified_leads_score_google_ppc ? Number(sourceCards.qualified_leads_score_google_ppc).toFixed(1) : 'N/A'} />
+            <SourceMetricCard value={sourceCards.qualified_leads_score_bing_ppc ? Number(sourceCards.qualified_leads_score_bing_ppc).toFixed(1) : 'N/A'} />
+            <SourceMetricCard value={sourceCards.qualified_leads_score_lsa ? Number(sourceCards.qualified_leads_score_lsa).toFixed(1) : 'N/A'} />
+            <SourceMetricCard value={sourceCards.qualified_leads_score_seo ? Number(sourceCards.qualified_leads_score_seo).toFixed(1) : 'N/A'} />
+          </div>
+
+          {/* Row 3: Qualified Close Score */}
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+            <SourceMetricCard
+              label="Line 3 - Qualified Close Score: All - Google PPC - Bing PPC - Google LSA - SEO"
+              value={sourceCards.qualified_close_score_all ? Number(sourceCards.qualified_close_score_all).toFixed(1) : 'N/A'}
+            />
+            <SourceMetricCard value={sourceCards.qualified_close_score_google_ppc ? Number(sourceCards.qualified_close_score_google_ppc).toFixed(1) : 'N/A'} />
+            <SourceMetricCard value={sourceCards.qualified_close_score_bing_ppc ? Number(sourceCards.qualified_close_score_bing_ppc).toFixed(1) : 'N/A'} />
+            <SourceMetricCard value={sourceCards.qualified_close_score_lsa ? Number(sourceCards.qualified_close_score_lsa).toFixed(1) : 'N/A'} />
+            <SourceMetricCard value={sourceCards.qualified_close_score_seo ? Number(sourceCards.qualified_close_score_seo).toFixed(1) : 'N/A'} />
+          </div>
+
+          {/* Row 4: Qualified Intake Score */}
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+            <SourceMetricCard
+              label="Line 4 - Qualified Intake Score: All - Google PPC - Bing PPC - Google LSA - SEO"
+              value={sourceCards.qualified_intake_score_all ? Number(sourceCards.qualified_intake_score_all).toFixed(1) : 'N/A'}
+            />
+            <SourceMetricCard value={sourceCards.qualified_intake_score_google_ppc ? Number(sourceCards.qualified_intake_score_google_ppc).toFixed(1) : 'N/A'} />
+            <SourceMetricCard value={sourceCards.qualified_intake_score_bing_ppc ? Number(sourceCards.qualified_intake_score_bing_ppc).toFixed(1) : 'N/A'} />
+            <SourceMetricCard value={sourceCards.qualified_intake_score_lsa ? Number(sourceCards.qualified_intake_score_lsa).toFixed(1) : 'N/A'} />
+            <SourceMetricCard value={sourceCards.qualified_intake_score_seo ? Number(sourceCards.qualified_intake_score_seo).toFixed(1) : 'N/A'} />
+          </div>
         </div>
 
+        {/* === CHARTS WITH CORRECT Y-AXIS RANGES === */}
         <div className="space-y-8">
           <ChartSection title="QLead Intake Score by Source Line Chart" grouping={grouping} onGroupingChange={setGrouping}>
             <MultiLineChart
@@ -173,6 +251,7 @@ export default function LeadQualityBySource() {
               keys={['qlead_intake_score_google_ppc', 'qlead_intake_score_bing_ppc', 'qlead_intake_score_lsa', 'qlead_intake_score_seo']}
               colors={['#f97316', '#3b82f6', '#8b5cf6', '#10b981']}
               names={['Google PPC', 'Bing PPC', 'LSA', 'SEO']}
+              yDomain={[3, 5]}
             />
           </ChartSection>
 
@@ -191,6 +270,7 @@ export default function LeadQualityBySource() {
               keys={['qlead_lead_score_google_ppc', 'qlead_lead_score_bing_ppc', 'qlead_lead_score_lsa', 'qlead_lead_score_seo']}
               colors={['#f97316', '#3b82f6', '#8b5cf6', '#10b981']}
               names={['Google PPC', 'Bing PPC', 'LSA', 'SEO']}
+              yDomain={[3, 5]}
             />
           </ChartSection>
 
@@ -200,12 +280,17 @@ export default function LeadQualityBySource() {
               keys={['qlead_close_score_google_ppc', 'qlead_close_score_bing_ppc', 'qlead_close_score_lsa', 'qlead_close_score_seo']}
               colors={['#f97316', '#3b82f6', '#8b5cf6', '#10b981']}
               names={['Google PPC', 'Bing PPC', 'LSA', 'SEO']}
+              yDomain={[3, 5]}
             />
           </ChartSection>
         </div>
       </div>
 
-      {loading && <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 text-2xl text-white">Loading...</div>}
+      {loading && (
+        <div className="fixed inset-0 bg-white dark:bg-black/80 flex items-center justify-center z-50 text-2xl backdrop-blur-sm">
+          <div className="text-gray-700 dark:text-gray-300">Loading...</div>
+        </div>
+      )}
     </div>
   )
 }
