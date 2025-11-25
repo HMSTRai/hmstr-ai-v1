@@ -73,7 +73,7 @@ function ChartSection({ title, children, grouping, onGroupingChange }) {
           <option value="daily">Daily</option>
         </select>
       </div>
-      <div className="h-96 bg-gray-50 dark:bg-slate-900/60 rounded-xl border border-dashed border-gray-300 dark:border-slate-700">
+      <div className="h-96 bg-gray-50 dark:bg-slate-800/60 rounded-xl border border-dashed border-gray-300 dark:border-slate-700">
         {children}
       </div>
     </div>
