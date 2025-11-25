@@ -254,16 +254,20 @@ export default function LeadQualityBySource() {
               yDomain={[3, 5]}
             />
           </ChartSection>
-
-          <ChartSection title="% Leads Qualified by Source Line Chart" grouping={grouping} onGroupingChange={setGrouping}>
-            <MultiLineChart
-              data={percentQualifiedData}
-              keys={['lead_qualified_rate_google_ppc', 'lead_qualified_rate_bing_ppc', 'lead_qualified_rate_lsa', 'lead_qualified_rate_seo']}
-              colors={['#f97316', '#3b82f6', '#8b5cf6', '#10b981']}
-              names={['Google PPC', 'Bing PPC', 'LSA', 'SEO']}
-            />
-          </ChartSection>
-
+        <ChartSection title="% Leads Qualified by Source Line Chart" grouping={grouping} onGroupingChange={setGrouping}>
+        <MultiLineChart
+        data={percentQualifiedData}
+        keys={[
+        'lead_qualified_rate_google_ppc',
+        'lead_qualified_rate_bing_ppc',
+        'lead_qualified_rate_lsa',
+        'lead_qualified_rate_seo'
+        ]}
+        colors={['#f97316', '#3b82f6', '#8b5cf6', '#10b981']}
+        names={['Google PPC', 'Bing PPC', 'LSA', 'SEO']}
+        yDomain={[0, 100]}  // ← also add this for % chart!
+        />
+        </ChartSection>
           <ChartSection title="QLead Lead Score by Source Line Chart" grouping={grouping} onGroupingChange={setGrouping}>
             <MultiLineChart
               data={leadScoreData}
@@ -287,8 +291,8 @@ export default function LeadQualityBySource() {
       </div>
 
       {loading && (
-        <div className="fixed inset-0 bg-white dark:bg-black/80 flex items-center justify-center z-50 text-2xl backdrop-blur-sm">
-          <div className="text-gray-700 dark:text-gray-300">Loading...</div>
+        <div className="fixed top-0 left-0 w-full h-full bg-white dark:bg-slate-900 bg-opacity-60 flex items-center justify-center z-50 text-gray-900 dark:text-gray-100">
+          Loading...
         </div>
       )}
     </div>
