@@ -189,7 +189,7 @@ export default function LeadQualityBySource() {
       </div>
 
       <div className="px-6 py-8">
-        <h1 className="text-2xl font-bold mb-8 text-gray-900 dark:text-white">Lead Qualitication Rate (%) - by Source</h1>
+        <h1 className="text-2xl font-bold mb-8 text-gray-900 dark:text-white">Lead Qualification Rate (%) - By Source</h1>
 
         {/* === ALL 4 ROWS OF CARDS EXACTLY AS BOSS REQUESTED === */}
         <div className="space-y-6 mb-12">
