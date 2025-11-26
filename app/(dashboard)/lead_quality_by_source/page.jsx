@@ -47,9 +47,9 @@ function SourceMetricCard({ label, value }) {
     <div className="bg-white dark:bg-slate-800 border border-[#f36622] rounded-2xl px-6 py-5 flex items-center justify-between shadow-lg hover:shadow-xl transition-shadow">
       <div>
         <p className="text-sm text-gray-600 dark:text-gray-400 whitespace-normal">{label}</p>
-        <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{value ?? 'N/A'}</p>
+        <p className="text-3xl font-bold text-gray-900 dark:text-[#f36622] mt-1">{value ?? '0'}</p>
       </div>
-      <div className="w-12 h-12 rounded-full border-2 border-[#f36622] flex items-center justify-center">
+      <div className="w-12 h-12 rounded-full border border-[#f36622] flex items-center justify-center">
         <svg className="w-6 h-6 text-[#f36622]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
@@ -198,54 +198,54 @@ export default function LeadQualityBySource() {
           <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
             <SourceMetricCard
               label="Top Line - Lead Qualification Rate: All - Google PPC - Bing PPC - Google LSA - SEO"
-              value={sourceCards.lead_qualified_rate_all ? `${Math.round(sourceCards.lead_qualified_rate_all)}%` : 'N/A'}
+              value={sourceCards.lead_qualified_rate_all ? `${Math.round(sourceCards.lead_qualified_rate_all)}%` : '0'}
             />
-            <SourceMetricCard label="Google PPC" value={sourceCards.lead_qualified_rate_google_ppc ? `${Math.round(sourceCards.lead_qualified_rate_google_ppc)}%` : 'N/A'} />
-            <SourceMetricCard label="Bing PPC" value={sourceCards.lead_qualified_rate_bing_ppc ? `${Math.round(sourceCards.lead_qualified_rate_bing_ppc)}%` : 'N/A'} />
-            <SourceMetricCard label="Google LSA" value={sourceCards.lead_qualified_rate_lsa ? `${Math.round(sourceCards.lead_qualified_rate_lsa)}%` : 'N/A'} />
-            <SourceMetricCard label="SEO" value={sourceCards.lead_qualified_rate_seo ? `${Math.round(sourceCards.lead_qualified_rate_seo)}%` : 'N/A'} />
+            <SourceMetricCard label="Google PPC" value={sourceCards.lead_qualified_rate_google_ppc ? `${Math.round(sourceCards.lead_qualified_rate_google_ppc)}%` : '0'} />
+            <SourceMetricCard label="Bing PPC" value={sourceCards.lead_qualified_rate_bing_ppc ? `${Math.round(sourceCards.lead_qualified_rate_bing_ppc)}%` : '0'} />
+            <SourceMetricCard label="Google LSA" value={sourceCards.lead_qualified_rate_lsa ? `${Math.round(sourceCards.lead_qualified_rate_lsa)}%` : '0'} />
+            <SourceMetricCard label="SEO" value={sourceCards.lead_qualified_rate_seo ? `${Math.round(sourceCards.lead_qualified_rate_seo)}%` : '0'} />
           </div>
 
           {/* Row 2: Qualified Lead Score */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
             <SourceMetricCard
               label="Line 2 - Qualified Lead Score: All - Google PPC - Bing PPC - Google LSA - SEO"
-              value={sourceCards.qualified_leads_score_all ? Number(sourceCards.qualified_leads_score_all).toFixed(1) : 'N/A'}
+              value={sourceCards.qualified_leads_score_all ? Number(sourceCards.qualified_leads_score_all).toFixed(1) : '0'}
             />
-            <SourceMetricCard value={sourceCards.qualified_leads_score_google_ppc ? Number(sourceCards.qualified_leads_score_google_ppc).toFixed(1) : 'N/A'} />
-            <SourceMetricCard value={sourceCards.qualified_leads_score_bing_ppc ? Number(sourceCards.qualified_leads_score_bing_ppc).toFixed(1) : 'N/A'} />
-            <SourceMetricCard value={sourceCards.qualified_leads_score_lsa ? Number(sourceCards.qualified_leads_score_lsa).toFixed(1) : 'N/A'} />
-            <SourceMetricCard value={sourceCards.qualified_leads_score_seo ? Number(sourceCards.qualified_leads_score_seo).toFixed(1) : 'N/A'} />
+            <SourceMetricCard value={sourceCards.qualified_leads_score_google_ppc ? Number(sourceCards.qualified_leads_score_google_ppc).toFixed(1) : '0'} />
+            <SourceMetricCard value={sourceCards.qualified_leads_score_bing_ppc ? Number(sourceCards.qualified_leads_score_bing_ppc).toFixed(1) : '0'} />
+            <SourceMetricCard value={sourceCards.qualified_leads_score_lsa ? Number(sourceCards.qualified_leads_score_lsa).toFixed(1) : '0'} />
+            <SourceMetricCard value={sourceCards.qualified_leads_score_seo ? Number(sourceCards.qualified_leads_score_seo).toFixed(1) : '0'} />
           </div>
 
           {/* Row 3: Qualified Close Score */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
             <SourceMetricCard
               label="Line 3 - Qualified Close Score: All - Google PPC - Bing PPC - Google LSA - SEO"
-              value={sourceCards.qualified_close_score_all ? Number(sourceCards.qualified_close_score_all).toFixed(1) : 'N/A'}
+              value={sourceCards.qualified_close_score_all ? Number(sourceCards.qualified_close_score_all).toFixed(1) : '0'}
             />
-            <SourceMetricCard value={sourceCards.qualified_close_score_google_ppc ? Number(sourceCards.qualified_close_score_google_ppc).toFixed(1) : 'N/A'} />
-            <SourceMetricCard value={sourceCards.qualified_close_score_bing_ppc ? Number(sourceCards.qualified_close_score_bing_ppc).toFixed(1) : 'N/A'} />
-            <SourceMetricCard value={sourceCards.qualified_close_score_lsa ? Number(sourceCards.qualified_close_score_lsa).toFixed(1) : 'N/A'} />
-            <SourceMetricCard value={sourceCards.qualified_close_score_seo ? Number(sourceCards.qualified_close_score_seo).toFixed(1) : 'N/A'} />
+            <SourceMetricCard value={sourceCards.qualified_close_score_google_ppc ? Number(sourceCards.qualified_close_score_google_ppc).toFixed(1) : '0'} />
+            <SourceMetricCard value={sourceCards.qualified_close_score_bing_ppc ? Number(sourceCards.qualified_close_score_bing_ppc).toFixed(1) : '0'} />
+            <SourceMetricCard value={sourceCards.qualified_close_score_lsa ? Number(sourceCards.qualified_close_score_lsa).toFixed(1) : '0'} />
+            <SourceMetricCard value={sourceCards.qualified_close_score_seo ? Number(sourceCards.qualified_close_score_seo).toFixed(1) : '0'} />
           </div>
 
           {/* Row 4: Qualified Intake Score */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
             <SourceMetricCard
               label="Line 4 - Qualified Intake Score: All - Google PPC - Bing PPC - Google LSA - SEO"
-              value={sourceCards.qualified_intake_score_all ? Number(sourceCards.qualified_intake_score_all).toFixed(1) : 'N/A'}
+              value={sourceCards.qualified_intake_score_all ? Number(sourceCards.qualified_intake_score_all).toFixed(1) : '0'}
             />
-            <SourceMetricCard value={sourceCards.qualified_intake_score_google_ppc ? Number(sourceCards.qualified_intake_score_google_ppc).toFixed(1) : 'N/A'} />
-            <SourceMetricCard value={sourceCards.qualified_intake_score_bing_ppc ? Number(sourceCards.qualified_intake_score_bing_ppc).toFixed(1) : 'N/A'} />
-            <SourceMetricCard value={sourceCards.qualified_intake_score_lsa ? Number(sourceCards.qualified_intake_score_lsa).toFixed(1) : 'N/A'} />
-            <SourceMetricCard value={sourceCards.qualified_intake_score_seo ? Number(sourceCards.qualified_intake_score_seo).toFixed(1) : 'N/A'} />
+            <SourceMetricCard value={sourceCards.qualified_intake_score_google_ppc ? Number(sourceCards.qualified_intake_score_google_ppc).toFixed(1) : '0'} />
+            <SourceMetricCard value={sourceCards.qualified_intake_score_bing_ppc ? Number(sourceCards.qualified_intake_score_bing_ppc).toFixed(1) : '0'} />
+            <SourceMetricCard value={sourceCards.qualified_intake_score_lsa ? Number(sourceCards.qualified_intake_score_lsa).toFixed(1) : '0'} />
+            <SourceMetricCard value={sourceCards.qualified_intake_score_seo ? Number(sourceCards.qualified_intake_score_seo).toFixed(1) : '0'} />
           </div>
         </div>
 
         {/* === CHARTS WITH CORRECT Y-AXIS RANGES === */}
         <div className="space-y-8">
-          <ChartSection title="QLead Intake Score by Source Line Chart" grouping={grouping} onGroupingChange={setGrouping}>
+          <ChartSection title="QLead Intake Score by Source" grouping={grouping} onGroupingChange={setGrouping}>
             <MultiLineChart
               data={intakeScoreData}
               keys={['qlead_intake_score_google_ppc', 'qlead_intake_score_bing_ppc', 'qlead_intake_score_lsa', 'qlead_intake_score_seo']}
@@ -254,7 +254,7 @@ export default function LeadQualityBySource() {
               yDomain={[3, 5]}
             />
           </ChartSection>
-        <ChartSection title="% Leads Qualified by Source Line Chart" grouping={grouping} onGroupingChange={setGrouping}>
+        <ChartSection title="% Leads Qualified by Source" grouping={grouping} onGroupingChange={setGrouping}>
         <MultiLineChart
         data={percentQualifiedData}
         keys={[
@@ -268,7 +268,7 @@ export default function LeadQualityBySource() {
         yDomain={[0, 100]}  // ← also add this for % chart!
         />
         </ChartSection>
-          <ChartSection title="QLead Lead Score by Source Line Chart" grouping={grouping} onGroupingChange={setGrouping}>
+          <ChartSection title="QLead Lead Score by Source" grouping={grouping} onGroupingChange={setGrouping}>
             <MultiLineChart
               data={leadScoreData}
               keys={['qlead_lead_score_google_ppc', 'qlead_lead_score_bing_ppc', 'qlead_lead_score_lsa', 'qlead_lead_score_seo']}
@@ -278,7 +278,7 @@ export default function LeadQualityBySource() {
             />
           </ChartSection>
 
-          <ChartSection title="QLead Close Score by Source Line Chart" grouping={grouping} onGroupingChange={setGrouping}>
+          <ChartSection title="QLead Close Score by Source" grouping={grouping} onGroupingChange={setGrouping}>
             <MultiLineChart
               data={closeScoreData}
               keys={['qlead_close_score_google_ppc', 'qlead_close_score_bing_ppc', 'qlead_close_score_lsa', 'qlead_close_score_seo']}
