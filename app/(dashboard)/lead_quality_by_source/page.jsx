@@ -47,7 +47,7 @@ function SourceMetricCard({ label, value }) {
     <div className="bg-white dark:bg-slate-800 border border-[#f36622] rounded-2xl px-6 py-5 flex items-center justify-between shadow-lg hover:shadow-xl transition-shadow">
       <div>
         <p className="text-sm text-gray-600 dark:text-gray-400 whitespace-normal">{label}</p>
-        <p className="text-3xl font-bold text-gray-900 dark:text-[#f36622] mt-1">{value ?? '0'}</p>
+        <p className="text-3xl font-bold text-[#f36622] dark:text-[#f36622] mt-1">{value ?? '0'}</p>
       </div>
       <div className="w-12 h-12 rounded-full border border-[#f36622] flex items-center justify-center">
         <svg className="w-6 h-6 text-[#f36622]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -189,7 +189,7 @@ export default function LeadQualityBySource() {
       </div>
 
       <div className="px-6 py-8">
-        <h1 className="text-2xl font-bold mb-8 text-gray-900 dark:text-white">Lead Quality By Source</h1>
+        <h1 className="text-2xl font-bold mb-8 text-gray-900 dark:text-white">Lead Qualitication Rate (%) - by Source</h1>
 
         {/* === ALL 4 ROWS OF CARDS EXACTLY AS BOSS REQUESTED === */}
         <div className="space-y-6 mb-12">
@@ -197,7 +197,7 @@ export default function LeadQualityBySource() {
           {/* Row 1: Lead Qualification Rate */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
             <SourceMetricCard
-              label="Top Line - Lead Qualification Rate: All - Google PPC - Bing PPC - Google LSA - SEO"
+              label="Lead Qualification Rate"
               value={sourceCards.lead_qualified_rate_all ? `${Math.round(sourceCards.lead_qualified_rate_all)}%` : '0'}
             />
             <SourceMetricCard label="Google PPC" value={sourceCards.lead_qualified_rate_google_ppc ? `${Math.round(sourceCards.lead_qualified_rate_google_ppc)}%` : '0'} />
@@ -205,11 +205,11 @@ export default function LeadQualityBySource() {
             <SourceMetricCard label="Google LSA" value={sourceCards.lead_qualified_rate_lsa ? `${Math.round(sourceCards.lead_qualified_rate_lsa)}%` : '0'} />
             <SourceMetricCard label="SEO" value={sourceCards.lead_qualified_rate_seo ? `${Math.round(sourceCards.lead_qualified_rate_seo)}%` : '0'} />
           </div>
-
+          <h1 className="text-2xl font-bold mb-8 text-gray-900 dark:text-white">Average Qualified Lead Score - By Source</h1>
           {/* Row 2: Qualified Lead Score */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
             <SourceMetricCard
-              label="Line 2 - Qualified Lead Score: All - Google PPC - Bing PPC - Google LSA - SEO"
+              label="Qualified Lead Score"
               value={sourceCards.qualified_leads_score_all ? Number(sourceCards.qualified_leads_score_all).toFixed(1) : '0'}
             />
             <SourceMetricCard value={sourceCards.qualified_leads_score_google_ppc ? Number(sourceCards.qualified_leads_score_google_ppc).toFixed(1) : '0'} />
@@ -217,11 +217,11 @@ export default function LeadQualityBySource() {
             <SourceMetricCard value={sourceCards.qualified_leads_score_lsa ? Number(sourceCards.qualified_leads_score_lsa).toFixed(1) : '0'} />
             <SourceMetricCard value={sourceCards.qualified_leads_score_seo ? Number(sourceCards.qualified_leads_score_seo).toFixed(1) : '0'} />
           </div>
-
+          <h1 className="text-2xl font-bold mb-8 text-gray-900 dark:text-white">Average Qualified Close Score - By Source</h1>
           {/* Row 3: Qualified Close Score */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
             <SourceMetricCard
-              label="Line 3 - Qualified Close Score: All - Google PPC - Bing PPC - Google LSA - SEO"
+              label="Qualified Close Score"
               value={sourceCards.qualified_close_score_all ? Number(sourceCards.qualified_close_score_all).toFixed(1) : '0'}
             />
             <SourceMetricCard value={sourceCards.qualified_close_score_google_ppc ? Number(sourceCards.qualified_close_score_google_ppc).toFixed(1) : '0'} />
@@ -229,11 +229,11 @@ export default function LeadQualityBySource() {
             <SourceMetricCard value={sourceCards.qualified_close_score_lsa ? Number(sourceCards.qualified_close_score_lsa).toFixed(1) : '0'} />
             <SourceMetricCard value={sourceCards.qualified_close_score_seo ? Number(sourceCards.qualified_close_score_seo).toFixed(1) : '0'} />
           </div>
-
+          <h1 className="text-2xl font-bold mb-8 text-gray-900 dark:text-white">Average Qualified Intake Score - By Source</h1>
           {/* Row 4: Qualified Intake Score */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
             <SourceMetricCard
-              label="Line 4 - Qualified Intake Score: All - Google PPC - Bing PPC - Google LSA - SEO"
+              label="Qualified Intake Score"
               value={sourceCards.qualified_intake_score_all ? Number(sourceCards.qualified_intake_score_all).toFixed(1) : '0'}
             />
             <SourceMetricCard value={sourceCards.qualified_intake_score_google_ppc ? Number(sourceCards.qualified_intake_score_google_ppc).toFixed(1) : '0'} />
